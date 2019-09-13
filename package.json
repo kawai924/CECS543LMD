@@ -1,0 +1,19 @@
+{
+  "name": "cecs543lmd",
+  "version": "1.0.0",
+  "description": "VCS Project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawai924/CECS543LMD.git"
+  },
+  "author": "LMD",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kawai924/CECS543LMD/issues"
+  },
+  "homepage": "https://github.com/kawai924/CECS543LMD#readme"
+}
