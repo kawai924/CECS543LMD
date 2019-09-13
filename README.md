@@ -11,3 +11,12 @@ https://1drv.ms/w/s!AgJrpqI0jWm8gZpljgq3uOegIrgdbQ
 
 ## Target 1 (Due date sep 28th)
 create repo
+
+## folder structure
+Master
+|- app.js
+|- functions
+|- actual app folders
+    |- username
+    |   |- user project (repo)
+    |   |   |- file version
