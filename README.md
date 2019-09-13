@@ -13,6 +13,7 @@ https://1drv.ms/w/s!AgJrpqI0jWm8gZpljgq3uOegIrgdbQ
 create repo
 
 ## folder structure
+```bash
 Master
 |- app.js
 |- functions
@@ -20,3 +21,4 @@ Master
     |- username
     |   |- user project (repo)
     |   |   |- file version
+```
