@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/kawai924/CECS543LMD/issues"
   },
-  "homepage": "https://github.com/kawai924/CECS543LMD#readme"
+  "homepage": "https://github.com/kawai924/CECS543LMD#readme",
+  "dependencies": {
+    "express-fileupload": "^1.1.6-alpha.4"
+  }
 }
