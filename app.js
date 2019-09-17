@@ -19,6 +19,7 @@ app.get("/file_upload", function(req, res) {
 });
 
 app.post("/file_upload", function(req, res) {
+    // TODO create a directory for the project files?
     if(req.files) {
         var file = req.files.filename;
         var filename = file.name;
@@ -33,13 +34,10 @@ app.post("/file_upload", function(req, res) {
                     res.send(`${filename} was uploaded.`)
                 }
             })
-        });
-
-
-        // TODO create a directory for the project files? 
-        
+        });   
     }
 });
+
 app.listen(port, function () { // Set callback action fcn on network port.
     console.log('App.js listening on port '+port);
 });
