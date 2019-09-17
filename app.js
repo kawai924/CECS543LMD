@@ -23,18 +23,21 @@ app.post("/file_upload", function(req, res) {
         var file = req.files.filename;
         var filename = file.name;
         console.log(req.files);
-        
+        let artifactName = getArtifactId(filename).then( (value) => {
+            file.mv('./import/' + value, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.send("An error occurred while processing your file");
+                }
+                else {
+                    res.send(`${filename} was uploaded.`)
+                }
+            })
+        });
+
 
         // TODO create a directory for the project files? 
-        file.mv('./import' + filename, (err) => {
-            if (err) {
-                console.log(err);
-                res.send("An error occurred while processing your file");
-            }
-            else {
-                let artifactName = getArtifactId(filename).then( (value) => {res.send(value)});
-            }
-        })
+        
     }
 });
 app.listen(port, function () { // Set callback action fcn on network port.
