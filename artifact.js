@@ -44,5 +44,3 @@ function createArtifactId(fileName) {
     let artifactName = `${sum}-L${len}${ext}`;
     return artifactName;
 }
-
-console.log(createArtifactId('helloworld.txt'));
