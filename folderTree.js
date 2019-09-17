@@ -4,9 +4,10 @@
  * Assumed that the source and the target folder located in the same folder as
  * the folderTree.js and queue.js
  */
-
 const fs = require('fs');
 const path = require('path');
+
+const createArtifactId = require('./artifact');
 const {Queue} = require('./helpers/queue');
 
 /**
@@ -20,12 +21,9 @@ function copyFolderTree(source, targetFolder) {
 
     //Add all files to a queue
     const allFiles = fs.readdirSync(source);
-
     for (let file of allFiles) {
         fileQueue.enqueue(file);
     }
-    // console.log("Current files queue");
-    // fileQueue.print();
 
     //Process each element in the queue
     while(!fileQueue.isEmpty()) {
@@ -43,6 +41,16 @@ function copyFolderTree(source, targetFolder) {
             const leafFolder = path.join(targetFolder, fileName);
             // console.log('LEAF FOLDER ' + leafFolder);
             makeDir(leafFolder);
+
+            //Create artifact for file name
+            const filePath = path.join(source, fileName);
+            const artifact = createArtifactId(filePath);
+
+            //Move the file with artifact name
+            const artifactPath= path.join(leafFolder, artifact);
+            fs.copyFile(filePath, artifactPath , (err) => {
+                if (err) throw err;
+            })
         }
     }
 }
@@ -53,9 +61,7 @@ function copyFolderTree(source, targetFolder) {
  * @param fileName the name of the file
  */
 function isDirectory(source, fileName) {
-    // console.log('IS_DIRECTORY ---> ' + source + ' + ' + fileName);
     const filePath = path.join(source, fileName);
-    // console.log('filePath = ' + filePath);
     return fs.statSync(filePath).isDirectory();
 }
 
@@ -66,3 +72,7 @@ function isDirectory(source, fileName) {
 function makeDir(path) {
     !fs.existsSync(path) && fs.mkdirSync(path);
 }
+
+
+//Test
+// copyFolderTree('testing', 'target');
