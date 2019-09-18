@@ -1,0 +1,26 @@
+.center {
+    display: block;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.vertical-center {
+    top: 50%;
+    position: relative;
+    height: 50px;
+}
+
+.fit-page {
+    height: 100vh;
+}
+
+.user-input {
+    border-width: 0 0 2px 0;
+    outline: none;
+}
+
+.small-margin-top {
+    margin-top: 16px;
+}
