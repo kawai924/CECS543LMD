@@ -29,7 +29,7 @@ module.exports = createArtifactId;
 
 
 function createArtifactId(fileName) {
-    let data = fs.readFileSync(fileName, 'utf8') 
+    let data = fs.readFileSync(fileName, 'utf8'); 
     let ext = fileName.substring(fileName.indexOf('.'));
     // let weights = [1,7,3,7,11]; 
     let weights = [1,3,7,11,13];

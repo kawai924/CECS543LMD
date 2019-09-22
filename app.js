@@ -3,8 +3,7 @@ var express = require('express');
 var app = express();  // Init an Express object.
 var upload = require("express-fileupload");
 var path = require('path')
-var getArtifactId = require('./artifact');
-
+var getArtifactId = require('./helpers/artifact');
 
 app.use(upload());
 // app.use(express.static('public'))
@@ -19,3 +18,5 @@ app.use('/', index);
 app.listen(port, function () { // Set callback action fcn on network port.
     console.log('App.js listening on port '+port);
 });
+
+

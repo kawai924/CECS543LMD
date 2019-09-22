@@ -8,7 +8,13 @@ const fs = require('fs');
 const path = require('path');
 
 const createArtifactId = require('./artifact');
-const {Queue} = require('./helpers/queue');
+const {Queue} = require('./queue');
+
+module.exports = {
+    copyFolderTree, 
+    isDirectory,  
+    makeDir    
+};
 
 /**
  * Read all files in a particular source and put it in a queue
