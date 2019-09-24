@@ -15,10 +15,12 @@ create repo
 ## folder structure
 ```bash
 Master
-|- app.js
-|- functions
-|- actual app folders
-    |- username
+|- app.js (entry point)
+|- helpers (functions dir)
+|- app (UI dir)
+|- import (uplaod file dir)
+    |- username (dir)
     |   |- user project (repo)
-    |   |   |- file version
+    |   |   |- file name (dir)
+    |   |   |   |-manifest file
 ```
