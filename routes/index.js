@@ -26,7 +26,7 @@ router.post('/', function(req, res, next) {
     var fullDirectory = req.body.repo;
     ft.copyFolderTree(fullDirectory, './import/' );
     // TODO Grab just the folder name?
-    res.status(200).send('Repo created for folder: ', fullDirectory);
+    res.redirect('localhost:3000');
 });
 
 // router.get('/', function (req, res) { // Set page-gen fcn for URL root request.
