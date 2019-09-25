@@ -18,9 +18,8 @@ app.use('/', index);
 
 //JSToNode test
 var testpage = require('./routes/JSToNode.html');
-app.get('/test', function (req, res) { // Set page-gen fcn for URL root request.
-    res.send('Hello World!'); // Send webpage containing "Hello World!".
-});
+app.use('/test', testpage);
+
 
 //
 app.listen(port, function () { // Set callback action fcn on network port.
