@@ -15,12 +15,6 @@ var port = process.env.PORT || 3000;
 var index = require('./routes/index');
 app.use('/', index);
 
-
-//JSToNode test
-var testpage = require('./routes/JSToNode.html');
-app.use('/test', testpage);
-
-
 //
 app.listen(port, function () { // Set callback action fcn on network port.
     console.log('App.js listening on port '+port);
