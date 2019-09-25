@@ -1,6 +1,12 @@
 
 function JStoNode() {
-    var xhr = new XMLHTTPRequets();
-    xhr.open('GET', './test', true);
-    alert(xhr);
+    var myFetch = fetch('./test');
+    myFetch.then(function(response) {
+        response.text().then(function(text){
+            alert (text);
+
+        });
+
+    });
+
 }
