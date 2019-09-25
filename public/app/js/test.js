@@ -4,9 +4,6 @@ function JStoNode() {
     myFetch.then(function(response) {
         response.text().then(function(text){
             alert (text);
-
         });
-
     });
-
 }
