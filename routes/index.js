@@ -21,10 +21,11 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/', function(req, res, next) {
-    console.log(req.body);
-    
+    console.log("req: " + req.body);
+    console.log("reponame:" + req.body.reponame);
     var fullDirectory = req.body.repo;
-    ft.copyFolderTree(fullDirectory, './import/' );
+    ft.makeDir('./import/' + req.body.reponame + '/');
+    ft.copyFolderTree(fullDirectory, './import/' + req.body.reponame + '/');
     // TODO Grab just the folder name?
     res.redirect('localhost:3000');
 });
