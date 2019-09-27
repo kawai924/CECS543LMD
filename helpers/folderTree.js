@@ -1,12 +1,5 @@
-/*
- * Use the function copyFolderTree to replicate the folder structure from
- * a source folder to the target folder.
- * Assumed that the source and the target folder located in the same folder as
- * the folderTree.js and queue.js
- */
 const fs = require('fs');
 const path = require('path');
-
 const createArtifactId = require('./artifact');
 const {Queue} = require('./queue');
 
@@ -65,6 +58,7 @@ function copyFolderTree(source, targetFolder) {
  * Check if a file from a source is a directory
  * @param source  the path of the file
  * @param fileName the name of the file
+ * Return: boolean
  */
 function isDirectory(source, fileName) {
     const filePath = path.join(source, fileName);
@@ -78,7 +72,3 @@ function isDirectory(source, fileName) {
 function makeDir(path) {
     !fs.existsSync(path) && fs.mkdirSync(path);
 }
-
-
-//Test
-// copyFolderTree('testing', 'target');
