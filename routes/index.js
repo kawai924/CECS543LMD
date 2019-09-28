@@ -7,7 +7,7 @@ var path = require('path');
 
 
 router.use(bodyParser());
-// var parser = bodyParser.urlencoded({extended: false});
+
 
 router.get('/', function(req, res, next) {
     var path = 'index.html';
@@ -20,42 +20,22 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.post('/', function(req, res, next) {
+
+/*
+post request to get the post data sent from the command line
+*/
+router.post('/', function(req, res) {
     console.log("req: " + req.body);
     console.log("reponame:" + req.body.reponame);
     var fullDirectory = req.body.repo;
+    
+    // Create the project directory under import folder
     ft.makeDir('./import/' + req.body.reponame + '/');
+    // Copy the uploaded folder structure to the import/<projectName> folder
     ft.copyFolderTree(fullDirectory, './import/' + req.body.reponame + '/');
-    // TODO Grab just the folder name?
     res.redirect('localhost:3000');
 });
 
-// router.get('/', function (req, res) { // Set page-gen fcn for URL root request.
-//     res.sendFile(__dirname + "/index.html"); // Send home webpage
-// });
 
-router.get("/file_upload", function(req, res) {
-    res.sendFile(__dirname + "/file_upload.html");
-});
-
-router.post("/file_upload", function(req, res) {
-    // TODO create a directory for the project files?
-    if(req.files) {
-        var file = req.files.filename;
-        var filename = file.name;
-        console.log(req.files);
-        let artifactName = getArtifactId(filename).then( (value) => {
-            file.mv('./import/' + value, (err) => {
-                if (err) {
-                    console.log(err);
-                    res.send("An error occurred while processing your file");
-                }
-                else {
-                    res.send(`${filename} was uploaded.`)
-                }
-            })
-        });   
-    }
-});
 
 module.exports = router;
