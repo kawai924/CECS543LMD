@@ -40,10 +40,6 @@ This program uses Node JS for backend functions. For more information on how to 
 ```
 
 
-## Azure website as project location
-https://cecs543.azurewebsites.net/
-as you make changes on github, the change should be synced to the website within a minute. You should see changes after a refresh.
-
 ## stand up report
 file location  
 https://1drv.ms/w/s!AgJrpqI0jWm8gZpljgq3uOegIrgdbQ
@@ -76,8 +72,6 @@ Master
 # Features
 Available now:
 - Create Repo.
-Missing:
-- Response back to user with tree structure of Repo.
 
 # Bugs
 N/A
