@@ -1,3 +1,6 @@
+/**
+ * This function to generate an artifact ID from the content of a file.
+ */
 var fs = require('fs');
 
 module.exports = createArtifactId;

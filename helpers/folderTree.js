@@ -1,13 +1,11 @@
+/**
+ * This file contains functions that manipulate folders and folders' structure.
+ */
+
 const fs = require('fs');
 const path = require('path');
 const createArtifactId = require('./artifact');
 const {Queue} = require('./queue');
-
-module.exports = {
-    copyFolderTree, 
-    isDirectory,  
-    makeDir    
-};
 
 /**
  * Read all files in a particular source and put it in a queue
@@ -91,3 +89,9 @@ function makeDir(path) {
     !fs.existsSync(path) && fs.mkdirSync(path);
 
 }
+
+module.exports = {
+    copyFolderTree,
+    isDirectory,
+    makeDir
+};

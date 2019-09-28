@@ -5,10 +5,14 @@ var ft = require('../helpers/folderTree');
 var path = require('path');
 
 
-
+/*
+Parse incoming request.
+ */
 router.use(bodyParser());
 
-
+/*
+Display index.html as home-page
+ */
 router.get('/', function(req, res, next) {
     var path = 'index.html';
     var options = {
@@ -19,10 +23,8 @@ router.get('/', function(req, res, next) {
     });
 });
 
-
-
 /*
-post request to get the post data sent from the command line
+Post request to get the post data sent from the command line
 */
 router.post('/', function(req, res) {
     console.log("req: " + req.body);
@@ -35,7 +37,6 @@ router.post('/', function(req, res) {
     ft.copyFolderTree(fullDirectory, './import/' + req.body.reponame + '/');
     res.redirect('localhost:3000');
 });
-
 
 
 module.exports = router;
