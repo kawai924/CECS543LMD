@@ -1,7 +1,7 @@
 /**
  * This class creates and maintain a queue.
  */
-module.exports = {Queue};
+
 
 class Queue {
     constructor() {this.data = [];}
@@ -10,3 +10,5 @@ class Queue {
     isEmpty() {return this.data.length === 0;}
     print() {console.log(this.data);}
 }
+
+module.exports = {Queue};
