@@ -1,11 +1,10 @@
 /**
  * This file contains functions that manipulate folders and folders' structure.
  */
-
 const fs = require('fs');
 const path = require('path');
-const createArtifactId = require('./artifact');
-const {Queue} = require('./queue');
+const createArtifactId = require('./Artifact');
+const {Queue} = require('./Queue');
 
 /**
  * Read all files in a particular source and put it in a queue
@@ -38,9 +37,7 @@ function copyFolderTree(source, targetFolder) {
             //Recursively copy sub folders and files.
             copyFolderTree(newSource, newTarget);
         } else {
-            //console.log("TARGET " + targetFolder + ", fileName " + fileName);
             const leafFolder = path.join(targetFolder, fileName);
-            //console.log('LEAF FOLDER ' + leafFolder);
             makeDir(leafFolder);
             
             //Create artifact for file name
@@ -49,7 +46,6 @@ function copyFolderTree(source, targetFolder) {
             
             //write manifest file
             const content = 'Project Name: ' + fileName + '. Created Date: '+ date_ob+'\r\n---------------------------\r\nFile Name: ' + fileName+'. Artifact ID: '+artifact+'\r\n';
-            //console.log(content);
             //Create manifest file
             fs.writeFile(leafFolder+'/manifest.txt', content, (err) => {
                 if (err) {

@@ -22,9 +22,9 @@ This program uses Node JS for backend functions. For more information on how to 
 ```bash
 |- app.js
 |- helpers
-    |- artifact.js
-    |- folderTree.js
-    |- queue.js
+    |- Artifact.js
+    |- FolderFunctions.js
+    |- Queue.js
 |- import (where the created Repos will be stored.)
 |- public
     |- app
