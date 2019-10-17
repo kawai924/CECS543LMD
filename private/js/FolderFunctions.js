@@ -81,9 +81,8 @@ function isDirectory(source, fileName) {
  * If a directory is not exists, create a new one. Otherwise, do nothing
  * @param path the path of the new folder
  */
-function makeDir(path) {
-    !fs.existsSync(path) && fs.mkdirSync(path);
-
+function makeDir(path, options={}) {
+    !fs.existsSync(path) && fs.mkdirSync(path, options);
 }
 
 module.exports = {

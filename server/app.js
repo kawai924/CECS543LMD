@@ -4,7 +4,8 @@ const path = require("path");
 const fs = require("fs");
 
 const index = require("./routes/index.js");
-const getArtifactId = require("../helpers/Artifact");
+const constants = require('./constants');
+const getArtifactId = require("../private/js/Artifact");
 const PORT = process.env.PORT || 3000;
 
 // Init an Express object.
@@ -16,7 +17,7 @@ app.use(express.static('public'));
 app.use("/", index);
 
 //Extra features after this point
-//reading dir in import
+//reading dir in data
 function getFiles(dir, files_) {
   files_ = files_ || [];
   var files = fs.readdirSync(dir);
@@ -35,7 +36,7 @@ function getFiles(dir, files_) {
 app.get("/test", function(req, res) {
   // Set page-gen fcn for URL root request.
   //res.send('Hello Liam Matt and Marco!'); // Send webpage containing "Hello World!".
-  dirlist = getFiles("./import");
+  dirlist = getFiles(path.join(constants.TESTPATH, "data"));
   var list = "<p>";
   for (let file of dirlist) {
     list = list + file + "</br>";
