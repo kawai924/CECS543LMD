@@ -1,11 +1,8 @@
 # CECS543LMD
-##<span style="color:purple">VCS Project for CECS 543 Sec 07 11646</span>
+VCS Project for CECS 543 Sec 07 11646
 
 # Authors
-Liam Nguyen
-Matt Nguyen
-Marco Curci
-Dennis Lo
+Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
 
 # Intro
 Create a repository for the given project source tree (including all its files and their folder paths) within the project.
