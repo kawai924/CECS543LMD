@@ -9,7 +9,7 @@ Create a repository for the given project source tree (including all its files a
 
 # Installation
 Before installing, [download and install Node.js](https://nodejs.org/en/download/).
-Node.js 0.10 or higher is required.
+Node.js v11 or higher is required.
 
 # Dependencies
 Install Dependencies is done using [npm install](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
