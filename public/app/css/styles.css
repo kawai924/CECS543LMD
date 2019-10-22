@@ -1,12 +1,12 @@
-.center {
+/* .center {
     display: block;
     position: relative;
     align-items: center;
     justify-content: center;
     margin: auto;
-}
+} */
 
-.vertical-center {
+/* .vertical-center {
     top: 50%;
     position: relative;
     height: 50px;
@@ -27,4 +27,23 @@
 
 .small-margin-bottom {
     margin-bottom: 16px;
+} */
+
+
+/* FORM STYLE
+----------------*/ 
+form input[type='text'] {
+    display: block;
+    width: 500px;
+    margin: 16px 0;
 }
+
+/* DATA LIST
+---------------*/
+h5 {
+    font-size: 2rem;
+}
+.data-list {
+    margin-top: 20px;
+}
+

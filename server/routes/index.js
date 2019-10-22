@@ -1,31 +1,35 @@
-const express = require('express');
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+
+const folderFuncs = require("../../private/js/FolderFunctions");
+const constants = require("../constants.js");
+
 const router = express.Router();
-const bodyParser = require('body-parser');
-const folderFuncs = require('../../private/js/FolderFunctions');
-const path = require('path');
-const constants = require('../constants.js');
 
+router.use(bodyParser.urlencoded({ extended: true }));
 
-router.use(bodyParser.urlencoded({extended: true}));
-
-//Display index.html as home-page//
-router.get('/', function(req, res, next) {
-    return res.sendFile(path.join(constants.APPPATH, 'index.html'));
+// GET homepage
+router.get("/", function(req, res, next) {
+  return res.sendFile(path.join(constants.APPPATH, "index.html"));
 });
 
-//Post request to get the post data sent from the command line
-router.post('/', function(req, res) {
-    const userName = req.body.username; // get username
-    const repoName = req.body.repoName; // get repo name
-    const fullDirectory = path.join(constants.TESTPATH, repoName); // absolute repo path
-    const importPath = path.join(constants.TESTPATH, 'data', userName, repoName); // absolute data path
+// POST form in homepage
+router.post("/", function(req, res) {
+  const userName = req.body.username; // get username
+  const repoName = req.body.repoName; // get repo name
 
-    // Create the project directory under data folder
-    folderFuncs.makeDir(importPath, {recursive: true});
-    // Copy the uploaded folder structure to the data/<projectName> folder
-    folderFuncs.copyFolderTree(fullDirectory, importPath);
-    res.redirect('localhost:3000');
+  const sourcePath = path.join(constants.TESTPATH, repoName); // absolute user's repo path
+  const destPath = path.join(constants.ROOTPATH, "database", userName); // absolute destination path
+  // console.log({ fullDirectory, importPath });
+
+  // Create the project directory under database folder
+  folderFuncs.makeDir(destPath, { recursive: true });
+
+  // Copy the uploaded folder structure to the data/<projectName> folder
+  folderFuncs.copyFolderTree(sourcePath, destPath);
+
+  res.redirect("localhost:3000/");
 });
-
 
 module.exports = router;

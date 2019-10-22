@@ -1,9 +1,10 @@
+// function JStoNode() {
+//   var myFetch = fetch("./test");
 
-function JStoNode() {
-    var myFetch = fetch('./test');
-    myFetch.then(function(response) {
-        response.text().then(function(text){
-            alert (text);
-        });
-    });
-}
+//   myFetch.then(function(response) {
+//     console.log(response.text());
+//     response.text().then(function(text) {
+//       alert(text);
+//     });
+//   });
+// }
