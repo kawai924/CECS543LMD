@@ -20,17 +20,20 @@ app.use("/", index);
 // For a given path dir,
 function getFiles(dir, files_ = []) {
   // files_ = files_ || [];
-  var files = fs.readdirSync(dir); // Read content in dir
-  for (var i in files) {
-    var name = dir + "/" + files[i]; // Get the next sub-path
+  const files = fs.readdirSync(dir); // Read content in dir
+  for (let i in files) {
+    const subPath = dir + "/" + files[i]; // Get the next sub-path
+    const fileName = /\/database.*/.exec(subPath);
+
+    // console.log(fileName[0]);
 
     // If that sub-path == directory
-    if (fs.statSync(name).isDirectory()) {
-      getFiles(name, files_); // Recursively call
+    if (fs.statSync(subPath).isDirectory()) {
+      getFiles(subPath, files_); // Recursively call
 
       // If not
     } else {
-      files_.push(name); // Add that to files_ array
+      files_.push(fileName); // Add that to files_ array
     }
   }
 

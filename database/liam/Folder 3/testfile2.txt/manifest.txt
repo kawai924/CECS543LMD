@@ -1,3 +1,0 @@
-Project Name: testfile2.txt. Created Date: Tue Oct 22 2019 11:39:52 GMT-0700 (Pacific Daylight Time)
----------------------------
-File Name: testfile2.txt. Artifact ID: 9976-L17.txt

@@ -24,8 +24,8 @@ function createRepo() {
   // }, 500);
   const repoCreated = document.getElementById("repo-created");
   repoCreated.innerHTML = "<h1>Repository Created</h1>";
-  // setTimeout(function() {
-  //   getdir(url);
-  // }, 500);
+  setTimeout(function() {
+    repoCreated.style.visibility = "hidden";
+  }, 1000);
   getdir(url);
 }
