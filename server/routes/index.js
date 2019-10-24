@@ -29,11 +29,15 @@ router.post("/", function(req, res) {
   ); // absolute destination path
   // console.log({ fullDirectory, importPath });
 
-  // Create the project directory under database folder
+  // Create the project directory under database folder and manifests folder under the project folder
   folderFuncs.makeDir(destPath, { recursive: true });
+  folderFuncs.makeDir(path.join(destPath, "manifests"), { recursive: true });
 
+  let manifestObject = new Manifest("create repo", destPath);
+  manifestObject.init();
   // Copy the uploaded folder structure to the data/<projectName> folder
-  folderFuncs.copyFolderTree(sourcePath, destPath);
+  folderFuncs.copyFolderTree(sourcePath, destPath, manifestObject);
+  manifestObject.complete();
 
   res.redirect("localhost:3000/");
 });

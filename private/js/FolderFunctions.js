@@ -113,20 +113,20 @@ function makeDir(path, options = {}) {
 }
 
 // Testing
-const constants = require("../../server/constants");
-const projectPath = path.join(constants.ROOTPATH, "testing", "Test_user");
-const targetPath = path.join(constants.ROOTPATH, "database", "liam");
+// const constants = require("../../server/constants");
+// const projectPath = path.join(constants.ROOTPATH, "testing", "Test_user");
+// const targetPath = path.join(constants.ROOTPATH, "database", "liam");
 
-let My_manifest = new Manifest(
-  "create repo",
-  path.join(targetPath, "Test_user")
-);
-My_manifest.init();
+// let My_manifest = new Manifest(
+//   "create repo",
+//   path.join(targetPath, "Test_user")
+// );
+// My_manifest.init();
 
-//targetPath = "liam"
-//projectPath = "testing/Test_user"
-copyFolderTree(projectPath, path.join(targetPath, "Test_user"), My_manifest);
-My_manifest.complete();
+// //targetPath = "liam"
+// //projectPath = "testing/Test_user"
+// copyFolderTree(projectPath, path.join(targetPath, "Test_user"), My_manifest);
+// My_manifest.complete();
 
 module.exports = {
   copyFolderTree,
