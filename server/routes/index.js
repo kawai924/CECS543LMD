@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 
 const folderFuncs = require("../../private/js/FolderFunctions");
 const constants = require("../constants.js");
+const Manifest = require("../../private/js/Manifest");
 
 const router = express.Router();
 
@@ -20,7 +21,12 @@ router.post("/", function(req, res) {
   const repoName = req.body.repoName; // get repo name
 
   const sourcePath = path.join(constants.TESTPATH, repoName); // absolute user's repo path
-  const destPath = path.join(constants.ROOTPATH, "database", userName); // absolute destination path
+  const destPath = path.join(
+    constants.ROOTPATH,
+    "database",
+    userName,
+    repoName
+  ); // absolute destination path
   // console.log({ fullDirectory, importPath });
 
   // Create the project directory under database folder

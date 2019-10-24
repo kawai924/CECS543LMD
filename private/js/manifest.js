@@ -11,13 +11,13 @@
  *  - repo: repo name
  *  - date: date and time of the command
  *  - structure:
- *       + "[leaf folder]/artifact" : relative location to the root
+ *       + "[leaf folder]/artifact" : absolute path to the artifact
  *
  * Ex: The structure for path: /liam/foo/bar.txt/artifact1.txt
- * "bar.txt/artifact1.txt" : """" (empty string on relative location)
+ * "bar.txt/artifact1.txt" : "/liam/foo/bar.txt/artifact1.txt"
  *
  * Ex: The structure for path: /liam/foo/baz/bar.txt/artifact3.txt
- * "bar.txt/artifact1.txt" : "baz"
+ * "bar.txt/artifact1.txt" : "/liam/foo/bar.txt/artifact1.txt"
  *
  *
  * For master_manifest.json
@@ -37,7 +37,7 @@ const constants = require("../../server/constants");
 // Turn fs.readFile into a promise
 const readFilePromise = util.promisify(fs.readFile);
 
-class Manifest {
+module.exports = class Manifest {
   constructor(command, pathToRepo) {
     this.pathToRepo = pathToRepo;
     this.command = command;
@@ -67,11 +67,12 @@ class Manifest {
         // Prepare new id for a new manifest file
         this.newID = Object.keys(this.masterManifest).length + 1;
 
-        console.log("Master Manifest File:\n", this.masterManifest);
+        // console.log("Master Manifest File:\n", this.masterManifest);
 
         // No
       } else {
         // Write to file master_manifest.json with {}
+        console.log(masterJsonPath + "\n\n\n");
         fs.writeFileSync(masterJsonPath, "{}");
 
         // Set up id for the new manifest file and initialize empty object
@@ -83,14 +84,14 @@ class Manifest {
     }
 
     // Create a template for a new manifest
-    const deconstructedPathToRepo = pathToRepo.split("/");
+    const deconstructedPathToRepo = this.pathToRepo.split("/");
     const len = deconstructedPathToRepo.length;
     const userName = deconstructedPathToRepo[len - 2];
     const repoName = deconstructedPathToRepo[len - 1];
     const datetime = new Date();
     // console.log(datetime);
 
-    this.manifest = {
+    this.newManifest = {
       id: this.newID,
       user: userName,
       repo: repoName,
@@ -99,8 +100,6 @@ class Manifest {
       labels: [],
       structure: {}
     };
-
-    // console.log(this.newID);
   }
 
   // Store artifact path and relative location into this.manifest object
@@ -108,19 +107,21 @@ class Manifest {
   // Relative path: from rootRepo
   // Look above for reference
   addToStructure(artifactPath, relPath) {
-    this.manifest.structure.artifactPath = relPath;
+    const structureObj = this.newManifest.structure;
+    structureObj[artifactPath] = relPath;
   }
 
   complete() {
     // Write manifest file into the manifest folder
     const manifestName = "manifest_" + this.newID.toString() + ".json";
-    // console.log(manifestName);
-    const newManifestPath = path.join(pathToRepo, "manifests", manifestName);
+    const newManifestPath = path.join(
+      this.pathToRepo,
+      "manifests",
+      manifestName
+    );
+    console.log(`newManifestPath: ${newManifestPath}`);
     try {
-      fs.writeFileSync(newManifestPath, JSON.stringify(this.manifest));
-      console.log(
-        `${manifestName} is successfully written into ${newManifestPath}`
-      );
+      fs.writeFileSync(newManifestPath, JSON.stringify(this.newManifest));
     } catch (err) {
       console.log(err);
     }
@@ -129,21 +130,22 @@ class Manifest {
     this.masterManifest[this.newID] = newManifestPath;
     try {
       const masterJsonPath = path.join(this.pathToRepo, "master_manifest.json");
+
       fs.writeFileSync(masterJsonPath, JSON.stringify(this.masterManifest));
-      console.log(this.masterManifest);
+      // console.log(this.masterManifest);
     } catch (err) {
       console.log(err);
     }
   }
-}
+};
 
-const pathToRepo = path.join(
-  constants.ROOTPATH,
-  "database",
-  "liam",
-  "tic_tac_toe"
-);
-const test = new Manifest("create Repo", pathToRepo);
-test.init();
-test.addToStructure("test1", "path1");
-test.complete();
+// const pathToRepo = path.join(
+//   constants.ROOTPATH,
+//   "database",
+//   "liam",
+//   "tic_tac_toe"
+// );
+// const test = new Manifest("create Repo", pathToRepo);
+// test.init();
+// test.addToStructure("test1", "path1");
+// test.complete();
