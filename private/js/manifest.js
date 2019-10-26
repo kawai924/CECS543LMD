@@ -38,8 +38,8 @@ const constants = require("../../server/constants");
 const readFilePromise = util.promisify(fs.readFile);
 
 module.exports = class Manifest {
-  constructor(command, pathToRepo) {
-    this.pathToRepo = pathToRepo;
+  constructor(command, destRepoPath) {
+    this.destRepoPath = destRepoPath;
     this.command = command;
   }
 
@@ -49,14 +49,17 @@ module.exports = class Manifest {
       // Check if master_manifest.json exists
 
       // Path of the upcoming master_manifest.json
-      const masterJsonPath = path.join(this.pathToRepo, "master_manifest.json");
+      const masterJsonPath = path.join(
+        this.destRepoPath,
+        "master_manifest.json"
+      );
       const isMasterExist = fs.existsSync(masterJsonPath);
 
       // Yes
       if (isMasterExist) {
         // Grab the master_manifest.json file
         const rawMasterManifest = fs.readFileSync(
-          path.join(this.pathToRepo, "master_manifest.json")
+          path.join(this.destRepoPath, "master_manifest.json")
         );
 
         // rawMasterManifest is currently a buffer. So, toString() converts it into a string
@@ -84,7 +87,7 @@ module.exports = class Manifest {
     }
 
     // Create a template for a new manifest
-    const deconstructedPathToRepo = this.pathToRepo.split("/");
+    const deconstructedPathToRepo = this.destRepoPath.split("/");
     const len = deconstructedPathToRepo.length;
     const userName = deconstructedPathToRepo[len - 2];
     const repoName = deconstructedPathToRepo[len - 1];
@@ -115,7 +118,7 @@ module.exports = class Manifest {
     // Write manifest file into the manifest folder
     const manifestName = "manifest_" + this.newID.toString() + ".json";
     const newManifestPath = path.join(
-      this.pathToRepo,
+      this.destRepoPath,
       "manifests",
       manifestName
     );
@@ -129,7 +132,10 @@ module.exports = class Manifest {
     // Update the master manifest
     this.masterManifest[this.newID] = newManifestPath;
     try {
-      const masterJsonPath = path.join(this.pathToRepo, "master_manifest.json");
+      const masterJsonPath = path.join(
+        this.destRepoPath,
+        "master_manifest.json"
+      );
 
       fs.writeFileSync(masterJsonPath, JSON.stringify(this.masterManifest));
       // console.log(this.masterManifest);
