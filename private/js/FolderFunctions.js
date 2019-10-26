@@ -35,10 +35,6 @@ function copyFolderTree(source, targetFolder, ManifestObj) {
 
       makeDir(newTarget); //Make a directory
 
-      // console.log(`new target: ${newTarget}`);
-      // console.log(`dir path: ${dirPath}`);
-      // console.log(`\n\nManifest Obj: ${JSON.stringify(ManifestObj)}\n\n`);
-
       ManifestObj.addToStructure("", newTarget); // Add """" : dirPath to structure
 
       copyFolderTree(dirPath, newTarget, ManifestObj); //Recursively copy sub folders and files.
@@ -111,22 +107,6 @@ function isDirectory(source, fileName) {
 function makeDir(path, options = {}) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
 }
-
-// Testing
-// const constants = require("../../server/constants");
-// const projectPath = path.join(constants.ROOTPATH, "testing", "Test_user");
-// const targetPath = path.join(constants.ROOTPATH, "database", "liam");
-
-// let My_manifest = new Manifest(
-//   "create repo",
-//   path.join(targetPath, "Test_user")
-// );
-// My_manifest.init();
-
-// //targetPath = "liam"
-// //projectPath = "testing/Test_user"
-// copyFolderTree(projectPath, path.join(targetPath, "Test_user"), My_manifest);
-// My_manifest.complete();
 
 module.exports = {
   copyFolderTree,

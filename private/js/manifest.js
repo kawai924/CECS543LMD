@@ -37,7 +37,7 @@ const constants = require("../../server/constants");
 // Turn fs.readFile into a promise
 const readFilePromise = util.promisify(fs.readFile);
 
-module.exports = class Manifest {
+class Manifest {
   constructor(command, destRepoPath) {
     this.destRepoPath = destRepoPath;
     this.command = command;
@@ -70,8 +70,6 @@ module.exports = class Manifest {
         // Prepare new id for a new manifest file
         this.newID = Object.keys(this.masterManifest).length + 1;
 
-        // console.log("Master Manifest File:\n", this.masterManifest);
-
         // No
       } else {
         // Write to file master_manifest.json with {}
@@ -92,7 +90,6 @@ module.exports = class Manifest {
     const userName = deconstructedPathToRepo[len - 2];
     const repoName = deconstructedPathToRepo[len - 1];
     const datetime = new Date();
-    // console.log(datetime);
 
     this.newManifest = {
       id: this.newID,
@@ -143,15 +140,6 @@ module.exports = class Manifest {
       console.log(err);
     }
   }
-};
+}
 
-// const pathToRepo = path.join(
-//   constants.ROOTPATH,
-//   "database",
-//   "liam",
-//   "tic_tac_toe"
-// );
-// const test = new Manifest("create Repo", pathToRepo);
-// test.init();
-// test.addToStructure("test1", "path1");
-// test.complete();
+module.exports = Manifest;
