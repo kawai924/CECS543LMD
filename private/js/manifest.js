@@ -44,7 +44,7 @@ module.exports = class Manifest {
   }
 
   // Grab or create the master_manifest.json
-  init() {
+  initialize() {
     try {
       // Check if master_manifest.json exists
 
