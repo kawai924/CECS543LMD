@@ -28,12 +28,14 @@ class RepoHandler {
       repoName
     );
 
-    // If command === create, it's a new repo
-    let isNew = command === "create" ? true : false;
+    // Can't create an existing repo of the same name under same user
+    // Throw error
+    if (command === "create" && fs.existsSync(destRepoPath)) {
+      throw new Error("Repo already exists");
+    }
 
     // Store all properties regarding about the current repo
     this.repo = {
-      isNew: isNew,
       userName: userName,
       repoName: repoName,
       command: command,
@@ -49,16 +51,12 @@ class RepoHandler {
    * Make sure destination repo exists, then initialize manifest instance.
    */
   initializeForCreate() {
-    // For new repo
-    if (this.repo.isNew) {
-      // Create repo folder under database/[userName]/[repoName]
-      ff.makeDir(this.repo.destRepoPath, { recursive: true });
-      // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
-      ff.makeDir(path.join(this.repo.destRepoPath, "manifests"), {
-        recursive: true
-      });
-    }
-
+    // Create repo folder under database/[userName]/[repoName]
+    ff.makeDir(this.repo.destRepoPath, { recursive: true });
+    // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
+    ff.makeDir(path.join(this.repo.destRepoPath, "manifests"), {
+      recursive: true
+    });
     // Initialize manifest instance after database/[repo] exists
     this.manifest.initialize();
   }
@@ -86,8 +84,8 @@ class RepoHandler {
     }
   }
 
-  addLabel(manifestID, label) {
-    this.manifest.addLabel(manifestID, label);
+  addLabel(manifestProp, label) {
+    this.manifest.addLabel(manifestProp, label);
   }
 }
 

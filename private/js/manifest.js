@@ -82,7 +82,9 @@ class Manifest {
   // Add a label of a particular manifest to master manifest
   addLabel(manifestID, label) {
     const masterManifest = this.getMasterManifest();
+    console.log("before", masterManifest);
     masterManifest.labels[label] = manifestID;
+    console.log("after", masterManifest);
 
     // Update the master manifest
     try {
