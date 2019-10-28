@@ -26,7 +26,7 @@ function copyFolderTree(source, targetFolder, ManifestObj) {
   while (!fileQueue.isEmpty()) {
     const fileName = fileQueue.dequeue();
 
-    let date_ob = new Date();
+    // let date_ob = new Date();
 
     // The current file is a DIRECTORY
     if (isDirectory(source, fileName)) {

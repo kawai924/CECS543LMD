@@ -10,8 +10,8 @@
  *  - user: user name
  *  - repo: repo name
  *  - date: date and time of the command
- *  - structure:
- *       + "[leaf folder]/artifact" : absolute path to the artifact
+ *  - structure: an array of objects, each contains
+ *      "[leaf folder]/artifact" : absolute path to the artifact
  *
  * Ex: The structure for path: /liam/foo/bar.txt/artifact1.txt
  * "bar.txt/artifact1.txt" : "/liam/foo/bar.txt/artifact1.txt"
@@ -75,7 +75,7 @@ class Manifest {
       repo: repoName,
       command: this.command,
       datetime: datetime,
-      structure: {}
+      structure: []
     };
   }
 
@@ -98,8 +98,8 @@ class Manifest {
   // Artifact path: [leaf_folder]/[artifact_file]
   // Relative path: from rootRepo => Look above for reference
   addToStructure(artifactPath, relPath) {
-    const structureObj = this.newManifest.structure;
-    structureObj[artifactPath] = relPath;
+    const { structure } = this.newManifest;
+    structure.push({ [artifactPath]: relPath });
   }
 
   finalize() {
