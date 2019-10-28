@@ -97,9 +97,10 @@ class Manifest {
   // Store artifact path and relative location into this.manifest object
   // Artifact path: [leaf_folder]/[artifact_file]
   // Relative path: from rootRepo => Look above for reference
-  addToStructure(artifactPath, relPath) {
+  addToStructure(artifactNode, relPath) {
     const { structure } = this.newManifest;
-    structure.push({ [artifactPath]: relPath });
+    // structure.push({ [artifactPath]: relPath });
+    structure.push({ artifactNode, artifactRelPath: relPath });
   }
 
   finalize() {
