@@ -82,7 +82,14 @@ class Manifest {
   // Add a label of a particular manifest to master manifest
   addLabel(manifestID, label) {
     const masterManifest = this.getMasterManifest();
-    masterManifest[manifestID].labels.append(label);
+    masterManifest.labels[label] = manifestID;
+
+    // Update the master manifest
+    try {
+      fs.writeFileSync(this.masterJsonPath, JSON.stringify(masterManifest));
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // Store artifact path and relative location into this.manifest object
