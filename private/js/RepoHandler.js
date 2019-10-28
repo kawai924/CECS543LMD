@@ -85,6 +85,12 @@ class RepoHandler {
       console.log("ERROR: ", err);
     }
   }
+
+  addLabel(manifestID, label) {
+    this.manifest.addLabel(manifestID, label);
+  }
 }
+
+const filePath = path.join(constants.ROOTPATH, "database", "liam", "Test_user");
 
 module.exports = RepoHandler;

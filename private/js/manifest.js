@@ -22,10 +22,13 @@
  *
  * For master_manifest.json
  * General Form:
- *  "id" : {
- *    path: "manifest path"
- *    labels: [] // contains all labels for this particular manifest
- * }
+ *  "manifest_lists": {
+ *      "id1" : "manifest path"
+ *      "id2" : "manifest path"
+ *          ...
+ *  }
+ *  labels: {} // contains all labels mapping to a particular manifest
+
  * 
  * With: 
  *  - id: auto increment. Higher number = newer manifest.
@@ -47,17 +50,16 @@ class Manifest {
     this.masterManifest = {};
     this.newManifest = {};
 
-    // Path of the upcoming master_manifest.json
-    // (unsure if exists)
+    // Path of the upcoming master_manifest.json (not check if exists)
     this.masterJsonPath = path.join(this.destRepoPath, "master_manifest.json");
   }
 
   // Grab or create the master_manifest.json
   initialize() {
-    this.masterManifest = this.getMasterManifest();
+    this.masterManifest = this.getMasterManifest(); // grab master manifest
 
     // Prepare new id for a new manifest file
-    this.newID = Object.keys(this.masterManifest).length + 1;
+    this.newID = Object.keys(this.masterManifest.manifest_lists).length + 1;
 
     // Create a template for a new manifest
     // Path pattern: database/[userName]/[repoName]
@@ -77,12 +79,15 @@ class Manifest {
     };
   }
 
-  addLabel(manifestId) {}
+  // Add a label of a particular manifest to master manifest
+  addLabel(manifestID, label) {
+    const masterManifest = this.getMasterManifest();
+    masterManifest[manifestID].labels.append(label);
+  }
 
   // Store artifact path and relative location into this.manifest object
   // Artifact path: [leaf_folder]/[artifact_file]
-  // Relative path: from rootRepo
-  // Look above for reference
+  // Relative path: from rootRepo => Look above for reference
   addToStructure(artifactPath, relPath) {
     const structureObj = this.newManifest.structure;
     structureObj[artifactPath] = relPath;
@@ -103,7 +108,7 @@ class Manifest {
     }
 
     // Update the master manifest
-    this.masterManifest[this.newID] = { path: newManifestPath, labels: [] };
+    this.masterManifest.manifest_lists[this.newID] = newManifestPath;
     try {
       fs.writeFileSync(
         this.masterJsonPath,
@@ -121,8 +126,9 @@ class Manifest {
 
     // If master manifest doesn't exist, make one!
     if (!isMasterExist) {
+      const newMasterManifest = { manifest_lists: {}, labels: {} };
       // Write to file master_manifest.json with {}
-      fs.writeFileSync(this.masterJsonPath, "{}");
+      fs.writeFileSync(this.masterJsonPath, JSON.stringify(newMasterManifest));
     }
 
     // Grab the master_manifest.json file
