@@ -41,14 +41,14 @@ class RepoHandler {
       destRepoPath: destRepoPath
     };
 
-    // Set up manifest object to store new manifest
+    // Set up an manifest instance
     this.manifest = new Manifest(this.repo.command, destRepoPath);
   }
 
   /**
-   * Make sure destination repo exists, then initialize manifest object.
+   * Make sure destination repo exists, then initialize manifest instance.
    */
-  initialize() {
+  initializeForCreate() {
     // For new repo
     if (this.repo.isNew) {
       // Create repo folder under database/[userName]/[repoName]
@@ -59,7 +59,7 @@ class RepoHandler {
       });
     }
 
-    // Initialize manifest object after database/[repo] exists
+    // Initialize manifest instance after database/[repo] exists
     this.manifest.initialize();
   }
 
@@ -68,7 +68,7 @@ class RepoHandler {
    */
   copySourceToDest() {
     // Get ready before copying source to destination
-    this.initialize();
+    this.initializeForCreate();
 
     try {
       //Actual copying source repo to destination repo
@@ -78,8 +78,8 @@ class RepoHandler {
         this.manifest
       );
 
-      // Finish writing manifest object
-      this.manifest.complete();
+      // Finish writing manifest instance
+      this.manifest.finalize();
     } catch (err) {
       console.log("Fail to copy source to dest and write manifest file");
       console.log("ERROR: ", err);

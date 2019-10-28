@@ -13,6 +13,7 @@ const app = express();
 // Serve static files
 app.use(express.static("public"));
 
+// Route to index
 app.use("/", index);
 
 //Extra features after this point

@@ -108,8 +108,16 @@ function makeDir(path, options = {}) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
 }
 
+/**
+ * Check if a file exist
+ */
+function doesFileExists(filePath) {
+  return fs.existsSync(filePath) ? true : false;
+}
+
 module.exports = {
   copyFolderTree,
   isDirectory,
-  makeDir
+  makeDir,
+  doesFileExists
 };

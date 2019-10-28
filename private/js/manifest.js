@@ -22,7 +22,10 @@
  *
  * For master_manifest.json
  * General Form:
- *  "id" : "manifest path"
+ *  "id" : {
+ *    path: "manifest path"
+ *    labels: [] // contains all labels for this particular manifest
+ * }
  * 
  * With: 
  *  - id: auto increment. Higher number = newer manifest.
@@ -41,6 +44,12 @@ class Manifest {
   constructor(command, destRepoPath) {
     this.destRepoPath = destRepoPath;
     this.command = command;
+    this.masterManifest = {};
+    this.newManifest = {};
+
+    // Path of the upcoming master_manifest.json
+    // (unsure if exists)
+    this.masterJsonPath = path.join(this.destRepoPath, "master_manifest.json");
   }
 
   // Grab or create the master_manifest.json
@@ -48,12 +57,7 @@ class Manifest {
     try {
       // Check if master_manifest.json exists
 
-      // Path of the upcoming master_manifest.json
-      const masterJsonPath = path.join(
-        this.destRepoPath,
-        "master_manifest.json"
-      );
-      const isMasterExist = fs.existsSync(masterJsonPath);
+      const isMasterExist = fs.existsSync(this.masterJsonPath);
 
       // Yes
       if (isMasterExist) {
@@ -73,11 +77,11 @@ class Manifest {
         // No
       } else {
         // Write to file master_manifest.json with {}
-        console.log(masterJsonPath + "\n\n\n");
-        fs.writeFileSync(masterJsonPath, "{}");
+        // console.log(masterJsonPath + "\n\n\n");
+        fs.writeFileSync(this.masterJsonPath, "{}");
 
         // Set up id for the new manifest file and initialize empty object
-        this.masterManifest = {};
+        // this.masterManifest = {};
         this.newID = 1;
       }
     } catch (err) {
@@ -85,10 +89,11 @@ class Manifest {
     }
 
     // Create a template for a new manifest
-    const deconstructedPathToRepo = this.destRepoPath.split("/");
+    // Path pattern: database/[userName]/[repoName]
+    const deconstructedPathToRepo = this.destRepoPath.split("/"); // Split the path
     const len = deconstructedPathToRepo.length;
-    const userName = deconstructedPathToRepo[len - 2];
-    const repoName = deconstructedPathToRepo[len - 1];
+    const userName = deconstructedPathToRepo[len - 2]; // Next to last
+    const repoName = deconstructedPathToRepo[len - 1]; // Last element
     const datetime = new Date();
 
     this.newManifest = {
@@ -111,7 +116,7 @@ class Manifest {
     structureObj[artifactPath] = relPath;
   }
 
-  complete() {
+  finalize() {
     // Write manifest file into the manifest folder
     const manifestName = "manifest_" + this.newID.toString() + ".json";
     const newManifestPath = path.join(
@@ -119,7 +124,6 @@ class Manifest {
       "manifests",
       manifestName
     );
-    console.log(`newManifestPath: ${newManifestPath}`);
     try {
       fs.writeFileSync(newManifestPath, JSON.stringify(this.newManifest));
     } catch (err) {
@@ -129,13 +133,10 @@ class Manifest {
     // Update the master manifest
     this.masterManifest[this.newID] = newManifestPath;
     try {
-      const masterJsonPath = path.join(
-        this.destRepoPath,
-        "master_manifest.json"
+      fs.writeFileSync(
+        this.masterJsonPath,
+        JSON.stringify(this.masterManifest)
       );
-
-      fs.writeFileSync(masterJsonPath, JSON.stringify(this.masterManifest));
-      // console.log(this.masterManifest);
     } catch (err) {
       console.log(err);
     }
