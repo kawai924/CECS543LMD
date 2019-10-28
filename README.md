@@ -72,8 +72,8 @@ npm start
 - In browser, use: [localhost:3000](localhost:3000)
 - Put project into testing folder
 - On the web page:
-  _ Provide name of user
-  _ Provide name of the repo in testing folder
+  \_ Provide name of user
+  \_ Provide name of the repo in testing folder
 - (Testing phase) A clone of the repo from testing folder will be generated into
 
 ```bash
