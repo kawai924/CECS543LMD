@@ -54,39 +54,10 @@ class Manifest {
 
   // Grab or create the master_manifest.json
   initialize() {
-    try {
-      // Check if master_manifest.json exists
+    this.masterManifest = this.getMasterManifest();
 
-      const isMasterExist = fs.existsSync(this.masterJsonPath);
-
-      // Yes
-      if (isMasterExist) {
-        // Grab the master_manifest.json file
-        const rawMasterManifest = fs.readFileSync(
-          path.join(this.destRepoPath, "master_manifest.json")
-        );
-
-        // rawMasterManifest is currently a buffer. So, toString() converts it into a string
-        // then JSON converts string into object
-        // store that in the manifest object
-        this.masterManifest = JSON.parse(rawMasterManifest.toString());
-
-        // Prepare new id for a new manifest file
-        this.newID = Object.keys(this.masterManifest).length + 1;
-
-        // No
-      } else {
-        // Write to file master_manifest.json with {}
-        // console.log(masterJsonPath + "\n\n\n");
-        fs.writeFileSync(this.masterJsonPath, "{}");
-
-        // Set up id for the new manifest file and initialize empty object
-        // this.masterManifest = {};
-        this.newID = 1;
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    // Prepare new id for a new manifest file
+    this.newID = Object.keys(this.masterManifest).length + 1;
 
     // Create a template for a new manifest
     // Path pattern: database/[userName]/[repoName]
@@ -102,10 +73,11 @@ class Manifest {
       repo: repoName,
       command: this.command,
       datetime: datetime,
-      labels: [],
       structure: {}
     };
   }
+
+  addLabel(manifestId) {}
 
   // Store artifact path and relative location into this.manifest object
   // Artifact path: [leaf_folder]/[artifact_file]
@@ -131,7 +103,7 @@ class Manifest {
     }
 
     // Update the master manifest
-    this.masterManifest[this.newID] = newManifestPath;
+    this.masterManifest[this.newID] = { path: newManifestPath, labels: [] };
     try {
       fs.writeFileSync(
         this.masterJsonPath,
@@ -140,6 +112,28 @@ class Manifest {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  /* Helper functions */
+  getMasterManifest() {
+    // Check if master_manifest.json exists
+    const isMasterExist = fs.existsSync(this.masterJsonPath);
+
+    // If master manifest doesn't exist, make one!
+    if (!isMasterExist) {
+      // Write to file master_manifest.json with {}
+      fs.writeFileSync(this.masterJsonPath, "{}");
+    }
+
+    // Grab the master_manifest.json file
+    const rawMasterManifest = fs.readFileSync(
+      path.join(this.destRepoPath, "master_manifest.json")
+    );
+
+    // rawMasterManifest is currently a buffer. So, toString() converts it into a string
+    // then JSON converts string into object
+    // store that in the manifest object
+    return JSON.parse(rawMasterManifest.toString());
   }
 }
 
