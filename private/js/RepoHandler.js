@@ -47,9 +47,9 @@ class RepoHandler {
     this.manifest = new Manifest(this.repo.command, destRepoPath);
   }
 
-  /**
-   * Make sure destination repo exists, then initialize manifest instance.
-   */
+  /* Create Functionality
+---------------------------- */
+  /* Create repo and manifest folder at destination, then initialize manifest instance. */
   initializeForCreate() {
     // Create repo folder under database/[userName]/[repoName]
     ff.makeDir(this.repo.destRepoPath, { recursive: true });
@@ -61,9 +61,7 @@ class RepoHandler {
     this.manifest.initialize();
   }
 
-  /**
-   * Actuallly copying source repo to destination repo and finalize writing manifest
-   */
+  /* Actuallly copying source repo to destination repo and finalize writing manifest */
   copySourceToDest() {
     // Get ready before copying source to destination
     this.initializeForCreate();
@@ -84,8 +82,49 @@ class RepoHandler {
     }
   }
 
+  /* Label Functionality
+  ---------------------------- */
   addLabel(manifestProp, label) {
     this.manifest.addLabel(manifestProp, label);
+  }
+
+  /* Checkout Functionality (not tested)
+---------------------------- */
+  checkoutManifestByID(manifestID, targetPath) {
+    const masterManifest = this.manifest.getMasterManifest();
+    const manifestItem = masterManifest.manifest_lists[manifestID];
+
+    // If the manifest doesn't exist, throw error
+    if (!manifestItem) throw new Error("Manifest not found");
+
+    // Actually recreate the repo into the targetPath
+    this.recreateRepo(manifestItem, targetPath);
+  }
+
+  // Use the manifest as blueprint to recreate repo in the targetPath
+  recreateRepo(manifest, targetPath) {
+    const { structure } = manifest;
+    structure.forEach(item => {
+      const regrexForFolder = /(?<=database).*/;
+      const relativeDestPath = regrexForFolder.exec(item.artifactRelPath)[0];
+      const newDestPath = path.join(targetPath, relativeDestPath);
+
+      // Create all the neccessary folders
+      ff.makeDir(newDestPath);
+
+      const regrexForFileName = /.+(?=\/)/;
+      const fileNameMatches = regrexForFileName.exec(item.artifactNode);
+
+      // If there is a file in the folder
+      if (fileNameMatches) {
+        // Grab fileName from regrex
+        const fileName = fileNameMatches[0];
+        const fileSource = path.join(item.artifactRelPath, item.artifactNode);
+        const fileDest = path.join(newDestPath, fileName);
+
+        fs.copyFileSync(fileSource, fileDest);
+      }
+    });
   }
 }
 
