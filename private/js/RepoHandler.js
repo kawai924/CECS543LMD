@@ -98,11 +98,34 @@ class RepoHandler {
     if (!manifestItem) throw new Error("Manifest not found");
 
     // Actually recreate the repo into the targetPath
-    recreateRepo(manifestItem, targetPath);
+    this.recreateRepo(manifestItem, targetPath);
   }
 
   // Use the manifest as blueprint to recreate repo in the targetPath
-  recreateRepo(manifest, targetPath) {}
+  recreateRepo(manifest, targetPath) {
+    const { structure } = manifest;
+    structure.forEach(item => {
+      const regrexForFolder = /(?<=database).*/;
+      const relativeDestPath = regrexForFolder.exec(item.artifactRelPath)[0];
+      const newDestPath = path.join(targetPath, relativeDestPath);
+
+      // Create all the neccessary folders
+      ff.makeDir(newDestPath);
+
+      const regrexForFileName = /.+(?=\/)/;
+      const fileNameMatches = regrexForFileName.exec(item.artifactNode);
+
+      // If there is a file in the folder
+      if (fileNameMatches) {
+        // Grab fileName from regrex
+        const fileName = fileNameMatches[0];
+        const fileSource = path.join(item.artifactRelPath, item.artifactNode);
+        const fileDest = path.join(newDestPath, fileName);
+
+        fs.copyFileSync(fileSource, fileDest);
+      }
+    });
+  }
 }
 
 const filePath = path.join(constants.ROOTPATH, "database", "liam", "Test_user");

@@ -9,7 +9,7 @@ const manifestSample = {
   user: "liam",
   repo: "Test_user",
   command: "create",
-  datetime: "2019-10-28T23:47:00.008Z",
+  datetime: "2019-10-29T00:23:33.743Z",
   structure: [
     {
       artifactNode: "",
@@ -19,7 +19,7 @@ const manifestSample = {
     {
       artifactNode: "testfile2.txt/9976-L17.txt",
       artifactRelPath:
-        "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/"
+        "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/liam/Test_user/Folder 3/"
     },
     {
       artifactNode: "",
@@ -34,17 +34,7 @@ const manifestSample = {
     {
       artifactNode: "testfile.txt/7686-L11.txt",
       artifactRelPath:
-        "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/"
-    },
-    {
-      artifactNode: ".DS_Store/83139171-L8196.DS_Store",
-      artifactRelPath:
-        "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/"
-    },
-    {
-      artifactNode: ".DS_Store/100881779-L10244.DS_Store",
-      artifactRelPath:
-        "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/"
+        "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/liam/Test_user/Folder 2/Folder 2_2/"
     }
   ]
 };
@@ -77,15 +67,10 @@ function recreateRepo(manifest, targetPath) {
       // Grab fileName from regrex
       const fileName = fileNameMatches[0];
       const fileSource = path.join(item.artifactRelPath, item.artifactNode);
-      const fileDest = path.join(newDestPath);
+      const fileDest = path.join(newDestPath, fileName);
 
       fs.copyFileSync(fileSource, fileDest);
     }
-
-    // Empty folder - no file
-    // if(fileName === "") {
-
-    // }
   });
 }
 

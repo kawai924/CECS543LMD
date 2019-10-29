@@ -26,6 +26,9 @@ function copyFolderTree(source, targetFolder, ManifestObj) {
   while (!fileQueue.isEmpty()) {
     const fileName = fileQueue.dequeue();
 
+    //Check if fileName is a DOT FILE (ex: .DS_STORE), ignore
+    if (!/^(?!\.).*$/.test(fileName)) continue;
+
     // let date_ob = new Date();
 
     // The current file is a DIRECTORY
