@@ -70,20 +70,23 @@ function copyFolderTree(source, targetFolder, ManifestObj) {
       // });
 
       //Move the file with artifact name
-      const artifactPath = path.join(leafFolder, artifact);
-      fs.copyFile(filePath, artifactPath, err => {
+      const artifactFullPath = path.join(leafFolder, artifact);
+      fs.copyFile(filePath, artifactFullPath, err => {
         if (err) throw err;
       });
 
       // Grab the absolute path from database to the curent artifact
-      const testingArtifactPath = /.*\/database\//.exec(artifactPath);
-      const leafFolderPathArray = leafFolder.split("/");
-      const leafFolderName =
-        leafFolderPathArray[leafFolderPathArray.length - 1];
+      const fileNameWithoutExtension = /.*(?=\.)/.exec(fileName)[0];
+      const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
+
+      const fullArtifactPath = regrex.exec(artifactFullPath)[0];
+      // console.log("file name", fileName);
+      // console.log("artifact path = ", artifactFullPath);
+      // console.log("testing artifact path = ", fullArtifactPath);
 
       ManifestObj.addToStructure(
-        path.join(leafFolderName, artifact),
-        testingArtifactPath[0]
+        path.join(fileName, artifact),
+        fullArtifactPath
       );
     }
   }
@@ -104,12 +107,18 @@ function isDirectory(source, fileName) {
  * If a directory is not exists, create a new one. Otherwise, do nothing
  * @param path the path of the new folder
  */
-function makeDir(path, options = {}) {
+function makeDir(path, options = { recursive: true }) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
+}
+
+/* Copy file to a file path */
+function copyFile(source, destination) {
+  fs.copyFileSync(source, destination);
 }
 
 module.exports = {
   copyFolderTree,
   isDirectory,
-  makeDir
+  makeDir,
+  copyFile
 };

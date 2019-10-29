@@ -47,9 +47,9 @@ class RepoHandler {
     this.manifest = new Manifest(this.repo.command, destRepoPath);
   }
 
-  /**
-   * Make sure destination repo exists, then initialize manifest instance.
-   */
+  /* Create Functionality
+---------------------------- */
+  /* Create repo and manifest folder at destination, then initialize manifest instance. */
   initializeForCreate() {
     // Create repo folder under database/[userName]/[repoName]
     ff.makeDir(this.repo.destRepoPath, { recursive: true });
@@ -61,9 +61,7 @@ class RepoHandler {
     this.manifest.initialize();
   }
 
-  /**
-   * Actuallly copying source repo to destination repo and finalize writing manifest
-   */
+  /* Actuallly copying source repo to destination repo and finalize writing manifest */
   copySourceToDest() {
     // Get ready before copying source to destination
     this.initializeForCreate();
@@ -84,9 +82,27 @@ class RepoHandler {
     }
   }
 
+  /* Label Functionality
+  ---------------------------- */
   addLabel(manifestProp, label) {
     this.manifest.addLabel(manifestProp, label);
   }
+
+  /* Checkout Functionality (not tested)
+---------------------------- */
+  checkoutManifestByID(manifestID, targetPath) {
+    const masterManifest = this.manifest.getMasterManifest();
+    const manifestItem = masterManifest.manifest_lists[manifestID];
+
+    // If the manifest doesn't exist, throw error
+    if (!manifestItem) throw new Error("Manifest not found");
+
+    // Actually recreate the repo into the targetPath
+    recreateRepo(manifestItem, targetPath);
+  }
+
+  // Use the manifest as blueprint to recreate repo in the targetPath
+  recreateRepo(manifest, targetPath) {}
 }
 
 const filePath = path.join(constants.ROOTPATH, "database", "liam", "Test_user");
