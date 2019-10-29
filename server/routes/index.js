@@ -21,8 +21,13 @@ router.post("/", function(req, res) {
   const userName = req.body.username; // get username
   const repoName = req.body.repoName; // get repo name
 
-  const repoHandler = new RepoHandler(userName, repoName, "create");
-  repoHandler.copySourceToDest();
+  const repoHandler = new RepoHandler(userName, repoName, "check-in");
+  // repoHandler.copySourceToDest();
+
+  repoHandler.checkoutManifestByID(
+    "1",
+    path.join(constants.ROOTPATH, "testing", "dest")
+  );
 
   // const repoHandler = new RepoHandler(userName, repoName, "update");
   // repoHandler.addLabel("2", "haha");

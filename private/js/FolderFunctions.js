@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 
 const createArtifactId = require("./Artifact");
-const Manifest = require("./Manifest");
 const { Queue } = require("./Queue");
 
 /**
@@ -13,7 +12,7 @@ const { Queue } = require("./Queue");
  * @param source the original path.
  * @param targetFolder the target folder where the folder tree is replicated into.
  */
-function copyFolderTree(source, targetFolder, ManifestObj) {
+function copyFolderTree(source, targetFolder, manifestHandler) {
   let fileQueue = new Queue(); //Queue to hold files
 
   //Add all files to a queue
@@ -36,41 +35,25 @@ function copyFolderTree(source, targetFolder, ManifestObj) {
       const dirPath = path.join(source, fileName);
       const newTarget = path.join(targetFolder, fileName);
 
-      makeDir(newTarget); //Make a directory
+      // Create the directory in the destination
+      makeDir(newTarget);
 
-      ManifestObj.addToStructure("", newTarget); // Add """" : dirPath to structure
+      // Add """" : dirPath to structure
+      manifestHandler.addToStructure("", newTarget);
 
-      copyFolderTree(dirPath, newTarget, ManifestObj); //Recursively copy sub folders and files.
-
-      // The current file is a FILE
+      //Recursively copy sub folders and files.
+      copyFolderTree(dirPath, newTarget, manifestHandler);
     } else {
+      // The current file is a FILE
+      // Grab the full path of leaf folder
       const leafFolder = path.join(targetFolder, fileName);
+
+      // Create the folder there
       makeDir(leafFolder);
 
-      //Create artifact for file name
+      //Create artifact for the file
       const filePath = path.join(source, fileName);
       const artifact = createArtifactId(filePath);
-
-      // //write manifest file
-      // const content =
-      //   "Project Name: " +
-      //   fileName +
-      //   ". Created Date: " +
-      //   date_ob +
-      //   "\r\n---------------------------\r\nFile Name: " +
-      //   fileName +
-      //   ". Artifact ID: " +
-      //   artifact +
-      //   "\r\n";
-      // //Create manifest file
-      // fs.writeFile(leafFolder + "/manifest.txt", content, err => {
-      //   if (err) {
-      //     console.error(err);
-      //     return;
-      //   }
-      //   //file written successfully
-      //   // console.log('Saved manifest');
-      // });
 
       //Move the file with artifact name
       const artifactFullPath = path.join(leafFolder, artifact);
@@ -81,13 +64,10 @@ function copyFolderTree(source, targetFolder, ManifestObj) {
       // Grab the absolute path from database to the curent artifact
       const fileNameWithoutExtension = /.*(?=\.)/.exec(fileName)[0];
       const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
-
       const fullArtifactPath = regrex.exec(artifactFullPath)[0];
-      // console.log("file name", fileName);
-      // console.log("artifact path = ", artifactFullPath);
-      // console.log("testing artifact path = ", fullArtifactPath);
 
-      ManifestObj.addToStructure(
+      // Add artifact and its path to manifest
+      manifestHandler.addToStructure(
         path.join(fileName, artifact),
         fullArtifactPath
       );
