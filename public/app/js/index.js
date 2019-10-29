@@ -29,3 +29,26 @@ function createRepo() {
   }, 1000);
   getdir(url);
 }
+
+$(document).ready(function(){
+
+  console.log("ready")
+
+  $("input[name='create-repo-options").change(function() {
+    $("#version").prop('disabled', true);
+    $("#target-folder").prop('disabled', true);
+    console.log("Works")
+  })
+
+  $("input[name='check-in-options").change(function() {
+    $("#version").prop('disabled', true);
+    $("#target-folder").prop('disabled', true);
+    console.log("Works")
+  })
+
+  $("input[name='check-out-options").change(function() {
+    $("#version").prop('disabled', false);
+    $("#target-folder").prop('disabled', false);
+    console.log("Works")
+  })
+});
