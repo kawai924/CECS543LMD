@@ -1,9 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const createArtifactId = require("./Artifact");
 const Manifest = require("./Manifest");
-const { Queue } = require("./Queue");
 const ff = require("./FolderFunctions");
 const constants = require("../../server/constants");
 
@@ -103,25 +101,25 @@ class RepoHandler {
 
   // Use the manifest as blueprint to recreate repo in the targetPath
   recreateRepo(manifest, targetPath) {
-    const { structure } = manifest;
+    // Read manifest file. If doesn't exist, throw error
+    const rawData = fs.readFileSync(manifest);
+    const parsedManifest = JSON.parse(rawData);
+
+    const { structure } = parsedManifest;
     structure.forEach(item => {
       const regrexForFolder = /(?<=database).*/;
       const relativeDestPath = regrexForFolder.exec(item.artifactRelPath)[0];
       const newDestPath = path.join(targetPath, relativeDestPath);
-
       // Create all the neccessary folders
       ff.makeDir(newDestPath);
-
       const regrexForFileName = /.+(?=\/)/;
       const fileNameMatches = regrexForFileName.exec(item.artifactNode);
-
       // If there is a file in the folder
       if (fileNameMatches) {
         // Grab fileName from regrex
         const fileName = fileNameMatches[0];
         const fileSource = path.join(item.artifactRelPath, item.artifactNode);
         const fileDest = path.join(newDestPath, fileName);
-
         fs.copyFileSync(fileSource, fileDest);
       }
     });

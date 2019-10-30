@@ -21,19 +21,20 @@ router.post("/", function(req, res) {
   const userName = req.body.username; // get username
   const repoName = req.body.repoName; // get repo name
 
-  const repoHandler = new RepoHandler(userName, repoName, "check-in");
+  // const repoHandler = new RepoHandler(userName, repoName, "create");
   // repoHandler.copySourceToDest();
-
-  repoHandler.checkoutManifestByID(
-    "1",
-    path.join(constants.ROOTPATH, "testing", "dest")
-  );
 
   // const repoHandler = new RepoHandler(userName, repoName, "update");
   // repoHandler.addLabel("2", "haha");
   // repoHandler.addLabel("2", "hhoho label2");
   // repoHandler.addLabel("4", "hihi label3");
   // repoHandler.addLabel("7", "hehe label4");
+
+  const repoHandler = new RepoHandler(userName, repoName, "check-in");
+  repoHandler.checkoutManifestByID(
+    "1",
+    path.join(constants.ROOTPATH, "testing", "dest")
+  );
 
   /* Old Way
   // // Create the project directory under database folder and manifests folder under the project folder
