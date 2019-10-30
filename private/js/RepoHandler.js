@@ -67,30 +67,23 @@ class RepoHandler {
   * Missing feature: The checkout command also creates a new manifest file, of the checked out version, in the repo. The user should be able to specify the manifest file using a label, if it has one.
 ---------------------------- */
   // Set up checkout by ID
-  checkoutManifestByID(manifestID, targetPath) {
-    const masterManifest = this.manifest.getMasterManifest();
-    const manifestItem = masterManifest.manifest_lists[manifestID];
+  checkoutByID(manifestID, destPath) {
+    // Add command to new manifest
+    this.manifestHandler.addCommand("checkout");
 
-    // If the manifest doesn't exist, throw error
-    if (!manifestItem) throw new Error("Manifest not found");
+    const manifestPath = this.manifestHandler.getManifestPath(manifestID);
 
-    // Actually recreate the repo into the targetPath
-    this.recreateRepo(manifestItem, targetPath);
-  }
-
-  // Use the manifest as blueprint to recreate repo in the targetPath
-  recreateRepo(manifest, targetPath) {
-    // Read manifest file. If doesn't exist, throw error
-    const dataBuffer = fs.readFileSync(manifest);
-    const parsedManifest = JSON.parse(dataBuffer);
-    const { structure } = parsedManifest;
+    // Grab structure from parsed manifest file
+    const { structure } = JSON.parse(fs.readFileSync(manifestPath));
 
     structure.forEach(item => {
       // Use regrex to grab the path of the folder after /database
       const regrexForFolder = /(?<=database).*/;
       const relativeDestPath = regrexForFolder.exec(item.artifactRelPath)[0];
+      console.log(destPath);
+
       // Append the folder path with the new target path
-      const newDestPath = path.join(targetPath, relativeDestPath);
+      const newDestPath = path.join(destPath, relativeDestPath);
       // Recursively make folders in the destination
       ff.makeDir(newDestPath);
 

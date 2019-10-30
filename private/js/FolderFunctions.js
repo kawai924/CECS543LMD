@@ -7,6 +7,9 @@ const createArtifactId = require("./Artifact");
 const { Queue } = require("./Queue");
 
 function copyFolderTreeWithMemoization(source, targetFolder) {
+  // Store artifact path and relative location into this.manifest object
+  // Artifact path: [leaf_folder]/[artifact_file]
+  // Relative path: from rootRepo => Look above for reference
   let structure = [];
 
   function copyFolderTree(source, targetFolder) {

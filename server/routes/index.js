@@ -21,8 +21,8 @@ router.post("/", function(req, res) {
   const repoName = req.body.repoName; // get repo name
 
   /* Testing create repo */
-  const repoHandler = new RepoHandler(userName, repoName);
-  repoHandler.create();
+  // const repoHandler = new RepoHandler(userName, repoName);
+  // repoHandler.create();
 
   /* Testing labeling */
   // const repoHandler = new RepoHandler(userName, repoName, "update");
@@ -32,11 +32,9 @@ router.post("/", function(req, res) {
   // repoHandler.addLabel("7", "hehe label4");
 
   /* Testing checkout */
-  // const repoHandler = new RepoHandler(userName, repoName, "check-out");
-  // repoHandler.checkoutManifestByID(
-  //   "1",
-  //   path.join(constants.ROOTPATH, "testing", "dest")
-  // );
+  const repoHandler = new RepoHandler(userName, repoName);
+  const destPath = path.join(constants.ROOTPATH, "testing", "dest");
+  repoHandler.checkoutByID("1", destPath);
 
   /* Testing check-in */
   // const repoHandler = new RepoHandler(userName, repoName, "check-in");

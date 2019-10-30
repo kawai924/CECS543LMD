@@ -57,7 +57,15 @@ class Manifest {
     this.masterManifest = this.getMasterManifest(); // Store master manifest
   }
 
-  // Add a label of a particular manifest to master manifest
+  /* Setters */
+  addCommand(command) {
+    this.newManifest.command = command;
+  }
+
+  addStructure(folderStructure) {
+    this.newManifest.structure = folderStructure;
+  }
+
   addLabel(manifestID, label) {
     const masterManifest = this.getMasterManifest();
     masterManifest.labels[label] = manifestID;
@@ -73,11 +81,9 @@ class Manifest {
     }
   }
 
-  // Store artifact path and relative location into this.manifest object
-  // Artifact path: [leaf_folder]/[artifact_file]
-  // Relative path: from rootRepo => Look above for reference
-  addStructure(folderStructure) {
-    this.newManifest.structure = folderStructure;
+  /* Getter */
+  getManifestPath(id) {
+    return this.masterManifest.manifest_lists[id.toString()] || false;
   }
 
   /* Write manifest into file and update master manifest */
@@ -137,11 +143,6 @@ class Manifest {
 
     // Grab the master_manifest.json file as a buffer, then convert into strings then parse.
     return JSON.parse(fs.readFileSync(this.paths.masterJsonPath).toString());
-  }
-
-  /* Setters */
-  addCommand(command) {
-    this.newManifest.command = command;
   }
 }
 
