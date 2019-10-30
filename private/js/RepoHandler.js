@@ -5,12 +5,8 @@ const ff = require("./FolderFunctions");
 const constants = require("../../server/constants");
 
 /**
- * RepoHandler is supposed to coordinate between manifest and copying repo.
- * Everything is setup internally.
- *
- * To use RepoHandler,
- *  - Constructor take 3 params: userName, repoName, and command
- *      (command will be received from website from either button, checkbox...)
+ * RepoHandler handles all methods regarding repos.
+ * Supports create(), checkoutByID()
  */
 class RepoHandler {
   constructor(userName, repoName) {
@@ -60,7 +56,7 @@ class RepoHandler {
   /* Label Functionality
   ---------------------------- */
   addLabel(manifestProp, label) {
-    this.manifest.addLabel(manifestProp, label);
+    this.manifestHandler.addLabel(manifestProp, label);
   }
 
   /* Checkout Functionality

@@ -67,18 +67,10 @@ class Manifest {
   }
 
   addLabel(manifestID, label) {
-    const masterManifest = this.getMasterManifest();
-    masterManifest.labels[label] = manifestID;
+    this.masterManifest.labels.push({ [label]: manifestID });
 
     // Update the master manifest
-    try {
-      fs.writeFileSync(
-        this.paths.masterJsonPath,
-        JSON.stringify(masterManifest)
-      );
-    } catch (err) {
-      console.log(err);
-    }
+    this.rewriteMasterManifest();
   }
 
   /* Getter */
@@ -109,14 +101,7 @@ class Manifest {
 
     // Update the master manifest
     this.masterManifest.manifest_lists[newID] = newManifestPath;
-    try {
-      fs.writeFileSync(
-        this.paths.masterJsonPath,
-        JSON.stringify(this.masterManifest)
-      );
-    } catch (err) {
-      console.log("Unable to write master manifest file!!!", err);
-    }
+    this.rewriteMasterManifest();
   }
 
   /* Helper functions */
@@ -143,6 +128,17 @@ class Manifest {
 
     // Grab the master_manifest.json file as a buffer, then convert into strings then parse.
     return JSON.parse(fs.readFileSync(this.paths.masterJsonPath).toString());
+  }
+
+  rewriteMasterManifest() {
+    try {
+      fs.writeFileSync(
+        this.paths.masterJsonPath,
+        JSON.stringify(this.masterManifest)
+      );
+    } catch (err) {
+      console.log("Unable to write master manifest file!!!", err);
+    }
   }
 }
 
