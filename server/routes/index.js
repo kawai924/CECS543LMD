@@ -25,16 +25,16 @@ router.post("/", function(req, res) {
   // repoHandler.create();
 
   /* Testing labeling */
-  const repoHandler = new RepoHandler(userName, repoName, "update");
-  repoHandler.addLabel("2", "label1");
-  repoHandler.addLabel("3", "label2");
-  repoHandler.addLabel("4", "label3");
-  repoHandler.addLabel("7", "label4");
+  // const repoHandler = new RepoHandler(userName, repoName);
+  // repoHandler.addLabel("2", "label1");
+  // repoHandler.addLabel("3", "label2");
+  // repoHandler.addLabel("4", "label3");
+  // repoHandler.addLabel("7", "label4");
 
   /* Testing checkout */
-  // const repoHandler = new RepoHandler(userName, repoName);
-  // const destPath = path.join(constants.ROOTPATH, "testing", "dest");
-  // repoHandler.checkoutByID("1", destPath);
+  const repoHandler = new RepoHandler(userName, repoName);
+  const destPath = path.join(constants.ROOTPATH, "testing", "dest");
+  repoHandler.checkoutByID("1", destPath);
 
   /* Testing check-in */
   // const repoHandler = new RepoHandler(userName, repoName, "check-in");

@@ -75,8 +75,7 @@ class RepoHandler {
     structure.forEach(item => {
       // Use regrex to grab the path of the folder after /database
       const regrexForFolder = /(?<=database).*/;
-      const relativeDestPath = regrexForFolder.exec(item.artifactRelPath)[0];
-      console.log(destPath);
+      const relativeDestPath = regrexForFolder.exec(item.artifactAbsPath)[0];
 
       // Append the folder path with the new target path
       const newDestPath = path.join(destPath, relativeDestPath);
@@ -93,7 +92,7 @@ class RepoHandler {
         // Grab fileName from regrex
         const fileName = fileNameMatches[0];
         // Get full file path from source
-        const fileSource = path.join(item.artifactRelPath, item.artifactNode);
+        const fileSource = path.join(item.artifactAbsPath, item.artifactNode);
         // Create full file path to destination
         const fileDest = path.join(newDestPath, fileName);
         // Copy the file
