@@ -3,76 +3,76 @@
  */
 const fs = require("fs");
 const path = require("path");
-
 const createArtifactId = require("./Artifact");
 const { Queue } = require("./Queue");
 
-/**
- * Read all files in a particular source and put it in a queue
- * @param source the original path.
- * @param targetFolder the target folder where the folder tree is replicated into.
- */
-function copyFolderTree(source, targetFolder, manifestHandler) {
-  let fileQueue = new Queue(); //Queue to hold files
+function copyFolderTreeWithMemoization(source, targetFolder) {
+  let structure = [];
 
-  //Add all files to a queue
-  const allFiles = fs.readdirSync(source);
-  for (let file of allFiles) {
-    fileQueue.enqueue(file);
-  }
+  function copyFolderTree(source, targetFolder) {
+    let fileQueue = new Queue(); //Queue to hold files
 
-  //Process each element in the queue
-  while (!fileQueue.isEmpty()) {
-    const fileName = fileQueue.dequeue();
+    //Add all files to a queue
+    const allFiles = fs.readdirSync(source);
+    for (let file of allFiles) {
+      fileQueue.enqueue(file);
+    }
 
-    //Check if fileName is a DOT FILE (ex: .DS_STORE), ignore
-    if (!/^(?!\.).*$/.test(fileName)) continue;
+    //Process each element in the queue
+    while (!fileQueue.isEmpty()) {
+      const fileName = fileQueue.dequeue();
 
-    // let date_ob = new Date();
+      //Check if fileName is a DOT FILE (ex: .DS_STORE), ignore
+      if (!/^(?!\.).*$/.test(fileName)) continue;
 
-    // The current file is a DIRECTORY
-    if (isDirectory(source, fileName)) {
-      const dirPath = path.join(source, fileName);
-      const newTarget = path.join(targetFolder, fileName);
+      // let date_ob = new Date();
 
-      // Create the directory in the destination
-      makeDir(newTarget);
+      // The current file is a DIRECTORY
+      if (isDirectory(source, fileName)) {
+        const dirPath = path.join(source, fileName);
+        const newTarget = path.join(targetFolder, fileName);
 
-      // Add """" : dirPath to structure
-      manifestHandler.addToStructure("", newTarget);
+        // Create the directory in the destination
+        makeDir(newTarget);
 
-      //Recursively copy sub folders and files.
-      copyFolderTree(dirPath, newTarget, manifestHandler);
-    } else {
-      // The current file is a FILE
-      // Grab the full path of leaf folder
-      const leafFolder = path.join(targetFolder, fileName);
+        // Add """" : dirPath to structure
+        structure.push({ artifactNode: "", artifactRelPath: newTarget });
 
-      // Create the folder there
-      makeDir(leafFolder);
+        //Recursively copy sub folders and files.
+        copyFolderTree(dirPath, newTarget);
+      } else {
+        // The current file is a FILE
+        // Grab the full path of leaf folder
+        const leafFolder = path.join(targetFolder, fileName);
 
-      //Create artifact for the file
-      const filePath = path.join(source, fileName);
-      const artifact = createArtifactId(filePath);
+        // Create the folder there
+        makeDir(leafFolder);
 
-      //Move the file with artifact name
-      const artifactFullPath = path.join(leafFolder, artifact);
-      fs.copyFile(filePath, artifactFullPath, err => {
-        if (err) throw err;
-      });
+        //Create artifact for the file
+        const filePath = path.join(source, fileName);
+        const artifact = createArtifactId(filePath);
 
-      // Grab the absolute path from database to the curent artifact
-      const fileNameWithoutExtension = /.*(?=\.)/.exec(fileName)[0];
-      const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
-      const fullArtifactPath = regrex.exec(artifactFullPath)[0];
+        //Move the file with artifact name
+        const artifactFullPath = path.join(leafFolder, artifact);
+        fs.copyFile(filePath, artifactFullPath, err => {
+          if (err) throw err;
+        });
 
-      // Add artifact and its path to manifest
-      manifestHandler.addToStructure(
-        path.join(fileName, artifact),
-        fullArtifactPath
-      );
+        // Grab the absolute path from database to the curent artifact
+        const fileNameWithoutExtension = /.*(?=\.)/.exec(fileName)[0];
+        const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
+        const fullArtifactPath = regrex.exec(artifactFullPath)[0];
+
+        // Add artifact and its path to manifest
+        structure.push({
+          artifactNode: path.join(fileName, artifact),
+          artifactRelPath: fullArtifactPath
+        });
+      }
     }
   }
+  copyFolderTree(source, targetFolder);
+  return structure;
 }
 
 /**
@@ -100,7 +100,7 @@ function copyFile(source, destination) {
 }
 
 module.exports = {
-  copyFolderTree,
+  copyFolderTreeWithMemoization,
   isDirectory,
   makeDir,
   copyFile

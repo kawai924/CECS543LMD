@@ -38,57 +38,36 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
+const ff = require("./FolderFunctions");
 const constants = require("../../server/constants");
-
-// Turn fs.readFile into a promise
-const readFilePromise = util.promisify(fs.readFile);
+const readFilePromise = util.promisify(fs.readFile); // Turn fs.readFile into a promise
 
 class Manifest {
-  constructor(command, destRepoPath) {
-    this.destRepoPath = destRepoPath;
-    this.command = command;
-    this.masterManifest = {};
-    this.newManifest = {};
-
-    // Path of the upcoming master_manifest.json (not check if exists)
-    this.masterJsonPath = path.join(this.destRepoPath, "master_manifest.json");
-  }
-
-  // Grab or create the master_manifest.json
-  initialize() {
-    this.masterManifest = this.getMasterManifest(); // grab master manifest
-
-    // Prepare new id for a new manifest file
-    this.newID = Object.keys(this.masterManifest.manifest_lists).length + 1;
-
-    // Create a template for a new manifest
-    // Path pattern: database/[userName]/[repoName]
-    const deconstructedPathToRepo = this.destRepoPath.split("/"); // Split the path
-    const len = deconstructedPathToRepo.length;
-    const userName = deconstructedPathToRepo[len - 2]; // Next to last
-    const repoName = deconstructedPathToRepo[len - 1]; // Last element
-    const datetime = new Date();
-
+  constructor({ userName, repoName, destRepoPath }) {
+    this.paths = {
+      destRepoPath,
+      masterJsonPath: path.join(destRepoPath, "master_manifest.json")
+    };
     this.newManifest = {
-      id: this.newID,
       user: userName,
       repo: repoName,
-      command: this.command,
-      datetime: datetime,
       structure: []
     };
+
+    this.masterManifest = this.getMasterManifest(); // Store master manifest
   }
 
   // Add a label of a particular manifest to master manifest
   addLabel(manifestID, label) {
     const masterManifest = this.getMasterManifest();
-    console.log("before", masterManifest);
     masterManifest.labels[label] = manifestID;
-    console.log("after", masterManifest);
 
     // Update the master manifest
     try {
-      fs.writeFileSync(this.masterJsonPath, JSON.stringify(masterManifest));
+      fs.writeFileSync(
+        this.paths.masterJsonPath,
+        JSON.stringify(masterManifest)
+      );
     } catch (err) {
       console.log(err);
     }
@@ -97,59 +76,72 @@ class Manifest {
   // Store artifact path and relative location into this.manifest object
   // Artifact path: [leaf_folder]/[artifact_file]
   // Relative path: from rootRepo => Look above for reference
-  addToStructure(artifactNode, relPath) {
-    const { structure } = this.newManifest;
-    // structure.push({ [artifactPath]: relPath });
-    structure.push({ artifactNode, artifactRelPath: relPath });
+  addStructure(folderStructure) {
+    this.newManifest.structure = folderStructure;
   }
 
-  finalize() {
-    // Write manifest file into the manifest folder
-    const manifestName = "manifest_" + this.newID.toString() + ".json";
+  /* Write manifest into file and update master manifest */
+  write() {
+    const newID =
+      Object.keys(this.masterManifest.manifest_lists).length + 1 || 1;
+    this.newManifest.id = newID;
+    this.newManifest.datetime = new Date();
+
+    const manifestName = "manifest_" + newID.toString() + ".json";
     const newManifestPath = path.join(
-      this.destRepoPath,
+      this.paths.destRepoPath,
       "manifests",
       manifestName
     );
+
     try {
+      // Write manifest file into the manifest folder
       fs.writeFileSync(newManifestPath, JSON.stringify(this.newManifest));
     } catch (err) {
-      console.log(err);
+      console.log("Unable to write manifest file!!!", err);
     }
 
     // Update the master manifest
-    this.masterManifest.manifest_lists[this.newID] = newManifestPath;
+    this.masterManifest.manifest_lists[newID] = newManifestPath;
     try {
       fs.writeFileSync(
-        this.masterJsonPath,
+        this.paths.masterJsonPath,
         JSON.stringify(this.masterManifest)
       );
     } catch (err) {
-      console.log(err);
+      console.log("Unable to write master manifest file!!!", err);
     }
   }
 
   /* Helper functions */
   getMasterManifest() {
-    // Check if master_manifest.json exists
-    const isMasterExist = fs.existsSync(this.masterJsonPath);
+    // Create repo folder under database/[userName]/[repoName]
+    ff.makeDir(this.paths.destRepoPath, { recursive: true });
+    // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
+    ff.makeDir(path.join(this.paths.destRepoPath, "manifests"), {
+      recursive: true
+    });
 
-    // If master manifest doesn't exist, make one!
-    if (!isMasterExist) {
-      const newMasterManifest = { manifest_lists: {}, labels: {} };
-      // Write to file master_manifest.json with {}
-      fs.writeFileSync(this.masterJsonPath, JSON.stringify(newMasterManifest));
+    // Check if master_manifest.json exists. If not, create.
+    if (!fs.existsSync(this.paths.masterJsonPath)) {
+      const newMasterManifest = {
+        manifest_lists: {},
+        labels: []
+      };
+      fs.writeFileSync(
+        this.paths.masterJsonPath,
+        JSON.stringify(newMasterManifest)
+      );
+      return newMasterManifest;
     }
 
-    // Grab the master_manifest.json file
-    const rawMasterManifest = fs.readFileSync(
-      path.join(this.destRepoPath, "master_manifest.json")
-    );
+    // Grab the master_manifest.json file as a buffer, then convert into strings then parse.
+    return JSON.parse(fs.readFileSync(this.paths.masterJsonPath).toString());
+  }
 
-    // rawMasterManifest is currently a buffer. So, toString() converts it into a string
-    // then JSON converts string into object
-    // store that in the manifest object
-    return JSON.parse(rawMasterManifest.toString());
+  /* Setters */
+  addCommand(command) {
+    this.newManifest.command = command;
   }
 }
 

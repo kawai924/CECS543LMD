@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 
 const folderFuncs = require("../../private/js/FolderFunctions");
 const constants = require("../constants.js");
-// const Manifest = require("../../private/js/Manifest");
 const RepoHandler = require("../../private/js/RepoHandler");
 
 const router = express.Router();
@@ -22,8 +21,8 @@ router.post("/", function(req, res) {
   const repoName = req.body.repoName; // get repo name
 
   /* Testing create repo */
-  // const repoHandler = new RepoHandler(userName, repoName, "create");
-  // repoHandler.copySourceToDest();
+  const repoHandler = new RepoHandler(userName, repoName);
+  repoHandler.create();
 
   /* Testing labeling */
   // const repoHandler = new RepoHandler(userName, repoName, "update");
@@ -33,11 +32,14 @@ router.post("/", function(req, res) {
   // repoHandler.addLabel("7", "hehe label4");
 
   /* Testing checkout */
-  const repoHandler = new RepoHandler(userName, repoName, "check-out");
-  repoHandler.checkoutManifestByID(
-    "1",
-    path.join(constants.ROOTPATH, "testing", "dest")
-  );
+  // const repoHandler = new RepoHandler(userName, repoName, "check-out");
+  // repoHandler.checkoutManifestByID(
+  //   "1",
+  //   path.join(constants.ROOTPATH, "testing", "dest")
+  // );
+
+  /* Testing check-in */
+  // const repoHandler = new RepoHandler(userName, repoName, "check-in");
 
   /* Old Way
   // // Create the project directory under database folder and manifests folder under the project folder

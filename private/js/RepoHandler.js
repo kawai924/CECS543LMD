@@ -13,70 +13,48 @@ const constants = require("../../server/constants");
  *      (command will be received from website from either button, checkbox...)
  */
 class RepoHandler {
-  constructor(userName = "john_doe", repoName = "foo", command = "create") {
+  constructor(userName, repoName) {
+    // For testing purpose, put all testing repos in testing folder
     // source path = testing/[repoName]
-    const sourceRepoPath = path.join(constants.TESTPATH, repoName);
-
     // dest path = [ROOT]/database/[username]/[repoName]
-    const destRepoPath = path.join(
-      constants.ROOTPATH,
-      "database",
-      userName,
-      repoName
-    );
-
-    // Can't create an existing repo of the same name under same user
-    // Throw error
-    if (command === "create" && fs.existsSync(destRepoPath)) {
-      throw new Error("Repo already exists");
-    }
+    const defaultSourcePath = path.join(constants.ROOTPATH, "testing");
 
     // Store all properties regarding about the current repo
     this.repo = {
-      userName: userName,
-      repoName: repoName,
-      command: command,
-      sourceRepoPath: sourceRepoPath,
-      destRepoPath: destRepoPath
+      userName,
+      repoName,
+      sourceRepoPath: path.join(defaultSourcePath, repoName),
+      destRepoPath: path.join(
+        constants.ROOTPATH,
+        "database",
+        userName,
+        repoName
+      )
     };
 
-    // Set up an manifest instance
-    this.manifest = new Manifest(this.repo.command, destRepoPath);
+    // Create a new manifest handler
+    this.manifestHandler = new Manifest({
+      userName,
+      repoName,
+      destRepoPath: this.repo.destRepoPath
+    });
   }
 
   /* Create Functionality
 ---------------------------- */
-  /* Create repo and manifest folder at destination, then initialize manifest instance. */
-  initializeForCreate() {
-    // Create repo folder under database/[userName]/[repoName]
-    ff.makeDir(this.repo.destRepoPath, { recursive: true });
-    // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
-    ff.makeDir(path.join(this.repo.destRepoPath, "manifests"), {
-      recursive: true
-    });
-    // Initialize manifest instance after database/[repo] exists
-    this.manifest.initialize();
-  }
+  create() {
+    // Add command to new manifest
+    this.manifestHandler.addCommand("create");
 
-  /* Actuallly copying source repo to destination repo and finalize writing manifest */
-  copySourceToDest() {
-    // Get ready before copying source to destination
-    this.initializeForCreate();
+    //Actual copying source repo to destination repo
+    const folderStructure = ff.copyFolderTreeWithMemoization(
+      this.repo.sourceRepoPath,
+      this.repo.destRepoPath
+    );
+    this.manifestHandler.addStructure(folderStructure);
 
-    try {
-      //Actual copying source repo to destination repo
-      ff.copyFolderTree(
-        this.repo.sourceRepoPath,
-        this.repo.destRepoPath,
-        this.manifest
-      );
-
-      // Finish writing manifest instance
-      this.manifest.finalize();
-    } catch (err) {
-      console.log("Fail to copy source to dest and write manifest file");
-      console.log("ERROR: ", err);
-    }
+    // Create new manifest
+    this.manifestHandler.write();
   }
 
   /* Label Functionality
@@ -85,8 +63,10 @@ class RepoHandler {
     this.manifest.addLabel(manifestProp, label);
   }
 
-  /* Checkout Functionality (not tested)
+  /* Checkout Functionality
+  * Missing feature: The checkout command also creates a new manifest file, of the checked out version, in the repo. The user should be able to specify the manifest file using a label, if it has one.
 ---------------------------- */
+  // Set up checkout by ID
   checkoutManifestByID(manifestID, targetPath) {
     const masterManifest = this.manifest.getMasterManifest();
     const manifestItem = masterManifest.manifest_lists[manifestID];
@@ -133,7 +113,5 @@ class RepoHandler {
     });
   }
 }
-
-// const filePath = path.join(constants.ROOTPATH, "database", "liam", "Test_user");
 
 module.exports = RepoHandler;
