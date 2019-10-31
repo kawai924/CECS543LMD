@@ -2,6 +2,22 @@
 
 VCS Project for CECS 543 Sec 07 11646
 
+# For DEVS
+
+To test each feature, please go to sever/routes/index.js
+
+- Uncomment each block of code in the router.post method to test each feature
+- Note:
+
+  - You can't create a repo of the same REPONAME and USERNAME, since the manifests and master manifest will be overwritten.
+  - If you want to distable this feature, go to RepoHandler, in its construtor, comment out
+
+```bash
+    if (command === "create" && fs.existsSync(destRepoPath)) {
+      throw new Error("Repo already exists");
+    }
+```
+
 # Authors
 
 Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
@@ -26,9 +42,9 @@ $ npm install
 ## Structure
 
 ```bash
-|- data (as a database to store repos)
-|- private
-	|- js (backend helper functions)
+|- database (store all repos from users)
+|- private (stores all helper JS functions)
+	|- js
    		|- Artifact.js
    		|- FolderFunctions.js
     	|- Queue.js
@@ -43,7 +59,10 @@ $ npm install
 |-server
 	|- routes
    		|- index.js
-   	|- app.js (start server)
+   	|- app.js (entry point)
+	|- constants.js (stores all constants)
+|-testing (testing repo goes here)
+	|- dest (checkout repo goes here)
 ```
 
 ## Stand Up Report
@@ -72,9 +91,8 @@ npm start
 - In browser, use: [localhost:3000](localhost:3000)
 - Put project into testing folder
 - On the web page:<br />
-  _ Provide name of user<br />
-  _ Provide name of the repo in testing folder<br />
-- (Testing phase) A clone of the repo from testing folder will be generated into
+  _ Provide USERNAME<br />
+  _ Provide REPONAME of the repo in testing folder (REPONAME has to match with the name of the repo in the testing folder)<br />
 
 ```bash
 |- testing

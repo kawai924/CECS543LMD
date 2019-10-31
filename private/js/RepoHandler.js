@@ -1,9 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
-const createArtifactId = require("./Artifact");
 const Manifest = require("./Manifest");
-const { Queue } = require("./Queue");
 const ff = require("./FolderFunctions");
 const constants = require("../../server/constants");
 
@@ -103,31 +100,40 @@ class RepoHandler {
 
   // Use the manifest as blueprint to recreate repo in the targetPath
   recreateRepo(manifest, targetPath) {
-    const { structure } = manifest;
+    // Read manifest file. If doesn't exist, throw error
+    const dataBuffer = fs.readFileSync(manifest);
+    const parsedManifest = JSON.parse(dataBuffer);
+    const { structure } = parsedManifest;
+
     structure.forEach(item => {
+      // Use regrex to grab the path of the folder after /database
       const regrexForFolder = /(?<=database).*/;
       const relativeDestPath = regrexForFolder.exec(item.artifactRelPath)[0];
+      // Append the folder path with the new target path
       const newDestPath = path.join(targetPath, relativeDestPath);
-
-      // Create all the neccessary folders
+      // Recursively make folders in the destination
       ff.makeDir(newDestPath);
 
+      // Regrex to get the filename from leaf folder
       const regrexForFileName = /.+(?=\/)/;
+      // If no match, return null
       const fileNameMatches = regrexForFileName.exec(item.artifactNode);
 
-      // If there is a file in the folder
+      // If there is a file in the repo folder
       if (fileNameMatches) {
         // Grab fileName from regrex
         const fileName = fileNameMatches[0];
+        // Get full file path from source
         const fileSource = path.join(item.artifactRelPath, item.artifactNode);
+        // Create full file path to destination
         const fileDest = path.join(newDestPath, fileName);
-
+        // Copy the file
         fs.copyFileSync(fileSource, fileDest);
       }
     });
   }
 }
 
-const filePath = path.join(constants.ROOTPATH, "database", "liam", "Test_user");
+// const filePath = path.join(constants.ROOTPATH, "database", "liam", "Test_user");
 
 module.exports = RepoHandler;
