@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 
 const folderFuncs = require("../../private/js/FolderFunctions");
 const constants = require("../constants.js");
-// const Manifest = require("../../private/js/Manifest");
 const RepoHandler = require("../../private/js/RepoHandler");
 
 const router = express.Router();
@@ -26,22 +25,24 @@ router.post("/", function(req, res) {
   const repoName = req.body.repoName; // get repo name
 
   /* Testing create repo */
-  // const repoHandler = new RepoHandler(userName, repoName, "create");
-  // repoHandler.copySourceToDest();
+  const repoHandler = new RepoHandler(userName, repoName);
+  repoHandler.create();
 
   /* Testing labeling */
-  // const repoHandler = new RepoHandler(userName, repoName, "update");
-  // repoHandler.addLabel("2", "haha");
-  // repoHandler.addLabel("2", "hhoho label2");
-  // repoHandler.addLabel("4", "hihi label3");
-  // repoHandler.addLabel("7", "hehe label4");
+  // const repoHandler = new RepoHandler(userName, repoName);
+  repoHandler.addLabel("1", "label1");
+  repoHandler.addLabel("3", "label2");
+  repoHandler.addLabel("4", "label3");
+  repoHandler.addLabel("7", "label4");
 
   /* Testing checkout */
-  const repoHandler = new RepoHandler(userName, repoName, "check-out");
-  repoHandler.checkoutManifestByID(
-    "1",
-    path.join(constants.ROOTPATH, "testing", "dest")
-  );
+  // const repoHandler = new RepoHandler(userName, repoName);
+  const destPath = path.join(constants.ROOTPATH, "testing", "dest");
+  // repoHandler.checkout("1", destPath);
+  repoHandler.checkout("label1", destPath);
+
+  /* Testing check-in */
+  // const repoHandler = new RepoHandler(userName, repoName, "check-in");
 
   /* Old Way
   // // Create the project directory under database folder and manifests folder under the project folder
