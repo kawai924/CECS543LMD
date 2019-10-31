@@ -59,6 +59,20 @@ app.get("/dirlist", function(req, res) {
   res.send(list);
 });
 
+// Route to URL = '/readmanifest'
+app.get("/readmanifest", function(req, res) {
+  manifest = fs.readFileSync(path.join(constants.ROOTPATH, "/database/dennis/py/manifests/manifest_1.json"), 'utf8'); // Get the list of file in database folder
+  if (manifest.length === 0) {
+    return res.send('<p style="color:red"> Nothing in database folder </p>');
+  }
+  else{
+    content = JSON.parse(manifest);
+    res.json(content.id);
+    
+  }
+
+});
+
 app.listen(PORT, function() {
   // Set callback action fcn on network port.
   console.log("App.js listening on port " + PORT);
