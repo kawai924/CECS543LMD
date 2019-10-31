@@ -22,63 +22,14 @@
             </div>
         </div>
       </div>
-      <row>
-          <div class="btn-group btn-group-toggle" data-toggle="buttons">
-              <label class="btn btn-secondary">
-                <input type="radio" name="create-repo-options" id="create-repo-button" autocomplete="off"> Create Repo
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="check-in-options" id="check-in-button" autocomplete="off"> Check In
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="check-out-options" id="check-out-button" autocomplete="off"> Check Out
-              </label>
-            </div>
-      </row>
       <div class="row">
-        <div class="col-lg-6">
-          <form action="/" method="POST">
-              <input class="form-control user-input small-margin-bottom" type="text" id="username" name="username"
-                    placeholder="User">
-              <input class="form-control user-input small-margin-bottom" type="text" id="create-repo" name="repoName"
-                    placeholder="Repo Name">
-              <input class="form-control user-input small-margin-bottom" type="text" id="version" name="versionName"
-                    placeholder="Repo Version Number" disabled>
-              <input class="form-control user-input small-margin-bottom" type="text" id="target-folder" name="targetFolder"
-                    placeholder="Target Folder Path" disabled>
-            <input type="submit" id="create-repo-button" class="btn btn-outline-primary small-margin-top" onclick="createRepo()"></button> 
+        <div class="col-lg-12">
+          <form action="/home" method="GET">
+            <input class="form-control user-input small-margin-bottom" type="text" id="username-login" name="username-login"
+              placeholder="Username">
+            <input type="submit" id="create-repo-button" class="btn btn-outline-primary small-margin-top" onclick="enter()"></button> 
           </form>
-        </div>
-        <div class="col-lg-6">
-          <div id="repo-created" class="">
-            
-          </div>
-      </div>
-
-      <!-- <div class="row">
-        <div class="col-lg-12">
-          <div id="repo-created" class="">
-            
-          </div>
-        </div>
-
-      </div> -->
-
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="data-list">
-            <h5> Database Folder List </h5>
-          </div>
-          <div class="" id = "dirlist">
-            
-          </div>
-        </div>
-      </div>
-      <!-- for future dev
-        
-        <input class="center user-input small-margin-bottom" type="button"  value = "Dont you dare to touch me" size="75" onclick="JStoNode()">
-      -->
-      
+        </div>   
     </div>
     
     <!-- Optional JavaScript -->

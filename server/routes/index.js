@@ -16,6 +16,10 @@ router.get("/", function(req, res, next) {
   return res.sendFile(path.join(constants.APPPATH, "index.html"));
 });
 
+router.get("/home", function(req, res, next) {
+  return res.sendFile(path.join(constants.APPPATH, "home.html"))
+})
+
 // POST form in homepage
 router.post("/", function(req, res) {
   const userName = req.body.username; // get username
