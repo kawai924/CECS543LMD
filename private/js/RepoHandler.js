@@ -63,7 +63,7 @@ class RepoHandler {
   * Missing feature: The checkout command also creates a new manifest file, of the checked out version, in the repo. The user should be able to specify the manifest file using a label, if it has one.
 ---------------------------- */
   // Set up checkout by ID
-  checkoutByID(manifestID, destPath) {
+  checkout(manifestID, destPath) {
     // Add command to new manifest
     this.manifestHandler.addCommand("checkout");
 

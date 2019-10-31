@@ -34,7 +34,8 @@ router.post("/", function(req, res) {
   /* Testing checkout */
   const repoHandler = new RepoHandler(userName, repoName);
   const destPath = path.join(constants.ROOTPATH, "testing", "dest");
-  repoHandler.checkoutByID("1", destPath);
+  // repoHandler.checkout("1", destPath);
+  repoHandler.checkout("label1", destPath);
 
   /* Testing check-in */
   // const repoHandler = new RepoHandler(userName, repoName, "check-in");

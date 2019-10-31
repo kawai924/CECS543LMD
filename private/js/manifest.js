@@ -74,8 +74,18 @@ class Manifest {
   }
 
   /* Getter */
+
+  // Get manifest path from an id. ID can be LABEL or NUMBER.
   getManifestPath(id) {
-    return this.masterManifest.manifest_lists[id.toString()] || false;
+    let idFromLabel = null;
+    // Check each key in the labels array
+    this.masterManifest.labels.forEach(label => {
+      if (Object.keys(label)[0] === id) {
+        idFromLabel = label[id];
+      }
+    });
+    const manifestID = idFromLabel || id;
+    return this.masterManifest.manifest_lists[manifestID.toString()] || false;
   }
 
   /* Write manifest into file and update master manifest */
