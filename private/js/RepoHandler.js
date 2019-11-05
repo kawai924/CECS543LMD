@@ -99,6 +99,11 @@ class RepoHandler {
         fs.copyFileSync(fileSource, fileDest);
       }
     });
+
+    // Copy the structure that uses to checkout
+    this.manifestHandler.addStructure(structure);
+    // Write a new manifest into file.
+    this.manifestHandler.write({ checkoutPath: destPath });
   }
 }
 
