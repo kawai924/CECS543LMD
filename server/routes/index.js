@@ -1,26 +1,18 @@
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-
-const folderFuncs = require("../../private/js/FolderFunctions");
-const constants = require("../constants.js");
-const RepoHandler = require("../../private/js/RepoHandler");
+const express = require('express');
+const path = require('path');
 
 const router = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: true }));
+const constants = require('../constants.js');
+const RepoHandler = require('../../private/js/RepoHandler');
 
 // GET homepage
-router.get("/", function(req, res, next) {
-  return res.sendFile(path.join(constants.APPPATH, "index.html"));
+router.get('/', function(req, res, next) {
+  return res.sendFile(path.join(constants.APPPATH, 'index.html'));
 });
 
-router.get("/home", function(req, res, next) {
-  return res.sendFile(path.join(constants.APPPATH, "home.html"))
-})
-
 // POST form in homepage
-router.post("/", function(req, res) {
+router.post('/', function(req, res) {
   const userName = req.body.username; // get username
   const repoName = req.body.repoName; // get repo name
 
@@ -30,16 +22,16 @@ router.post("/", function(req, res) {
 
   /* Testing labeling */
   // const repoHandler = new RepoHandler(userName, repoName);
-  repoHandler.addLabel("1", "label1");
-  repoHandler.addLabel("3", "label2");
-  repoHandler.addLabel("4", "label3");
-  repoHandler.addLabel("7", "label4");
+  repoHandler.addLabel('1', 'label1');
+  repoHandler.addLabel('3', 'label2');
+  repoHandler.addLabel('4', 'label3');
+  repoHandler.addLabel('7', 'label4');
 
   /* Testing checkout */
   // const repoHandler = new RepoHandler(userName, repoName);
-  const destPath = path.join(constants.ROOTPATH, "testing", "dest");
+  const destPath = path.join(constants.ROOTPATH, 'testing', 'dest');
   // repoHandler.checkout("1", destPath);
-  repoHandler.checkout("label1", destPath);
+  repoHandler.checkout('label1', destPath);
 
   /* Testing check-in */
   // const repoHandler = new RepoHandler(userName, repoName, "check-in");
@@ -56,7 +48,9 @@ router.post("/", function(req, res) {
   // manifestObject.complete();
   */
 
-  res.redirect("localhost:3000/");
+  // const newURL = `localhost:3000/user?userName=${userName}`;
+
+  // res.redirect('localhost:3000/user');
 });
 
 module.exports = router;

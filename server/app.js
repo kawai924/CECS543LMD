@@ -1,20 +1,46 @@
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const bodyParser = require('body-parser');
 
-const index = require("./routes/index.js");
-const constants = require("./constants");
-const getArtifactId = require("../private/js/Artifact");
+const constants = require('./constants');
 const PORT = 3000;
 
-// Init an Express object.
+// Import routers
+const index = require('./routes/index.js');
+const user = require('./routes/user');
+
 const app = express();
 
-// Serve static files
-app.use(express.static("public"));
+// Middlewares
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, '..', 'public'))); // Serve static files
 
-// Route to index
-app.use("/", index);
+// Routes
+app.use('/', index);
+app.use('/user', user);
+
+// Route to URL = '/test'
+app.get('/dirlist', function(req, res) {
+  dirlist = getFiles(path.join(constants.ROOTPATH, 'database')); // Get the list of file in database folder
+  if (dirlist.length === 0) {
+    return res.send('<p style="color:red"> Nothing in database folder </p>');
+  }
+
+  // Each file in dirlist will become a <p> element in HTML
+  var list = '<p>';
+  for (let file of dirlist) {
+    list = list + file + '</br>';
+  }
+  list = list + '</p>';
+
+  res.send(list);
+});
+
+app.listen(PORT, function() {
+  // Set callback action fcn on network port.
+  console.log('App.js listening on port ' + PORT);
+});
 
 //Extra features after this point
 //reading dir in data
@@ -23,7 +49,7 @@ function getFiles(dir, files_ = []) {
   // files_ = files_ || [];
   const files = fs.readdirSync(dir); // Read content in dir
   for (let i in files) {
-    const subPath = dir + "/" + files[i]; // Get the next sub-path
+    const subPath = dir + '/' + files[i]; // Get the next sub-path
     const fileName = /\/database.*/.exec(subPath);
 
     // console.log(fileName[0]);
@@ -41,25 +67,3 @@ function getFiles(dir, files_ = []) {
   // console.log({ dir, files_ });
   return files_;
 }
-
-// Route to URL = '/test'
-app.get("/dirlist", function(req, res) {
-  dirlist = getFiles(path.join(constants.ROOTPATH, "database")); // Get the list of file in database folder
-  if (dirlist.length === 0) {
-    return res.send('<p style="color:red"> Nothing in database folder </p>');
-  }
-
-  // Each file in dirlist will become a <p> element in HTML
-  var list = "<p>";
-  for (let file of dirlist) {
-    list = list + file + "</br>";
-  }
-  list = list + "</p>";
-
-  res.send(list);
-});
-
-app.listen(PORT, function() {
-  // Set callback action fcn on network port.
-  console.log("App.js listening on port " + PORT);
-});

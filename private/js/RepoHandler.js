@@ -1,8 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const Manifest = require("./Manifest");
-const ff = require("./FolderFunctions");
-const constants = require("../../server/constants");
+const fs = require('fs');
+const path = require('path');
+const Manifest = require('./Manifest');
+const ff = require('./FolderFunctions');
+const constants = require('../../server/constants');
 
 /**
  * RepoHandler handles all methods regarding repos.
@@ -13,7 +13,7 @@ class RepoHandler {
     // For testing purpose, put all testing repos in testing folder
     // source path = testing/[repoName]
     // dest path = [ROOT]/database/[username]/[repoName]
-    const defaultSourcePath = path.join(constants.ROOTPATH, "testing");
+    const defaultSourcePath = path.join(constants.ROOTPATH, 'testing');
 
     // Store all properties regarding about the current repo
     this.repo = {
@@ -22,7 +22,7 @@ class RepoHandler {
       sourceRepoPath: path.join(defaultSourcePath, repoName),
       destRepoPath: path.join(
         constants.ROOTPATH,
-        "database",
+        'database',
         userName,
         repoName
       )
@@ -40,7 +40,7 @@ class RepoHandler {
 ---------------------------- */
   create() {
     // Add command to new manifest
-    this.manifestHandler.addCommand("create");
+    this.manifestHandler.addCommand('create');
 
     //Actual copying source repo to destination repo
     const folderStructure = ff.copyFolderTreeWithMemoization(
@@ -65,7 +65,7 @@ class RepoHandler {
   // Set up checkout by ID
   checkout(manifestID, destPath) {
     // Add command to new manifest
-    this.manifestHandler.addCommand("checkout");
+    this.manifestHandler.addCommand('checkout');
 
     const manifestPath = this.manifestHandler.getManifestPath(manifestID);
 
