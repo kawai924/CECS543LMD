@@ -64,6 +64,8 @@ class RepoHandler {
 ---------------------------- */
   // Set up checkout by ID
   checkout(manifestID, destPath) {
+    const { userName, repoName } = this.repo;
+
     // Add command to new manifest
     this.manifestHandler.addCommand('checkout');
 
@@ -72,6 +74,7 @@ class RepoHandler {
     // Grab structure from parsed manifest file
     const { structure } = JSON.parse(fs.readFileSync(manifestPath));
 
+    // Copy source file into the checkout folder
     structure.forEach(item => {
       // Use regrex to grab the path of the folder after /database
       const regrexForFolder = /(?<=database).*/;
@@ -99,11 +102,23 @@ class RepoHandler {
         fs.copyFileSync(fileSource, fileDest);
       }
     });
-
+    // HANDLE manifest for the original repo
     // Copy the structure that uses to checkout
     this.manifestHandler.addStructure(structure);
     // Write a new manifest into file.
     this.manifestHandler.write({ checkoutPath: destPath });
+
+    // SETUP manifest structure for the checkout repo
+    // Build manifest folder
+    ff.makeDir(path.join(destPath, 'manifests'));
+    // Create a new manifest handler
+    const repoManifest = new Manifest({
+      userName,
+      repoName,
+      destRepoPath: path.join(destPath, userName, repoName)
+    });
+    // Write master manifest
+    repoManifest.rewriteMasterManifest();
   }
 }
 
