@@ -23,10 +23,9 @@ block content
     .row
       .col-lg-6
         form(action='/' method='POST')
-          input#username.form-control.user-input.small-margin-bottom(type='text' name='username' placeholder='User')
           input#create-repo.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
-          input#version.form-control.user-input.small-margin-bottom(type='text' name='versionName' placeholder='Repo Version Number' disabled='')
-          input#target-folder.form-control.user-input.small-margin-bottom(type='text' name='targetFolder' placeholder='Target Folder Path' disabled='')
+          input#target-folder.form-control.user-input.small-margin-bottom(type='text' name='targetFolder' placeholder='Folder Path' disabled='')
+          input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit' onclick='createRepo()')
       .col-lg-6
         #repo-created
@@ -48,9 +47,5 @@ block content
                       li Manifest 1
                       li Manifest 2
                   a(href="#").btn.btn-primary Repo details
-        
-      //
-        for future dev
-        <input class="center user-input small-margin-bottom" type="button"  value = "Dont you dare to touch me" size="75" onclick="JStoNode()">
-    // Optional JavaScript
-    // jQuery first, then Popper.js, then Bootstrap JS
+  script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
+  script(type="text/javascript" src='app/js/user.js')
