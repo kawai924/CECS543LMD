@@ -38,6 +38,7 @@ $(document).ready(function() {
     $('#label').prop('disabled', true);
     $('#source-path').prop('disabled', true);
     $('#manifest-target').prop('disabled', true);
+    $('#dest-path').prop('disabled', true);
   }
 
   $("input[value='create']").change(function() {
@@ -50,7 +51,6 @@ $(document).ready(function() {
   $("input[value='check-in']").change(function() {
     reset();
     $('#repo-name').prop('disabled', false);
-    $('#label').prop('disabled', false);
     $('#source-path').prop('disabled', false);
     console.log('Works');
   });
@@ -59,8 +59,8 @@ $(document).ready(function() {
     reset();
     $('#repo-name').prop('disabled', false);
     $('#label').prop('disabled', false);
-    $('#source-path').prop('disabled', false);
     $('#manifest-target').prop('disabled', false);
+    $('#dest-path').prop('disabled', false);
     console.log('Works');
   });
 

@@ -26,9 +26,10 @@ block content
               |  Label
 
           input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
-          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='Default: /testing/[your-repo]' disabled='')
+          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='Source Repo Path, Default : /testing/[your-repo-name]' disabled='')
           input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
-          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifest-name' placeholder='Enter manifest' disabled='')
+          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest' disabled='')
+          input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='Destination Path' disabled='')
           //- input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit' onclick='createRepo()')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
       //- .col-lg-6
@@ -48,7 +49,15 @@ block content
             .card(style="width: 36rem;")
                 .card-body
                     h5.card-title #{repo.name}
-                    ul
+                    p 
+                      span.font-weight-bold Labels: [Name] -- [Manifest ID]
+                      ul
+                        each label in repo.labels
+                          - const labelName = Object.keys(label)
+                          li= `${labelName} --> ${label[labelName]}`
+                    p 
+                      span.font-weight-bold Manifests:
+                      ul
                        each manifest in repo.manifests
                         li= manifest.name
                           ul
