@@ -42,11 +42,11 @@ block content
       </div>
       </div>
     .row
-      .col-lg-12
-        .data-list
-          h5  Database Folder List 
+      .col-lg-6
+        .data-list.mt-5
+          h5.alert.alert-info  Database Folder List 
           each repo in repoInfoList
-            .card(style="width: 36rem;")
+            .card(style="width: 34rem;")
                 .card-body
                     h5.card-title #{repo.name}
                     p 

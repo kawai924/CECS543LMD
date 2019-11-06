@@ -19,16 +19,27 @@ router.get('/:username', function(req, res, next) {
 
 router.post('/:username', function(req, res, next) {
   // Grab and deconstruct information from request
-  const {
+  const { command_option, repoName, label, manifestID } = req.body;
+  const userName = req.params.username;
+
+  // Check if sourcePath or destPath are provided
+  const sourcePath =
+    req.body.sourcePath === ''
+      ? path.join(constants.ROOTPATH, 'testing')
+      : req.body.sourcePath;
+  const destPath =
+    req.body.destPath === ''
+      ? path.join(constants.ROOTPATH, 'testing', 'dest')
+      : req.body.destPath;
+
+  console.log({
     command_option,
     repoName,
-    sourcePath = path.join(constants.ROOTPATH, 'testing'),
+    sourcePath,
     label,
-    manifestID,
-    destPath = path.join(constants.ROOTPATH, 'testing', 'dest')
-  } = req.body;
-  const userName = req.params.username;
-  console.log({ command_option, repoName, somePath, label, userName });
+    userName,
+    destPath
+  });
 
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   switch (command_option) {
