@@ -11,8 +11,8 @@ router.get('/:username', function(req, res, next) {
   const userPath = path.join(constants.ROOTPATH, 'database', userName);
   const repoList = fs.readdirSync(userPath); // Grab all the repo of user from database
   const repoInfoList = buildRepoInfoList(repoList, userPath);
-  console.log(userPath);
-  res.render('user', { repoInfoList });
+  // console.log(userPath);
+  res.render('user', { userName, repoInfoList });
   // return res.sendFile(path.join(constants.APPPATH, 'home.html'));
 });
 

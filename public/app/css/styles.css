@@ -29,26 +29,30 @@
     margin-bottom: 16px;
 } */
 
+/* BODY
+----------------*/ 
+
 
 /* FORM STYLE
 ----------------*/ 
 form input[type='text'] {
-    display: block;
-    width: 500px;
-    margin: 16px 0;
+    /* display: block; */
+    /* width: 40em; */
+    margin: 1em 0;
 }
+
+form input[type='text']::placeholder {
+    text-align: center;
+}
+
+
 
 /* DATA LIST
 ---------------*/
 h5 {
     font-size: 2rem;
-    margin-top: 1rem;
-}
-.data-list {
-    margin-top: 20px;
 }
 
-.center_div{
-    margin: 0 auto;
-    width:80% /* value of your choice which suits your alignment */
+h5.card-title {
+    font-size: 1rem;
 }
