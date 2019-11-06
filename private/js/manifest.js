@@ -89,7 +89,7 @@ class Manifest {
   }
 
   /* Write manifest into file and update master manifest */
-  write({ checkoutPath }) {
+  write({ checkoutPath } = {}) {
     const newID =
       Object.keys(this.masterManifest.manifest_lists).length + 1 || 1;
     this.newManifest.id = newID;
