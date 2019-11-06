@@ -1,28 +1,28 @@
-"use strict";
-const fs = require("fs");
-const constants = require("../server/constants");
-const path = require("path");
-const ff = require("../private/js/FolderFunctions");
+'use strict';
+const fs = require('fs');
+const constants = require('../server/constants');
+const path = require('path');
+const ff = require('../private/js/FolderFunctions');
 
 const masterManifest = {
   manifest_lists: {
-    "1":
-      "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/liam/Test_user/manifests/manifest_1.json",
-    "2": "liam",
-    "5": "hello world"
+    '1':
+      '/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/liam/Test_user/manifests/manifest_1.json',
+    '2': 'liam',
+    '5': 'hello world'
   },
-  labels: [{ label1: "1" }, { label2: "2" }, { label3: "4" }, { label4: "7" }]
+  labels: [{ label1: '1' }, { label2: '2' }, { label3: '4' }, { label4: '7' }]
 };
 
 const fileSource = path.join(
   constants.ROOTPATH,
-  "database",
-  "liam",
-  "Test_user",
-  "master_manifest.json"
+  'database',
+  'liam',
+  'Test_user',
+  'master_manifest.json'
 );
 
-const fileDest = path.join(constants.ROOTPATH, "testing", "dest");
+const fileDest = path.join(constants.ROOTPATH, 'testing', 'dest');
 
 // Id can be either label or number
 function getManifestPath(id) {

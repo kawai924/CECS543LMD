@@ -1,32 +1,53 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-
-const index = require('./routes/index.js');
+const bodyParser = require('body-parser');
 const constants = require('./constants');
-const getArtifactId = require('../private/js/Artifact');
 const PORT = 3000;
 
-// Init an Express object.
 const app = express();
 
-// Serve static files
-app.use(express.static('public'));
+// Import routers
+const index = require('./routes/index.js');
+const user = require('./routes/user');
+const testing = require('./routes/testing');
 
-// Route to index
+// Middlewares
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, '..', 'public'))); // Serve static files
+app.set('view engine', 'pug');
+
+// Routes
 app.use('/', index);
+app.use('/user', user);
+app.use('/testing', testing);
+
+// Route to URL = '/test'
+app.get('/dirlist', function(req, res) {
+  dirlist = getFiles(path.join(constants.ROOTPATH, 'database')); // Get the list of file in database folder
+  if (dirlist.length === 0) {
+    return res.send('<p style="color:red"> Nothing in database folder </p>');
+  }
+
+  // Each file in dirlist will become a <p> element in HTML
+  var list = '<p>';
+  for (let file of dirlist) {
+    list = list + file + '</br>';
+  }
+  list = list + '</p>';
+
+  res.send(list);
+});
 
 //Extra features after this point
 //reading dir in data
 // For a given path dir,
 function getFiles(dir, files_ = []) {
-  // files_ = files_ || [];
+  files_ = files_ || [];
   const files = fs.readdirSync(dir); // Read content in dir
   for (let i in files) {
     const subPath = dir + '/' + files[i]; // Get the next sub-path
     const fileName = /\/database.*/.exec(subPath);
-
-    // console.log(fileName[0]);
 
     // If that sub-path == directory
     if (fs.statSync(subPath).isDirectory()) {

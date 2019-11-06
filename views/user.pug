@@ -1,0 +1,63 @@
+extends layout.pug
+
+block content
+  .container
+    .row.small-margin-top
+      .col-lg-12
+        .jumbotron.jumbotron-fluid
+          .container
+            h1.display-4 LMD Version Control System
+            p.lead A lightweight, web-based, intuitive VCS.
+    .row
+      .col-lg-6
+        form(method='POST')
+          .btn-group.btn-group-toggle(data-toggle='buttons')
+            label.btn.btn-secondary
+              input#create-repo-button(type='radio' name='command_option' value="create" autocomplete='off')
+              |  Create Repo
+            label.btn.btn-secondary
+              input#check-in-button(type='radio' name='command_option' value="check-in" autocomplete='off')
+              |  Check In
+            label.btn.btn-secondary
+              input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
+              |  Check Out
+            label.btn.btn-secondary
+              input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
+              |  Label
+
+          input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
+          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='Source Repo Path, Default : /testing/[your-repo-name]' disabled='')
+          input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
+          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest' disabled='')
+          input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='Destination Path, , Default : /testing/dest/[your-repo-name]' disabled='')
+          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
+      //- .col-lg-6
+      //-   #repo-created
+    .row
+      .col-lg-6
+        .data-list.mt-5
+          h5.alert.alert-info  Database Folder List 
+          each repo in repoInfoList
+            .card(style="width: 34rem;")
+                .card-body
+                    h5.card-title #{repo.name}
+                    p 
+                      span.font-weight-bold Labels: [Name] -- [Manifest ID]
+                      ul
+                        each label in repo.labels
+                          - const labelName = Object.keys(label)
+                          li= `${labelName} --> ${label[labelName]}`
+                    p 
+                      span.font-weight-bold Manifests:
+                      ul
+                       each manifest in repo.manifests
+                        li= manifest.name
+                          ul
+                            each key in Object.keys(manifest)
+                              if (key !== 'name')
+                                li
+                                  span.font-weight-bold=`${key}: `
+                                  span=manifest[key]
+                    //- a(href="#").btn.btn-primary Repo details
+  script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
+  script(type="text/javascript" src='/app/js/user.js')
