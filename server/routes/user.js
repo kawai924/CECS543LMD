@@ -12,7 +12,6 @@ router.get('/:username', function(req, res, next) {
   // // Grab all the repo in user folder
   const repoList = fs.readdirSync(userPath);
   const repoInfoList = buildRepoInfoList(repoList, userPath);
-  console.log(repoList);
 
   res.render('user', { repoInfoList });
   // return res.sendFile(path.join(constants.APPPATH, 'home.html'));
@@ -23,14 +22,14 @@ router.post('/:username', function(req, res, next) {
   const {
     command_option,
     repoName,
-    targetFolder = path.join(constants.ROOTPATH, 'testing'),
+    sourcePath = path.join(constants.ROOTPATH, 'testing'),
     label
   } = req.body;
   const userName = req.params.username;
-  console.log({ command_option, repoName, targetFolder, label, userName });
+  // console.log({ command_option, repoName, sourcePath, label, userName });
 
   /* Testing create repo */
-  const repoHandler = new RepoHandler(userName, repoName);
+  const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   repoHandler.create();
   /* Testing labeling */
   // const repoHandler = new RepoHandler(userName, repoName);

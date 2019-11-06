@@ -33,27 +33,42 @@
 $(document).ready(function() {
   console.log('ready');
 
-  // $("input[name='create-repo-options").change(function() {
-  //   $('#label').prop('disabled', true);
-  //   $('#target-folder').prop('disabled', false);
-  //   console.log('Works');
-  // });
+  function reset() {
+    $('#repo-name').prop('disabled', true);
+    $('#label').prop('disabled', true);
+    $('#source-path').prop('disabled', true);
+    $('#manifest-target').prop('disabled', true);
+  }
 
   $("input[value='create']").change(function() {
-    $('#label').prop('disabled', true);
-    $('#target-folder').prop('disabled', false);
+    reset();
+    $('#repo-name').prop('disabled', false);
+    $('#source-path').prop('disabled', false);
     console.log('Works');
   });
 
   $("input[value='check-in']").change(function() {
+    reset();
+    $('#repo-name').prop('disabled', false);
     $('#label').prop('disabled', false);
-    $('#target-folder').prop('disabled', false);
+    $('#source-path').prop('disabled', false);
     console.log('Works');
   });
 
   $("input[value='check-out']").change(function() {
+    reset();
+    $('#repo-name').prop('disabled', false);
     $('#label').prop('disabled', false);
-    $('#target-folder').prop('disabled', false);
+    $('#source-path').prop('disabled', false);
+    $('#manifest-target').prop('disabled', false);
+    console.log('Works');
+  });
+
+  $("input[value='label']").change(function() {
+    reset();
+    $('#repo-name').prop('disabled', false);
+    $('#label').prop('disabled', false);
+    $('#manifest-target').prop('disabled', false);
     console.log('Works');
   });
 });

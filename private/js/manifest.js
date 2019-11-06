@@ -102,7 +102,7 @@ class Manifest {
       manifestName
     );
 
-    console.log(checkoutPath);
+    // console.log(checkoutPath);
     // For "checkout" command, add checkout path to the destination repo
     if (this.newManifest.command === 'checkout') {
       if (checkoutPath === '')
@@ -114,7 +114,7 @@ class Manifest {
       );
     }
 
-    console.log(this.newManifest);
+    // console.log(this.newManifest);
 
     try {
       // Write manifest file into the manifest folder

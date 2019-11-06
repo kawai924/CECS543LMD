@@ -8,18 +8,24 @@ const constants = require('../../server/constants');
  * RepoHandler handles all methods regarding repos.
  * Supports create(), checkoutByID()
  */
+// For testing purpose, put all testing repos in testing folder
+// source path = testing/[repoName]
+// dest path = [ROOT]/database/[username]/[repoName]
 class RepoHandler {
-  constructor(userName, repoName) {
-    // For testing purpose, put all testing repos in testing folder
-    // source path = testing/[repoName]
-    // dest path = [ROOT]/database/[username]/[repoName]
-    const defaultSourcePath = path.join(constants.ROOTPATH, 'testing');
+  constructor(
+    userName,
+    repoName,
+    { SourcePath = path.join(constants.ROOTPATH, 'testing') }
+  ) {
+    const sourceRepoPath = path.join(SourcePath, repoName);
+    // Check if there is a repo there
+    if (!fs.existsSync(sourceRepoPath)) throw new Error("Repo doesn't exist");
 
     // Store all properties regarding about the current repo
     this.repo = {
       userName,
       repoName,
-      sourceRepoPath: path.join(defaultSourcePath, repoName),
+      sourceRepoPath,
       destRepoPath: path.join(
         constants.ROOTPATH,
         'database',

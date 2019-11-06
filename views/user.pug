@@ -21,14 +21,18 @@ block content
             label.btn.btn-secondary
               input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
               |  Check Out
+            label.btn.btn-secondary
+              input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
+              |  Label
 
-          input#create-repo.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
-          input#target-folder.form-control.user-input.small-margin-bottom(type='text' name='targetFolder' placeholder='Folder Path' disabled='')
+          input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
+          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='Default: /testing/[your-repo]' disabled='')
           input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
+          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifest-name' placeholder='Enter manifest' disabled='')
           //- input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit' onclick='createRepo()')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
-      .col-lg-6
-        #repo-created
+      //- .col-lg-6
+      //-   #repo-created
     //
       <div class="row">
       <div class="col-lg-12">
@@ -53,7 +57,6 @@ block content
                                 li
                                   span.font-weight-bold=`${key}: `
                                   span=manifest[key]
-
-                    a(href="#").btn.btn-primary Repo details
+                    //- a(href="#").btn.btn-primary Repo details
   script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
   script(type="text/javascript" src='/app/js/user.js')
