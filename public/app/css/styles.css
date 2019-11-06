@@ -47,3 +47,8 @@ h5 {
 .data-list {
     margin-top: 20px;
 }
+
+.center_div{
+    margin: 0 auto;
+    width:80% /* value of your choice which suits your alignment */
+}

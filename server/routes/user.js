@@ -11,7 +11,7 @@ router.get('/:username', function(req, res, next) {
   const userPath = path.join(constants.ROOTPATH, 'database', userName);
   const repoList = fs.readdirSync(userPath); // Grab all the repo of user from database
   const repoInfoList = buildRepoInfoList(repoList, userPath);
-
+  console.log(userPath);
   res.render('user', { repoInfoList });
   // return res.sendFile(path.join(constants.APPPATH, 'home.html'));
 });
@@ -82,33 +82,36 @@ function buildRepoInfoList(repoList, userPath) {
 
   // Build repoInfo for each repo
   repoList.forEach(repo => {
-    // Initialize
-    const repoInfoEach = { name: repo, manifests: [], labels: [] };
-    const manifestFolderPath = path.join(userPath, repo, 'manifests');
+    // Check if it is a REPO
+    if (fs.lstatSync(path.join(userPath, repo)).isDirectory()) {
+      // Initialize
+      const repoInfoEach = { name: repo, manifests: [], labels: [] };
+      const manifestFolderPath = path.join(userPath, repo, 'manifests');
 
-    // Grab list of manifests
-    const manifestList = fs.readdirSync(manifestFolderPath);
+      // Grab list of manifests
+      const manifestList = fs.readdirSync(manifestFolderPath);
 
-    // Grab labels from master manifest
-    repoInfoEach.labels = JSON.parse(
-      fs.readFileSync(path.join(userPath, repo, 'master_manifest.json'))
-    ).labels;
+      // Grab labels from master manifest
+      repoInfoEach.labels = JSON.parse(
+        fs.readFileSync(path.join(userPath, repo, 'master_manifest.json'))
+      ).labels;
 
-    // For each manifest, build an list of necessary information into an object
-    // then push that object into repoInfoEach.manifests array
-    manifestList.forEach(manifest => {
-      const manifestObject = JSON.parse(
-        fs.readFileSync(path.join(manifestFolderPath, manifest))
-      );
+      // For each manifest, build an list of necessary information into an object
+      // then push that object into repoInfoEach.manifests array
+      manifestList.forEach(manifest => {
+        const manifestObject = JSON.parse(
+          fs.readFileSync(path.join(manifestFolderPath, manifest))
+        );
 
-      repoInfoEach.manifests.push({
-        name: manifest,
-        command: manifestObject.command,
-        datetime: manifestObject.datetime
+        repoInfoEach.manifests.push({
+          name: manifest,
+          command: manifestObject.command,
+          datetime: manifestObject.datetime
+        });
       });
-    });
 
-    repoInfoList.push(repoInfoEach);
+      repoInfoList.push(repoInfoEach);
+    }
   });
 
   return repoInfoList;
