@@ -17,6 +17,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
+  console.log(req);
   // const userName = req.body.username; // get username
   // const repoName = req.body.repoName; // get repo name
   // /* Testing create repo */
@@ -62,6 +63,8 @@ function buildRepoInfoList(repoList, userPath) {
     // Grab list of manifests
     const manifestList = fs.readdirSync(manifestFolderPath);
 
+    // For each manifest, build an list of necessary information into an object
+    // then push that object into repoInfoEach.manifests array
     manifestList.forEach(manifest => {
       const manifestObject = JSON.parse(
         fs.readFileSync(path.join(manifestFolderPath, manifest))

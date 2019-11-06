@@ -9,24 +9,24 @@ block content
             h1.display-4 LMD Version Control System
             p.lead A lightweight, web-based, intuitive VCS.
     .row
-      .col-lg-12
-        .btn-group.btn-group-toggle(data-toggle='buttons')
-          label.btn.btn-secondary
-            input#create-repo-button(type='radio' name='create-repo-options' autocomplete='off')
-            |  Create Repo
-          label.btn.btn-secondary
-            input#check-in-button(type='radio' name='check-in-options' autocomplete='off')
-            |  Check In
-          label.btn.btn-secondary
-            input#check-out-button(type='radio' name='check-out-options' autocomplete='off')
-            |  Check Out
-    .row
       .col-lg-6
-        form(action='/' method='POST')
+        form(method='POST')
+          .btn-group.btn-group-toggle(data-toggle='buttons')
+            label.btn.btn-secondary
+              input#create-repo-button(type='radio' name='command_option' value="create" autocomplete='off')
+              |  Create Repo
+            label.btn.btn-secondary
+              input#check-in-button(type='radio' name='command_option' value="check-in" autocomplete='off')
+              |  Check In
+            label.btn.btn-secondary
+              input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
+              |  Check Out
+
           input#create-repo.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
           input#target-folder.form-control.user-input.small-margin-bottom(type='text' name='targetFolder' placeholder='Folder Path' disabled='')
           input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
-          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit' onclick='createRepo()')
+          //- input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit' onclick='createRepo()')
+          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
       .col-lg-6
         #repo-created
     //

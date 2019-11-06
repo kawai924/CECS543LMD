@@ -33,19 +33,25 @@
 $(document).ready(function() {
   console.log('ready');
 
-  $("input[name='create-repo-options").change(function() {
+  // $("input[name='create-repo-options").change(function() {
+  //   $('#label').prop('disabled', true);
+  //   $('#target-folder').prop('disabled', false);
+  //   console.log('Works');
+  // });
+
+  $("input[value='create']").change(function() {
     $('#label').prop('disabled', true);
     $('#target-folder').prop('disabled', false);
     console.log('Works');
   });
 
-  $("input[name='check-in-options").change(function() {
+  $("input[value='check-in']").change(function() {
     $('#label').prop('disabled', false);
     $('#target-folder').prop('disabled', false);
     console.log('Works');
   });
 
-  $("input[name='check-out-options").change(function() {
+  $("input[value='check-out']").change(function() {
     $('#label').prop('disabled', false);
     $('#target-folder').prop('disabled', false);
     console.log('Works');
