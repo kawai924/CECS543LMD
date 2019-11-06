@@ -4,4 +4,8 @@ node_modules/
 .vscode/
 
 database/*
+!database/.gitkeep 
+
 testing/*
+!testing/.gitkeep 
+
