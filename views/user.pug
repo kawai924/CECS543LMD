@@ -40,12 +40,20 @@ block content
       .col-lg-12
         .data-list
           h5  Database Folder List 
-          .card(style="width: 18rem;")
-              .card-body
-                  h5.card-title #{repoList[0]}
-                  ul
-                      li Manifest 1
-                      li Manifest 2
-                  a(href="#").btn.btn-primary Repo details
+          each repo in repoInfoList
+            .card(style="width: 36rem;")
+                .card-body
+                    h5.card-title #{repo.name}
+                    ul
+                       each manifest in repo.manifests
+                        li= manifest.name
+                          ul
+                            each key in Object.keys(manifest)
+                              if (key !== 'name')
+                                li
+                                  span.font-weight-bold=`${key}: `
+                                  span=manifest[key]
+
+                    a(href="#").btn.btn-primary Repo details
   script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
   script(type="text/javascript" src='app/js/user.js')
