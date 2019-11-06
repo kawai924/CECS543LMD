@@ -2,17 +2,15 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const pug = require('pug');
-
 const constants = require('./constants');
 const PORT = 3000;
+
+const app = express();
 
 // Import routers
 const index = require('./routes/index.js');
 const user = require('./routes/user');
 const testing = require('./routes/testing');
-
-const app = express();
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: true }));

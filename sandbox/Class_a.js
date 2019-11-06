@@ -1,8 +1,8 @@
 'use strict';
 const fs = require('fs');
-const constants = require('../../../server/constants');
+const constants = require('../server/constants');
 const path = require('path');
-const ff = require('../FolderFunctions');
+const ff = require('../private/js/FolderFunctions');
 
 const masterManifest = {
   manifest_lists: {

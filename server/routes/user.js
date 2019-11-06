@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-const constants = require('../constants.js');
 const fs = require('fs');
+const constants = require('../constants.js');
 const RepoHandler = require('../../private/js/RepoHandler');
 
 const router = express.Router();
@@ -9,8 +9,7 @@ const router = express.Router();
 router.get('/:username', function(req, res, next) {
   const userName = req.params.username;
   const userPath = path.join(constants.ROOTPATH, 'database', userName);
-  // // Grab all the repo in user folder
-  const repoList = fs.readdirSync(userPath);
+  const repoList = fs.readdirSync(userPath); // Grab all the repo of user from database
   const repoInfoList = buildRepoInfoList(repoList, userPath);
 
   res.render('user', { repoInfoList });
@@ -22,7 +21,7 @@ router.post('/:username', function(req, res, next) {
   const { command_option, repoName, label, manifestID } = req.body;
   const userName = req.params.username;
 
-  // Check if sourcePath or destPath are provided
+  // Check if sourcePath or destPath are provided. If not, use default
   const sourcePath =
     req.body.sourcePath === ''
       ? path.join(constants.ROOTPATH, 'testing')
@@ -32,14 +31,14 @@ router.post('/:username', function(req, res, next) {
       ? path.join(constants.ROOTPATH, 'testing', 'dest')
       : req.body.destPath;
 
-  console.log({
-    command_option,
-    repoName,
-    sourcePath,
-    label,
-    userName,
-    destPath
-  });
+  // console.log({
+  //   command_option,
+  //   repoName,
+  //   sourcePath,
+  //   label,
+  //   userName,
+  //   destPath
+  // });
 
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   switch (command_option) {

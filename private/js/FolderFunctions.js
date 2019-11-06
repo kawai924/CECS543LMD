@@ -1,15 +1,12 @@
-/**
- * This file contains functions that manipulate folders and folders' structure.
- */
 const fs = require('fs');
 const path = require('path');
 const createArtifactId = require('./Artifact');
 const { Queue } = require('./Queue');
 
+// Store artifact path and relative location into this.manifest object
+// Artifact path: [leaf_folder]/[artifact_file]
+// Relative path: from rootRepo => Look above for reference
 function copyFolderTreeWithMemoization(source, targetFolder) {
-  // Store artifact path and relative location into this.manifest object
-  // Artifact path: [leaf_folder]/[artifact_file]
-  // Relative path: from rootRepo => Look above for reference
   let structure = [];
 
   function copyFolderTree(source, targetFolder) {

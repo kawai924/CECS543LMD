@@ -1,10 +1,7 @@
 const express = require('express');
 const path = require('path');
-
-const router = express.Router();
-
 const constants = require('../constants.js');
-const RepoHandler = require('../../private/js/RepoHandler');
+const router = express.Router();
 
 // GET homepage
 router.get('/', function(req, res, next) {
