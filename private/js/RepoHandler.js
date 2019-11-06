@@ -47,6 +47,7 @@ class RepoHandler {
       this.repo.sourceRepoPath,
       this.repo.destRepoPath
     );
+    // console.log(folderStructure);
     this.manifestHandler.addStructure(folderStructure);
 
     // Create new manifest

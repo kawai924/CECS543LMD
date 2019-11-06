@@ -1,10 +1,10 @@
 /**
  * This file contains functions that manipulate folders and folders' structure.
  */
-const fs = require("fs");
-const path = require("path");
-const createArtifactId = require("./Artifact");
-const { Queue } = require("./Queue");
+const fs = require('fs');
+const path = require('path');
+const createArtifactId = require('./Artifact');
+const { Queue } = require('./Queue');
 
 function copyFolderTreeWithMemoization(source, targetFolder) {
   // Store artifact path and relative location into this.manifest object
@@ -39,7 +39,7 @@ function copyFolderTreeWithMemoization(source, targetFolder) {
         makeDir(newTarget);
 
         // Add """" : dirPath to structure
-        structure.push({ artifactNode: "", artifactAbsPath: newTarget });
+        structure.push({ artifactNode: '', artifactAbsPath: newTarget });
 
         //Recursively copy sub folders and files.
         copyFolderTree(dirPath, newTarget);

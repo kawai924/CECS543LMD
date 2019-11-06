@@ -18,14 +18,14 @@ router.post('/', function(req, res) {
 
   /* Testing create repo */
   const repoHandler = new RepoHandler(userName, repoName);
-  // repoHandler.create();
+  repoHandler.create();
 
   /* Testing labeling */
   // const repoHandler = new RepoHandler(userName, repoName);
-  // repoHandler.addLabel('1', 'label1');
-  // repoHandler.addLabel('3', 'label2');
-  // repoHandler.addLabel('4', 'label3');
-  // repoHandler.addLabel('7', 'label4');
+  repoHandler.addLabel('1', 'label1');
+  repoHandler.addLabel('3', 'label2');
+  repoHandler.addLabel('4', 'label3');
+  repoHandler.addLabel('7', 'label4');
 
   /* Testing checkout */
   // const repoHandler = new RepoHandler(userName, repoName);
