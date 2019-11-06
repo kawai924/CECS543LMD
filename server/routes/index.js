@@ -14,7 +14,8 @@ router.get('/', function(req, res, next) {
 // POST form in homepage
 router.post('/', function(req, res) {
   const userName = req.body.username;
-  res.redirect('/user?username=' + userName);
+  // res.redirect('/user?username=' + userName);
+  res.redirect('/user/' + userName);
 });
 
 module.exports = router;
