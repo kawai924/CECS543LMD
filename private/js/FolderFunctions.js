@@ -1,19 +1,18 @@
 const fs = require('fs');
 const path = require('path');
-const createArtifactId = require('./Artifact');
-const { Queue } = require('./Queue');
 
-// Store artifact path and relative location into this.manifest object
-// Artifact path: [leaf_folder]/[artifact_file]
-// Relative path: from rootRepo => Look above for reference
-function copyFolderTreeWithMemoization(source, targetFolder) {
+const Queue = require('./Queue');
+const createArtifactId = require('./Artifact');
+
+/* This function reads each file from source folder, create artifact id and copy to target folder */
+function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
   let structure = [];
 
-  function copyFolderTree(source, targetFolder) {
+  function copyFolderTree(sourcePath, targetFolder) {
     let fileQueue = new Queue(); //Queue to hold files
 
     //Add all files to a queue
-    const allFiles = fs.readdirSync(source);
+    const allFiles = fs.readdirSync(sourcePath);
     for (let file of allFiles) {
       fileQueue.enqueue(file);
     }
@@ -28,8 +27,8 @@ function copyFolderTreeWithMemoization(source, targetFolder) {
       // let date_ob = new Date();
 
       // The current file is a DIRECTORY
-      if (isDirectory(source, fileName)) {
-        const dirPath = path.join(source, fileName);
+      if (isDirectory(sourcePath, fileName)) {
+        const dirPath = path.join(sourcePath, fileName);
         const newTarget = path.join(targetFolder, fileName);
 
         // Create the directory in the destination
@@ -49,7 +48,7 @@ function copyFolderTreeWithMemoization(source, targetFolder) {
         makeDir(leafFolder);
 
         //Create artifact for the file
-        const filePath = path.join(source, fileName);
+        const filePath = path.join(sourcePath, fileName);
         const artifact = createArtifactId(filePath);
 
         //Move the file with artifact name
@@ -71,37 +70,25 @@ function copyFolderTreeWithMemoization(source, targetFolder) {
       }
     }
   }
-  copyFolderTree(source, targetFolder);
+  copyFolderTree(sourcePath, targetFolder);
   return structure;
 }
 
 /**
  * Check if a file from a source is a directory
- * @param source  the path of the file
- * @param fileName the name of the file
- * Return: boolean
  */
 function isDirectory(source, fileName) {
   const filePath = path.join(source, fileName);
   return fs.statSync(filePath).isDirectory();
 }
 
-/**
- * If a directory is not exists, create a new one. Otherwise, do nothing
- * @param path the path of the new folder
- */
+/* Function to create a directory if directory is not exists */
 function makeDir(path, options = { recursive: true }) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
-}
-
-/* Copy file to a file path */
-function copyFile(source, destination) {
-  fs.copyFileSync(source, destination);
 }
 
 module.exports = {
   copyFolderTreeWithMemoization,
   isDirectory,
-  makeDir,
-  copyFile
+  makeDir
 };

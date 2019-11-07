@@ -1,43 +1,5 @@
-/* .center {
-    display: block;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-} */
-
-/* .vertical-center {
-    top: 50%;
-    position: relative;
-    height: 50px;
-}
-
-.fit-page {
-    height: 100vh;
-}
-
-.user-input {
-    border-width: 0 0 2px 0;
-    outline: none;
-}
-
-.small-margin-top {
-    margin-top: 16px;
-}
-
-.small-margin-bottom {
-    margin-bottom: 16px;
-} */
-
-/* BODY
-----------------*/ 
-
-
-/* FORM STYLE
-----------------*/ 
+/* FORM STYLE */ 
 form input[type='text'] {
-    /* display: block; */
-    /* width: 40em; */
     margin: 1em 0;
 }
 
@@ -46,9 +8,7 @@ form input[type='text']::placeholder {
 }
 
 
-
-/* DATA LIST
----------------*/
+/* DATA LIST */
 h5 {
     font-size: 2rem;
 }

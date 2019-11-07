@@ -1,21 +1,16 @@
 const fs = require('fs');
 const path = require('path');
-const Manifest = require('./Manifest');
-const ff = require('./FolderFunctions');
-const constants = require('../../server/constants');
 
-/**
- * RepoHandler handles all methods regarding repos.
- * Supports create(), checkoutByID()
- */
-// For testing purpose, put all testing repos in testing folder
-// source path = testing/[repoName]
-// dest path = [ROOT]/database/[username]/[repoName]
-class RepoHandler {
+const Manifest = require('./ManifestHandler');
+const { copyFolderTreeWithMemoization, makeDir } = require('./FolderFunctions');
+const ROOTPATH = path.join(__dirname, '..', '..');
+
+/* RepoHandler handles all methods regarding repos. */
+module.exports = class RepoHandler {
   constructor(
     userName,
     repoName,
-    { SourcePath = path.join(constants.ROOTPATH, 'testing') }
+    { SourcePath = path.join(ROOTPATH, 'testing') }
   ) {
     const sourceRepoPath = path.join(SourcePath, repoName);
     // Check if there is a repo there
@@ -26,12 +21,7 @@ class RepoHandler {
       userName,
       repoName,
       sourceRepoPath,
-      destRepoPath: path.join(
-        constants.ROOTPATH,
-        'database',
-        userName,
-        repoName
-      )
+      destRepoPath: path.join(ROOTPATH, 'database', userName, repoName)
     };
 
     // Create a new manifest handler
@@ -42,14 +32,16 @@ class RepoHandler {
     });
   }
 
-  /* Create Functionality
----------------------------- */
+  /* Create Functionality */
   create() {
+    if (fs.existsSync(path.join(ROOTPATH, 'database', userName, repoName))) {
+      throw new Error('Repo already exists');
+    }
     // Add command to new manifest
     this.manifestHandler.addCommand('create');
 
     //Actual copying source repo to destination repo
-    const folderStructure = ff.copyFolderTreeWithMemoization(
+    const folderStructure = copyFolderTreeWithMemoization(
       this.repo.sourceRepoPath,
       this.repo.destRepoPath
     );
@@ -60,16 +52,12 @@ class RepoHandler {
     this.manifestHandler.write();
   }
 
-  /* Label Functionality
-  ---------------------------- */
+  /* Label Functionality */
   addLabel(manifestProp, label) {
     this.manifestHandler.addLabel(manifestProp, label);
   }
 
-  /* Checkout Functionality
-  * Missing feature: The checkout command also creates a new manifest file, of the checked out version, in the repo. The user should be able to specify the manifest file using a label, if it has one.
----------------------------- */
-  // Set up checkout by ID
+  /* Checkout Functionality */
   checkout(manifestID, destPath) {
     const { userName, repoName } = this.repo;
 
@@ -90,7 +78,7 @@ class RepoHandler {
       // Append the folder path with the new target path
       const newDestPath = path.join(destPath, relativeDestPath);
       // Recursively make folders in the destination
-      ff.makeDir(newDestPath);
+      makeDir(newDestPath);
 
       // Regrex to get the filename from leaf folder
       const regrexForFileName = /.+(?=\/)/;
@@ -117,7 +105,7 @@ class RepoHandler {
 
     // SETUP manifest structure for the checkout repo
     // Build manifest folder
-    ff.makeDir(path.join(destPath, 'manifests'));
+    makeDir(path.join(destPath, 'manifests'));
     // Create a new manifest handler
     const repoManifest = new Manifest({
       userName,
@@ -128,14 +116,11 @@ class RepoHandler {
     repoManifest.rewriteMasterManifest();
   }
 
-
-
-
-  // Check in
+  /* Check In */
   checkin(manifestID, destPath) {
-    this.manifestHandler.addCommand("checkin");
+    this.manifestHandler.addCommand('checkin');
 
-    const folderStructure = ff.copyFolderTreeWithMemoization(
+    const folderStructure = copyFolderTreeWithMemoization(
       this.repo.sourceRepoPath,
       destPath
     );
@@ -143,7 +128,5 @@ class RepoHandler {
     this.manifestHandler.addStructure(folderStructure);
 
     this.manifestHandler.write();
-  };
-}
-
-module.exports = RepoHandler;
+  }
+};

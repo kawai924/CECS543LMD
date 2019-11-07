@@ -24,14 +24,11 @@ block content
               input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
 
           input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name' disabled='')
-          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='From Path (default : /testing/[your-repo-name])' disabled='')
+          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='From Path (Absolute)' disabled='')
           input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
           input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest' disabled='')
-          input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (default : /testing/dest/[your-repo-name])' disabled='')
+          input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (Absolute)' disabled='')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
-          
-      //- .col-lg-6
-      //-   #repo-created
     .row
       .col-lg-12
         .data-list.mt-5
@@ -61,6 +58,5 @@ block content
                                     li
                                       span.badge.badge-light #{key}
                                       span  #{manifest[key]}
-                        //- a(href="#").btn.btn-primary Repo details
   script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
   script(type="text/javascript" src='/app/js/user.js')
