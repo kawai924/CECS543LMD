@@ -47,15 +47,19 @@ router.post('/:username', function(req, res, next) {
   // });
 
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
+  let id;
   switch (command_option) {
     case 'create':
       repoHandler.create();
       break;
     case 'check-out':
-      const id = manifestID || label;
+      id = manifestID || label;
       repoHandler.checkout(id, destPath);
       break;
-    // case 'check-in':
+    case 'check-in':
+      id = manifestID || label;
+      repoHandler.checkin(id, destPath);
+      break;
     case 'label':
       repoHandler.addLabel(manifestID, label);
       break;

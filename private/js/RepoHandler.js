@@ -127,6 +127,23 @@ class RepoHandler {
     // Write master manifest
     repoManifest.rewriteMasterManifest();
   }
+
+
+
+
+  // Check in
+  checkin(manifestID, destPath) {
+    this.manifestHandler.addCommand("checkin");
+
+    const folderStructure = ff.copyFolderTreeWithMemoization(
+      this.repo.sourceRepoPath,
+      destPath
+    );
+
+    this.manifestHandler.addStructure(folderStructure);
+
+    this.manifestHandler.write();
+  };
 }
 
 module.exports = RepoHandler;
