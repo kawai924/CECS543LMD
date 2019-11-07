@@ -50,6 +50,7 @@ $(document).ready(function() {
 
   $("input[value='check-in']").change(function() {
     reset();
+    $('#source-path').prop('disabled', false);
     $('#repo-name').prop('disabled', false);
     $('#dest-path').prop('disabled', false);
     console.log('Works');
