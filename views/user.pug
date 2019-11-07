@@ -6,8 +6,10 @@ block content
       .col-lg-12
         .jumbotron.jumbotron-fluid.text-center.bg-white
           .container
-            h1.display-4 Welcome #{userName.toUpperCase()} 
+            h1.display-4 WELCOME #{userName.toUpperCase()} 
             p.lead LMD VSC is at your service
+            a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
+    
     .row.text-center.justify-content-center
       .col-lg-9
         form(method='POST')
@@ -27,6 +29,7 @@ block content
           input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest' disabled='')
           input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='Destination Path, , Default : /testing/dest/[your-repo-name]' disabled='')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
+          
       //- .col-lg-6
       //-   #repo-created
     .row
@@ -50,12 +53,13 @@ block content
                           span.font-weight-bold Manifests:
                           ul
                            each manifest in repo.manifests
-                            li= manifest.name
+                            li
+                              span.badge.badge-secondary #{manifest.name}
                               ul
                                 each key in Object.keys(manifest)
                                   if (key !== 'name')
                                     li
-                                      span.font-weight-bold.badge.badge-secondary #{key}
+                                      span.badge.badge-light #{key}
                                       span  #{manifest[key]}
                         //- a(href="#").btn.btn-primary Repo details
   script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')

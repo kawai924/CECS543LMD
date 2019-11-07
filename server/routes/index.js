@@ -5,13 +5,13 @@ const router = express.Router();
 
 // GET homepage
 router.get('/', function(req, res, next) {
-  return res.sendFile(path.join(constants.APPPATH, 'index.html'));
+  // return res.sendFile(path.join(constants.APPPATH, 'index.html'));
+  return res.render('index');
 });
 
 // POST form in homepage
 router.post('/', function(req, res) {
-  const userName = req.body.username;
-  // res.redirect('/user?username=' + userName);
+  const userName = req.body.username === '' ? 'johndoe' : req.body.username;
   res.redirect('/user/' + userName);
 });
 
