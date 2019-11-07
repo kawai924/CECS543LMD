@@ -1,0 +1,66 @@
+extends layout.pug
+
+block content
+  .container#content
+    .row.small-margin-top
+      .col-lg-12
+        .jumbotron.jumbotron-fluid.text-center.bg-white
+          .container
+            h1.display-4 WELCOME #{userName.toUpperCase()} 
+            p.lead LMD VSC is at your service
+            a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
+    
+    .row.text-center.justify-content-center
+      .col-lg-9
+        form(method='POST')
+          .btn-group.btn-group-toggle(data-toggle='buttons')
+            label.btn.btn-secondary Create Repo 
+              input#create-repo-button(type='radio' name='command_option' value="create" autocomplete='off')
+            label.btn.btn-secondary Check In 
+              input#check-in-button(type='radio' name='command_option' value="check-in" autocomplete='off')
+            label.btn.btn-secondary Check Out 
+              input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
+            label.btn.btn-secondary Label 
+              input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
+
+          input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name' disabled='')
+          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='From Path (default : /testing/[your-repo-name])' disabled='')
+          input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
+          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest' disabled='')
+          input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (default : /testing/dest/[your-repo-name])' disabled='')
+          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
+          
+      //- .col-lg-6
+      //-   #repo-created
+    .row
+      .col-lg-12
+        .data-list.mt-5
+          h5 YOU HAVE #{repoInfoList.length} REPOS:
+          .card-columns
+            each repo in repoInfoList
+              .card.border-info.rounded
+                  .card-body
+                      h5.card-title.badge.badge-primary #{repo.name}
+                      .card-text
+                        p 
+                          span.font-weight-bold Labels: 
+                          span [Name] &rarr; [Manifest ID]
+                          ul
+                            each label in repo.labels
+                              - const labelName = Object.keys(label)
+                              li #{labelName} &rarr; ID: #{label[labelName]}
+                        p 
+                          span.font-weight-bold Manifests:
+                          ul
+                           each manifest in repo.manifests
+                            li
+                              span.badge.badge-secondary #{manifest.name}
+                              ul
+                                each key in Object.keys(manifest)
+                                  if (key !== 'name')
+                                    li
+                                      span.badge.badge-light #{key}
+                                      span  #{manifest[key]}
+                        //- a(href="#").btn.btn-primary Repo details
+  script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
+  script(type="text/javascript" src='/app/js/user.js')

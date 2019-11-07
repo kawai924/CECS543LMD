@@ -1,5 +1,12 @@
 node_modules/
 .dist
+.idea/
+.vscode/
 
 database/*
+!database/.gitkeep 
+!database/johndoe/
+
 testing/*
+!testing/.gitkeep 
+

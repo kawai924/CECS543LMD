@@ -35,18 +35,18 @@
  *  - manifest path: the path to each manifest of this repo.
  
  */
-const fs = require("fs");
-const path = require("path");
-const util = require("util");
-const ff = require("./FolderFunctions");
-const constants = require("../../server/constants");
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
+const ff = require('./FolderFunctions');
+const constants = require('../../server/constants');
 const readFilePromise = util.promisify(fs.readFile); // Turn fs.readFile into a promise
 
 class Manifest {
   constructor({ userName, repoName, destRepoPath }) {
     this.paths = {
       destRepoPath,
-      masterJsonPath: path.join(destRepoPath, "master_manifest.json")
+      masterJsonPath: path.join(destRepoPath, 'master_manifest.json')
     };
     this.newManifest = {
       user: userName,
@@ -89,24 +89,38 @@ class Manifest {
   }
 
   /* Write manifest into file and update master manifest */
-  write() {
+  write({ checkoutPath } = {}) {
     const newID =
       Object.keys(this.masterManifest.manifest_lists).length + 1 || 1;
     this.newManifest.id = newID;
     this.newManifest.datetime = new Date();
 
-    const manifestName = "manifest_" + newID.toString() + ".json";
+    const manifestName = 'manifest_' + newID.toString() + '.json';
     const newManifestPath = path.join(
       this.paths.destRepoPath,
-      "manifests",
+      'manifests',
       manifestName
     );
+
+    // console.log(checkoutPath);
+    // For "checkout" command, add checkout path to the destination repo
+    if (this.newManifest.command === 'checkout') {
+      if (checkoutPath === '')
+        throw new Error("manifest.write() doesn't have checkoutPath");
+      this.newManifest.checkoutPath = path.join(
+        checkoutPath,
+        this.newManifest.user,
+        this.newManifest.repo
+      );
+    }
+
+    // console.log(this.newManifest);
 
     try {
       // Write manifest file into the manifest folder
       fs.writeFileSync(newManifestPath, JSON.stringify(this.newManifest));
     } catch (err) {
-      console.log("Unable to write manifest file!!!", err);
+      console.log('Unable to write manifest file!!!', err);
     }
 
     // Update the master manifest
@@ -119,7 +133,7 @@ class Manifest {
     // Create repo folder under database/[userName]/[repoName]
     ff.makeDir(this.paths.destRepoPath, { recursive: true });
     // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
-    ff.makeDir(path.join(this.paths.destRepoPath, "manifests"), {
+    ff.makeDir(path.join(this.paths.destRepoPath, 'manifests'), {
       recursive: true
     });
 
@@ -147,7 +161,7 @@ class Manifest {
         JSON.stringify(this.masterManifest)
       );
     } catch (err) {
-      console.log("Unable to write master manifest file!!!", err);
+      console.log('Unable to write master manifest file!!!', err);
     }
   }
 }

@@ -1,0 +1,17 @@
+extends layout.pug
+
+block content
+  .container
+    .row.small-margin-top
+      .col-lg-12
+        .jumbotron.jumbotron-fluid.text-center.bg-white
+          .container
+            h1.display-4 LMD Version Control System
+            p.lead A lightweight, web-based, intuitive VCS.
+    .row.text-center.justify-content-center
+      .col-lg-6
+        form(method='POST')
+          input#username.form-control.user-input.small-margin-bottom(type='text' name='username' placeholder='Username')
+          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
+        p.mt-5.border.border-secondary If leave blank, username = 
+          span.font-weight-bold johndoe
