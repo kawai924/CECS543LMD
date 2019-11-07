@@ -5,7 +5,7 @@ node_modules/
 
 database/*
 !database/.gitkeep 
-!database/johndoe/*
+!database/johndoe/
 
 testing/*
 !testing/.gitkeep 

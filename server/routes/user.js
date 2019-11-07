@@ -9,6 +9,12 @@ const router = express.Router();
 router.get('/:username', function(req, res, next) {
   const userName = req.params.username;
   const userPath = path.join(constants.ROOTPATH, 'database', userName);
+
+  // Brand new user, make a folder
+  if (!fs.existsSync(userPath)) {
+    fs.mkdirSync(userPath, { recursive: true });
+  }
+
   const repoList = fs.readdirSync(userPath); // Grab all the repo of user from database
   const repoInfoList = buildRepoInfoList(repoList, userPath);
   // console.log(userPath);
