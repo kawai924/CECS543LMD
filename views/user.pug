@@ -39,6 +39,7 @@ block content
                   .card-body
                       h5.card-title.badge.badge-primary #{repo.name}
                       .card-text
+                        
                         p 
                           span.font-weight-bold Labels: 
                           span [Name] &rarr; [Manifest ID]
@@ -54,7 +55,7 @@ block content
                               span.badge.badge-secondary #{manifest.name}
                               ul
                                 each key in Object.keys(manifest)
-                                  if (key !== 'name')
+                                  if (key !== 'name' && key !=='filepath')
                                     li
                                       span.badge.badge-light #{key}
                                       span  #{manifest[key]}
