@@ -7,20 +7,12 @@ const ROOTPATH = path.join(__dirname, '..', '..');
 
 /* RepoHandler handles all methods regarding repos. */
 module.exports = class RepoHandler {
-  constructor(
-    userName,
-    repoName,
-    { SourcePath = path.join(ROOTPATH, 'testing') }
-  ) {
-    const sourceRepoPath = path.join(SourcePath, repoName);
-    // Check if there is a repo there
-    if (!fs.existsSync(sourceRepoPath)) throw new Error("Repo doesn't exist");
-
+  constructor(userName, repoName, { sourcePath }) {
     // Store all properties regarding about the current repo
     this.repo = {
       userName,
       repoName,
-      sourceRepoPath,
+      sourcePath,
       destRepoPath: path.join(ROOTPATH, 'database', userName, repoName)
     };
 
@@ -34,15 +26,12 @@ module.exports = class RepoHandler {
 
   /* Create Functionality */
   create() {
-    if (fs.existsSync(path.join(ROOTPATH, 'database', userName, repoName))) {
-      throw new Error('Repo already exists');
-    }
     // Add command to new manifest
     this.manifestHandler.addCommand('create');
 
     //Actual copying source repo to destination repo
     const folderStructure = copyFolderTreeWithMemoization(
-      this.repo.sourceRepoPath,
+      this.repo.sourcePath,
       this.repo.destRepoPath
     );
     // console.log(folderStructure);
@@ -121,7 +110,7 @@ module.exports = class RepoHandler {
     this.manifestHandler.addCommand('checkin');
 
     const folderStructure = copyFolderTreeWithMemoization(
-      this.repo.sourceRepoPath,
+      this.repo.sourcePath,
       destPath
     );
 
