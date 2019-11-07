@@ -91,7 +91,7 @@ function buildRepoInfoList(repoList, userPath) {
     // Check if it is a REPO
     if (fs.lstatSync(path.join(userPath, repo)).isDirectory()) {
       // Initialize
-      const repoInfoEach = { name: repo, manifests: [], labels: [] };
+      const repoInfoEach = { name: repo, manifests: [], labels: [] , filepath: []};
       const manifestFolderPath = path.join(userPath, repo, 'manifests');
 
       // Grab list of manifests
@@ -107,19 +107,35 @@ function buildRepoInfoList(repoList, userPath) {
       manifestList.forEach(manifest => {
         const manifestObject = JSON.parse(
           fs.readFileSync(path.join(manifestFolderPath, manifest))
-        );
+          );
 
+        var list = '';
+        for (i in manifestObject.structure) {
+          var elem = manifestObject.structure[i];
+          var elemarr = [];
+          for (var key in elem) {
+            elemarr.push(key);
+          }
+          var LIFO = elemarr.pop();
+          list += elem[LIFO] ;
+          var LIFO = elemarr.pop();
+          list += elem[LIFO] +'\n';
+
+        }
+
+
+        var readdatetime = manifestObject.datetime.replace(/T/, ' ').replace(/\..+/,'');
         repoInfoEach.manifests.push({
           name: manifest,
           command: manifestObject.command,
-          datetime: manifestObject.datetime
+          datetime: readdatetime,
+          filepath: list
         });
       });
 
       repoInfoList.push(repoInfoEach);
     }
   });
-
   return repoInfoList;
 }
 
