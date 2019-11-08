@@ -6,6 +6,10 @@ VCS Project for CECS 543 Sec 07 11646
 
 Create a repository for the given project source tree (including all its files and their folder paths) within the project.
 
+# Project Demo
+
+- Please click here to see our demo: [Part 2](https://youtu.be/TblI6wRh0XQ)
+
 # Authors
 
 Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
@@ -49,6 +53,3 @@ Part 1: [LINK](https://1drv.ms/w/s!AgJrpqI0jWm8gZpljgq3uOegIrgdbQ)
 
 Part 2: [LINK](https://onedrive.live.com/view.aspx?resid=BC698D34A2A66B02!19862&ithint=file%2cdocx&authkey=!APonenOErzhufgc)
 
-# Project Demo
-
-- Please click here to see our demo: [Part 2](https://youtu.be/TblI6wRh0XQ)
