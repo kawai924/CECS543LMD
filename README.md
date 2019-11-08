@@ -20,11 +20,14 @@ Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
 
 - [Node](https://nodejs.org/en/download/). Node.js v11 or higher is recommended.
 - [NPM](https://www.npmjs.com/get-npm). Version 6+ is recommended.
+- [PUG](https://pugjs.org/). Version 6+ is recommended.
+
 
 2. Install dependencies using [npm install](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```bash
 $ npm install
+$ npm install pug
 ```
 
 3. On terminal, start server by:
