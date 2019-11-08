@@ -4,7 +4,8 @@ var fs = require('fs');
 function createArtifactId(fileName) {
   // Read the file and grab the extension
   let data = fs.readFileSync(fileName, 'utf8');
-  let ext = fileName.substring(fileName.indexOf('.'));
+  let ext = fileName.substring(fileName.lastIndexOf('.'));
+  console.log('Ext = ' + ext);
   let weights = [1, 3, 7, 11, 13];
   const len = data.length;
   let weight;

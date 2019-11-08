@@ -8,6 +8,9 @@ const createArtifactId = require('./Artifact');
 function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
   let structure = [];
 
+  console.log('CopyFunction, sourcePath = ', sourcePath);
+  console.log('CopyFunction, targetFolder = ', targetFolder);
+
   function copyFolderTree(sourcePath, targetFolder) {
     let fileQueue = new Queue(); //Queue to hold files
 
@@ -21,10 +24,10 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
     while (!fileQueue.isEmpty()) {
       const fileName = fileQueue.dequeue();
 
+      console.log(`Processing file: ${fileName}`);
+
       //Check if fileName is a DOT FILE (ex: .DS_STORE), ignore
       if (!/^(?!\.).*$/.test(fileName)) continue;
-
-      // let date_ob = new Date();
 
       // The current file is a DIRECTORY
       if (isDirectory(sourcePath, fileName)) {
@@ -58,7 +61,10 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
         });
 
         // Grab the absolute path from database to the curent artifact
-        const fileNameWithoutExtension = /.*(?=\.)/.exec(fileName)[0];
+        const fileNameWithoutExtension = /.*(?=\.)/.exec(
+          fileName.split('/').pop()
+        )[0];
+        console.log('file name w/o ext ' + fileNameWithoutExtension);
         const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
         const fullArtifactPath = regrex.exec(artifactFullPath)[0];
 

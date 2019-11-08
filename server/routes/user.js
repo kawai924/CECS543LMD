@@ -38,7 +38,6 @@ router.post('/:username', function(req, res, next) {
   const userName = req.params.username;
   let id;
 
-  console.log(sourcePath, destPath);
   // Create a repo handler to handle commands
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   switch (command_option) {
@@ -51,7 +50,7 @@ router.post('/:username', function(req, res, next) {
       break;
     case 'check-in':
       id = manifestID || label;
-      repoHandler.checkin(id, destPath);
+      repoHandler.checkin(id, sourcePath);
       break;
     case 'label':
       repoHandler.addLabel(manifestID, label);
@@ -73,7 +72,12 @@ function buildRepoInfoList(repoList, userPath) {
     // Check if it is a directory
     if (fs.lstatSync(path.join(userPath, repo)).isDirectory()) {
       // Initialize
-      const repoInfoEach = { name: repo, manifests: [], labels: [] , filepath: []};
+      const repoInfoEach = {
+        name: repo,
+        manifests: [],
+        labels: [],
+        filepath: []
+      };
       const manifestFolderPath = path.join(userPath, repo, 'manifests');
 
       // Grab list of manifests
@@ -89,7 +93,7 @@ function buildRepoInfoList(repoList, userPath) {
       manifestList.forEach(manifest => {
         const manifestObject = JSON.parse(
           fs.readFileSync(path.join(manifestFolderPath, manifest))
-          );
+        );
 
         var list = '';
         for (i in manifestObject.structure) {
@@ -99,14 +103,14 @@ function buildRepoInfoList(repoList, userPath) {
             elemarr.push(key);
           }
           var LIFO = elemarr.pop();
-          list += elem[LIFO] ;
+          list += elem[LIFO];
           var LIFO = elemarr.pop();
-          list += elem[LIFO] +'\n';
-
+          list += elem[LIFO] + '\n';
         }
 
-
-        var readdatetime = manifestObject.datetime.replace(/T/, ' ').replace(/\..+/,'');
+        var readdatetime = manifestObject.datetime
+          .replace(/T/, ' ')
+          .replace(/\..+/, '');
         repoInfoEach.manifests.push({
           name: manifest,
           command: manifestObject.command,

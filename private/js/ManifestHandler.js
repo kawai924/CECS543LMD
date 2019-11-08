@@ -111,7 +111,21 @@ module.exports = class Manifest {
   }
 
   /* Update or write a new master manifest */
-  rewriteMasterManifest() {
+  rewriteMasterManifest(alternatePath = undefined) {
+    if (alternatePath) {
+      try {
+        fs.writeFileSync(
+          this.paths.masterJsonPath,
+          JSON.stringify(this.masterManifest)
+        );
+      } catch (err) {
+        console.log(
+          'Unable to write master manifest file into alternate path!!!',
+          err
+        );
+      }
+    }
+
     try {
       fs.writeFileSync(
         this.paths.masterJsonPath,

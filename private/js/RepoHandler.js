@@ -48,6 +48,7 @@ module.exports = class RepoHandler {
 
   /* Checkout Functionality */
   checkout(manifestID, destPath) {
+    console.log('checkout, destPath = ' + destPath);
     const { userName, repoName } = this.repo;
 
     // Add command to new manifest
@@ -60,9 +61,20 @@ module.exports = class RepoHandler {
 
     // Copy source file into the checkout folder
     structure.forEach(item => {
+      console.log(`Item node = ${item.artifactNode}`);
+      console.log(`Item path = ${item.artifactAbsPath}`);
       // Use regrex to grab the path of the folder after /database
-      const regrexForFolder = /(?<=database).*/;
-      const relativeDestPath = regrexForFolder.exec(item.artifactAbsPath)[0];
+      const escapedFileName = item.artifactNode
+        .replace('.', '\\.')
+        .replace('/', '\\/');
+      console.log('escapedFileName = ' + escapedFileName);
+      const folderRegrex = new RegExp(
+        `(?<=${userName}).*(?=${escapedFileName})?`
+      );
+
+      const pathString = folderRegrex.exec(item.artifactAbsPath);
+      const relativeDestPath = pathString ? pathString[0] : '';
+      console.log('relativeDestPath = ' + relativeDestPath);
 
       // Append the folder path with the new target path
       const newDestPath = path.join(destPath, relativeDestPath);
@@ -73,45 +85,64 @@ module.exports = class RepoHandler {
       const regrexForFileName = /.+(?=\/)/;
       // If no match, return null
       const fileNameMatches = regrexForFileName.exec(item.artifactNode);
+      console.log(`fileNameMatches = ${fileNameMatches}`);
 
       // If there is a file in the repo folder
       if (fileNameMatches) {
         // Grab fileName from regrex
         const fileName = fileNameMatches[0];
+        console.log('fileName = ' + fileName);
         // Get full file path from source
         const fileSource = path.join(item.artifactAbsPath, item.artifactNode);
         // Create full file path to destination
-        const fileDest = path.join(newDestPath, fileName);
+        // const fileDest = path.join(newDestPath, fileName);
+        const fileDest = path.join(destPath, relativeDestPath);
+        if (!fs.existsSync(fileDest)) {
+          fs.mkdirSync(fileDest, { recursive: true });
+        }
+
+        console.log('fileSource = ' + fileSource);
+        console.log('fileDest = ' + fileDest);
         // Copy the file
-        fs.copyFileSync(fileSource, fileDest);
+        fs.copyFileSync(fileSource, fileDest + fileName);
       }
+      console.log('DONE-----');
+      console.log(`Item node = ${item.artifactNode}`);
+      console.log(`Item path = ${item.artifactAbsPath}`);
+      console.log('--------------');
     });
+
     // HANDLE manifest for the original repo
     // Copy the structure that uses to checkout
     this.manifestHandler.addStructure(structure);
     // Write a new manifest into file.
     this.manifestHandler.write({ checkoutPath: destPath });
 
-    // SETUP manifest structure for the checkout repo
-    // Build manifest folder
-    makeDir(path.join(destPath, 'manifests'));
+    console.log(`destPath = ${destPath}`);
     // Create a new manifest handler
     const repoManifest = new Manifest({
       userName,
       repoName,
-      destRepoPath: path.join(destPath, userName, repoName)
+      destRepoPath: path.join(destPath, repoName)
     });
     // Write master manifest
-    repoManifest.rewriteMasterManifest();
+    repoManifest.rewriteMasterManifest(path.join(destPath, repoName));
   }
 
   /* Check In */
-  checkin(manifestID, destPath) {
+  checkin(sourcePath) {
     this.manifestHandler.addCommand('checkin');
 
+    // Repo path in database
+    const repoPath = path.join(
+      ROOTPATH,
+      'database',
+      this.repo.userName,
+      this.repo.repoName
+    );
     const folderStructure = copyFolderTreeWithMemoization(
       this.repo.sourcePath,
-      destPath
+      repoPath
     );
 
     this.manifestHandler.addStructure(folderStructure);
