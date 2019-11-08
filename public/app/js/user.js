@@ -7,6 +7,7 @@ $(document).ready(function() {
     $('#source-path').prop('disabled', true);
     $('#manifest-target').prop('disabled', true);
     $('#dest-path').prop('disabled', true);
+    $('#form-message').text('');
   }
 
   $("input[value='create']").change(function() {
@@ -20,12 +21,12 @@ $(document).ready(function() {
     reset();
     $('#source-path').prop('disabled', false);
     $('#repo-name').prop('disabled', false);
-    $('#dest-path').prop('disabled', false);
     console.log('Works');
   });
 
   $("input[value='check-out']").change(function() {
     reset();
+    $('#form-message').text('Use label or ID');
     $('#repo-name').prop('disabled', false);
     $('#label').prop('disabled', false);
     $('#manifest-target').prop('disabled', false);
@@ -35,6 +36,7 @@ $(document).ready(function() {
 
   $("input[value='label']").change(function() {
     reset();
+    $('#form-message').text('Use label or ID');
     $('#repo-name').prop('disabled', false);
     $('#label').prop('disabled', false);
     $('#manifest-target').prop('disabled', false);
@@ -42,7 +44,7 @@ $(document).ready(function() {
   });
 });
 
-/* OLD CODES */
+/* OLD CODES - MIGHT REUSE */
 // //function to call node js function from JS using url request
 // const url = '/dirlist';
 // // on page load

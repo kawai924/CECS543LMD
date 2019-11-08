@@ -37,7 +37,7 @@ router.post('/:username', function(req, res, next) {
   } = req.body;
   const userName = req.params.username;
   let id;
-
+  console.log('sourcePath = ' + sourcePath);
   // Create a repo handler to handle commands
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   switch (command_option) {
@@ -50,7 +50,7 @@ router.post('/:username', function(req, res, next) {
       break;
     case 'check-in':
       id = manifestID || label;
-      repoHandler.checkin(id, sourcePath);
+      repoHandler.checkin(sourcePath);
       break;
     case 'label':
       repoHandler.addLabel(manifestID, label);
@@ -95,27 +95,28 @@ function buildRepoInfoList(repoList, userPath) {
           fs.readFileSync(path.join(manifestFolderPath, manifest))
         );
 
-        var list = '';
+        let list = '';
         for (i in manifestObject.structure) {
-          var elem = manifestObject.structure[i];
-          var elemarr = [];
-          for (var key in elem) {
+          let elem = manifestObject.structure[i];
+          const elemarr = [];
+          for (let key in elem) {
             elemarr.push(key);
           }
-          var LIFO = elemarr.pop();
+          let LIFO = elemarr.pop();
           list += elem[LIFO];
-          var LIFO = elemarr.pop();
+          LIFO = elemarr.pop();
           list += elem[LIFO] + '\n';
         }
 
-        var readdatetime = manifestObject.datetime
+        let readdatetime = manifestObject.datetime
           .replace(/T/, ' ')
           .replace(/\..+/, '');
         repoInfoEach.manifests.push({
           name: manifest,
           command: manifestObject.command,
           datetime: readdatetime,
-          filepath: list
+          filepath: list,
+          ID: manifestObject.id
         });
       });
 

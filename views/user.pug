@@ -9,7 +9,7 @@ block content
             h1.display-4 WELCOME #{userName.toUpperCase()} 
             p.lead LMD VSC is at your service
             a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
-    
+            
     .row.text-center.justify-content-center
       .col-lg-9
         form(method='POST')
@@ -22,11 +22,11 @@ block content
               input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
             label.btn.btn-secondary Label 
               input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
-
+          p#form-message.mt-3.text-danger
           input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name' disabled='')
           input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='From Path (Absolute)' disabled='')
           input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label' disabled='')
-          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest' disabled='')
+          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest ID' disabled='')
           input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (Absolute)' disabled='')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
     .row
