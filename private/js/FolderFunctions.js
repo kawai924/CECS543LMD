@@ -8,9 +8,6 @@ const createArtifactId = require('./Artifact');
 function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
   let structure = [];
 
-  console.log('CopyFunction, sourcePath = ', sourcePath);
-  console.log('CopyFunction, targetFolder = ', targetFolder);
-
   function copyFolderTree(sourcePath, targetFolder) {
     let fileQueue = new Queue(); //Queue to hold files
 
@@ -23,8 +20,6 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
     //Process each element in the queue
     while (!fileQueue.isEmpty()) {
       const fileName = fileQueue.dequeue();
-
-      console.log(`Processing file: ${fileName}`);
 
       //Check if fileName is a DOT FILE (ex: .DS_STORE), ignore
       if (!/^(?!\.).*$/.test(fileName)) continue;
@@ -64,7 +59,6 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
         const fileNameWithoutExtension = /.*(?=\.)/.exec(
           fileName.split('/').pop()
         )[0];
-        console.log('file name w/o ext ' + fileNameWithoutExtension);
         const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
         const fullArtifactPath = regrex.exec(artifactFullPath)[0];
 

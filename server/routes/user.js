@@ -37,7 +37,7 @@ router.post('/:username', function(req, res, next) {
   } = req.body;
   const userName = req.params.username;
   let id;
-  console.log('sourcePath = ' + sourcePath);
+
   // Create a repo handler to handle commands
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   switch (command_option) {
