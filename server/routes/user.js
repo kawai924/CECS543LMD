@@ -111,6 +111,7 @@ function buildRepoInfoList(repoList, userPath) {
         let readdatetime = manifestObject.datetime
           .replace(/T/, ' ')
           .replace(/\..+/, '');
+
         repoInfoEach.manifests.push({
           name: manifest,
           command: manifestObject.command,
