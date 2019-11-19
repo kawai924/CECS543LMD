@@ -19,18 +19,21 @@ repoHandler.addLabel(headManifestID, "my_label");
 writeTestFiles(projectPath);
 repoHandler.checkin();
 
-// const checkout_user = "Bob";
-// const checkout_repoName = "ProjectX";
-// const checkout_projectPath = path.join(ROOTPATH, "database", "Bob", "ProjectX");
-// const manifestID = 1574163428142;
+const checkout_user = "Bob";
+const checkout_repoName = "ProjectX";
+const checkout_projectPath = path.join(ROOTPATH, "database", "Bob", "ProjectX");
+const manifestID = repoHandler.getHeadManifestID();
 
-// repoHandler = new RepoHandler(
-//   checkout_user,
-//   checkout_repoName,
-//   checkout_projectPath
-// );
-// repoHandler.checkout(username, repoName, manifestID);
+fs.removeSync(path.join(checkout_projectPath));
 
+repoHandler = new RepoHandler(
+  checkout_user,
+  checkout_repoName,
+  checkout_projectPath
+);
+repoHandler.checkout(projectPath, manifestID);
+
+// Helper functions
 function writeTestFiles(toPath) {
   fs.writeFileSync(
     path.join(projectPath, "data.txt"),

@@ -106,73 +106,30 @@ module.exports = class RepoHandler {
     const pathToSourceRepo = path.join(sourceProjectPath, "repo");
 
     console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
-    // console.log(
-    //   "(check-out) this.infoHanlder=" + JSON.stringify(this.infoHandler)
-    // );
 
-    // Add command to new manifest
-    this.manifestHandler.addCommand(this.command.CHECKOUT);
+    const manifestHandler = this.getNewManifestHandler();
+    manifestHandler.addCommand(this.command.CHECKOUT);
 
-    // Grab the manifest from source repo info.json
+    // Grab info.json from source
     const manifestObject = this.getManifestObject(pathToSourceRepo, manifestID);
-
     console.log("(check-out) manifestObject=" + JSON.stringify(manifestObject));
 
     // Copy source file into the checkout folder
-    manifestObject.structure.forEach(item => {
-      const escapedFileName = item.artifactNode
-        .replace(".", "\\.")
-        .replace("/", "\\/");
+    manifestObject.structure.forEach(artifact =>
+      this.checkoutArtifact(artifact, sourceProjectPath)
+    );
+    // Copy the structure that uses to checkout
+    manifestHandler.addStructure(manifestObject.structure);
 
-      // Build a regrex
-      const relativeArtifactPathRegrex = new RegExp(
-        `(?<=${fromRepoName}).*(?=${escapedFileName})?`
-      );
-
-      const relativeArtifactPath = relativeArtifactPathRegrex.exec(
-        item.artifactAbsPath
-      );
-
-      // If folder is empty, get an empty string
-      const relativeDestPath = relativeArtifactPath
-        ? relativeArtifactPath[0]
-        : "";
-
-      // Append the folder path with the new target path
-      const newDestPath = path.join(this.repo.projectPath, relativeDestPath);
-      // Recursively make folders in the destination
-      makeDir(newDestPath);
-
-      // Regrex to get the filename from leaf folder
-      const regrexForFileName = /.+(?=\/)/;
-      // If no match, return null
-      const fileNameMatches = regrexForFileName.exec(item.artifactNode);
-
-      // If there is a file in the repo folder
-      if (fileNameMatches) {
-        // Grab fileName from regrex
-        const fileName = fileNameMatches[0];
-
-        // Get full file path from source
-        const fileSource = path.join(item.artifactAbsPath, item.artifactNode);
-
-        // Create full file path to destination
-        // const fileDest = path.join(newDestPath, fileName);
-        const fileDest = path.join(this.repo.projectPath, relativeDestPath);
-
-        // Create the folder
-        makeDir(fileDest);
-
-        // Copy the file
-        fs.copyFileSync(fileSource, path.join(fileDest, fileName));
-      }
+    // Setup repo and manifest folder
+    fs.mkdirSync(path.join(this.repo.projectPath, "repo", "manifests"), {
+      recursive: true
     });
 
-    // Copy the structure that uses to checkout
-    this.manifestHandler.addStructure(manifestObject.structure);
+    manifestHandler.addCheckoutFrom(sourceProjectPath);
 
     // Write a new manifest into file with the parentID = manifestID from parameter
-    this.manifestHandler.write(manifestID);
+    manifestHandler.write(manifestID);
   }
 
   /* Helper functions
@@ -224,5 +181,50 @@ module.exports = class RepoHandler {
 
   getHeadManifestID() {
     return this.getNewInfoHandler().getCurrentHead();
+  }
+
+  checkoutArtifact(artifact, sourceProjectPath) {
+    const escapedFileName = this.escapeRegExp(artifact.artifactNode);
+
+    // Append the folder path with the new target path
+    const newDestPath = path.join(
+      this.repo.projectPath,
+      artifact.artifactRelPath
+        .split("/")
+        .slice(2)
+        .join("/") // exclude /repo
+    );
+    console.log("(checkout-Artifact), newDestPath=", newDestPath);
+
+    // Recursively make folders in the destination
+    makeDir(newDestPath);
+
+    // Regrex to get the filename from leaf folder
+    const regrexForFileName = /.+(?=\/)/;
+    // If no match, return null
+    const fileNameMatches = regrexForFileName.exec(artifact.artifactNode);
+
+    // If there is a file in the repo folder
+    if (fileNameMatches) {
+      // Grab fileName from regrex
+      const fileName = fileNameMatches[0];
+
+      // Get full file path from source
+      const fileSource = path.join(
+        sourceProjectPath,
+        artifact.artifactRelPath,
+        artifact.artifactNode
+      );
+
+      // Create the folder
+      makeDir(newDestPath);
+
+      // Copy the file
+      fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
+    }
+  }
+
+  escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
   }
 };

@@ -22,6 +22,10 @@ module.exports = class ManifestHandler {
     this.newManifest.command = command;
   }
 
+  addCheckoutFrom(fromPath) {
+    this.newManifest.checkoutFromPath = fromPath;
+  }
+
   // Add parents to the manifest file
   addParent(...parents) {
     if (parents.length > 2) {

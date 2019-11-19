@@ -40,7 +40,7 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
         // Add """" : dirPath to structure
         structure.push({
           artifactNode: "",
-          artifactAbsPath: relativePath(newTarget, projectPath)
+          artifactRelPath: relativePath(newTarget, projectPath)
         });
 
         //Recursively copy sub folders and files.
@@ -73,7 +73,7 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
         // Add artifact and its path to manifest
         structure.push({
           artifactNode: path.join(fileName, artifact),
-          artifactAbsPath: relativePath(fullArtifactPath, projectPath)
+          artifactRelPath: relativePath(fullArtifactPath, projectPath)
         });
       }
     }
