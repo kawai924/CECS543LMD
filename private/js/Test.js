@@ -5,24 +5,24 @@ const fs = require("fs-extra");
 const path = require("path");
 const ROOTPATH = path.join(__dirname, "..", "..");
 
-const username = "Alice";
+const username = "liam";
 const repoName = "ProjectX"; // Grab from project folder.
-const projectPath = path.join(ROOTPATH, "database", "ProjectX"); // This should be the path to the project
+const projectPath = path.join(ROOTPATH, "database", "liam", "ProjectX"); // This should be the path to the project
 
-// fs.removeSync(path.join(projectPath));
+fs.removeSync(path.join(projectPath));
 
 const repoHandler = new RepoHandler(username, repoName, projectPath);
-// repoHandler.create();
+repoHandler.create();
 repoHandler.checkin();
 
-// const infoHandler = new InfoHandler(
-//   username,
-//   repoName,
-//   path.join(projectPath, "manifests")
-// // );
-// infoHandler.write();
-// infoHandler.addLabel(123131414, "first_label");
-// infoHandler.addManifest(
-//   123131414,
-//   path.join(projectPath, "manifests", "m1.json")
+// const checkout_user = "Bob";
+// const checkout_repoName = "ProjectX";
+// const checkout_projectPath = path.join(ROOTPATH, "database", "Bob", "ProjectX");
+// const manifestID = 1574158949133;
+
+// const repoHandler = new RepoHandler(
+//   checkout_user,
+//   checkout_repoName,
+//   checkout_projectPath
 // );
+// repoHandler.checkout(username, repoName, manifestID);

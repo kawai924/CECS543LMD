@@ -58,32 +58,50 @@ module.exports = class RepoHandler {
   }
 
   /* Checkout Functionality */
-  checkout(manifestID, destPath) {
-    const { username, repoName } = this.repo;
+  checkout(fromUser, fromRepoName, manifestID) {
+    const pathToSourceRepo = path.join(
+      ROOTPATH,
+      "database",
+      fromUser,
+      fromRepoName,
+      "repo"
+    );
+
+    console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
+    console.log(
+      "(check-out) this.infoHanlder=" + JSON.stringify(this.infoHandler)
+    );
 
     // Add command to new manifest
-    this.manifestHandler.addCommand("checkout");
+    this.manifestHandler.addCommand(this.command.CHECKOUT);
 
-    const manifestPath = this.manifestHandler.getManifestPath(manifestID);
+    // Grab the manifest from source repo info.json
+    const manifestObject = this.getManifestObject(pathToSourceRepo, manifestID);
 
-    // Grab structure from parsed manifest file
-    const { structure } = JSON.parse(fs.readFileSync(manifestPath));
+    console.log("(check-out) manifestObject=" + JSON.stringify(manifestObject));
 
     // Copy source file into the checkout folder
-    structure.forEach(item => {
-      // Use regrex to grab the path of the folder after /database
+    manifestObject.structure.forEach(item => {
       const escapedFileName = item.artifactNode
         .replace(".", "\\.")
         .replace("/", "\\/");
-      const folderRegrex = new RegExp(
-        `(?<=${username}).*(?=${escapedFileName})?`
+
+      // Build a regrex
+      const relativeArtifactPathRegrex = new RegExp(
+        `(?<=${fromRepoName}).*(?=${escapedFileName})?`
       );
 
-      const pathString = folderRegrex.exec(item.artifactAbsPath);
-      const relativeDestPath = pathString ? pathString[0] : "";
+      const relativeArtifactPath = relativeArtifactPathRegrex.exec(
+        item.artifactAbsPath
+      );
+
+      // If folder is empty, get an empty string
+      const relativeDestPath = relativeArtifactPath
+        ? relativeArtifactPath[0]
+        : "";
 
       // Append the folder path with the new target path
-      const newDestPath = path.join(destPath, relativeDestPath);
+      const newDestPath = path.join(this.repo.projectPath, relativeDestPath);
       // Recursively make folders in the destination
       makeDir(newDestPath);
 
@@ -96,34 +114,27 @@ module.exports = class RepoHandler {
       if (fileNameMatches) {
         // Grab fileName from regrex
         const fileName = fileNameMatches[0];
+
         // Get full file path from source
         const fileSource = path.join(item.artifactAbsPath, item.artifactNode);
+
         // Create full file path to destination
         // const fileDest = path.join(newDestPath, fileName);
-        const fileDest = path.join(destPath, relativeDestPath);
-        if (!fs.existsSync(fileDest)) {
-          fs.mkdirSync(fileDest, { recursive: true });
-        }
+        const fileDest = path.join(this.repo.projectPath, relativeDestPath);
+
+        // Create the folder
+        makeDir(fileDest);
 
         // Copy the file
-        fs.copyFileSync(fileSource, fileDest + fileName);
+        fs.copyFileSync(fileSource, path.join(fileDest, fileName));
       }
     });
 
-    // HANDLE manifest for the original repo
     // Copy the structure that uses to checkout
     this.manifestHandler.addStructure(structure);
-    // Write a new manifest into file.
-    this.manifestHandler.write({ checkoutPath: destPath });
 
-    // Create a new manifest handler
-    const repoManifest = new Manifest({
-      username,
-      repoName,
-      destRepoPath: path.join(destPath, repoName)
-    });
-    // Write master manifest
-    repoManifest.rewriteMasterManifest(path.join(destPath, repoName));
+    // Write a new manifest into file with the parentID = manifestID from parameter
+    this.manifestHandler.write(manifestID);
   }
 
   /* Check In */
@@ -139,6 +150,40 @@ module.exports = class RepoHandler {
     );
 
     this.manifestHandler.addStructure(folderStructure);
-    this.manifestHandler.write(parentID);
+
+    const { manifestID, manifestPath } = this.manifestHandler.write(parentID);
+
+    // Update the info.json with the new manifest
+    this.infoHandler.addManifest(manifestID, manifestPath);
+  }
+
+  // Helper function
+  getManifestObject(pathToSourceRepo, manifestID) {
+    const sourceRepoInfoObject = JSON.parse(
+      fs.readFileSync(path.join(pathToSourceRepo, "info.json"))
+    );
+
+    const manifestList = sourceRepoInfoObject.manifests;
+
+    console.log(
+      "(getManifestObject), manifestList=" + JSON.stringify(manifestList)
+    );
+
+    let manifestPath;
+    for (let i = 0; i < manifestList.length; i++) {
+      console.log(
+        "(getManifestObject), manifestList[i].manifestID=" +
+          manifestList[i].manifestID +
+          ", manifestID=" +
+          manifestID
+      );
+      if (manifestList[i].manifestID === manifestID) {
+        manifestPath = manifestList[i].manifestPath;
+      }
+    }
+
+    console.log("(getManifestObject), manifestPath=" + manifestPath);
+
+    return JSON.parse(fs.readFileSync(manifestPath));
   }
 };

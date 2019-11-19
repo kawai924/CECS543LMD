@@ -8,19 +8,27 @@ module.exports = class InfoManifest {
     this.infoJSON = {
       username,
       projectName,
-      labels: [],
-      manifests: [],
       head: null
     };
     this.repoPath = repoPath;
   }
 
   addLabel(manifestID, label) {
+    if (!this.infoJSON.labels) {
+      this.infoJSON.labels = [];
+    }
     this.infoJSON.labels.push({ label, manifestID });
     this.write();
   }
 
   addManifest(manifestID, manifestPath) {
+    console.log(
+      "(addManifest), this.infoJSON.manifests=" +
+        JSON.stringify(this.infoJSON.manifests)
+    );
+    if (!this.infoJSON.manifests) {
+      this.infoJSON.manifests = [];
+    }
     this.infoJSON.manifests.push({ manifestID, manifestPath });
     this.infoJSON.head = manifestID;
     this.write();
