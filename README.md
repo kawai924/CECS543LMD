@@ -56,3 +56,4 @@ Part 1: [LINK](https://1drv.ms/w/s!AgJrpqI0jWm8gZpljgq3uOegIrgdbQ)
 
 Part 2: [LINK](https://onedrive.live.com/view.aspx?resid=BC698D34A2A66B02!19862&ithint=file%2cdocx&authkey=!APonenOErzhufgc)
 
+Part 3: [LINK](https://docs.google.com/document/d/1kucMi0183DqceuyynsXOTjGCae9pUMABv_HjiSTmQAw/edit)
