@@ -131,7 +131,7 @@ module.exports = class RepoHandler {
     });
 
     // Copy the structure that uses to checkout
-    this.manifestHandler.addStructure(structure);
+    this.manifestHandler.addStructure(manifestObject.structure);
 
     // Write a new manifest into file with the parentID = manifestID from parameter
     this.manifestHandler.write(manifestID);
