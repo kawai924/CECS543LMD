@@ -17,20 +17,6 @@ module.exports = class RepoHandler {
       projectPath
     };
 
-    // // Create a new manifest handler
-    // this.manifestHandler = new ManifestHandler(
-    //   username,
-    //   repoName,
-    //   path.join(projectPath, "repo", "manifests")
-    // );
-
-    // // Initialize and write info.json
-    // this.infoHandler = new InfoHandler(
-    //   username,
-    //   repoName,
-    //   path.join(projectPath, "repo")
-    // );
-
     // Command enumerations
     this.command = {
       CREATE: "create",
