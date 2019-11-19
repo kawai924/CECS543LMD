@@ -1,57 +1,68 @@
-const fs = require('fs');
-const path = require('path');
-
-const Manifest = require('./ManifestHandler');
-const { copyFolderTreeWithMemoization, makeDir } = require('./FolderFunctions');
-const ROOTPATH = path.join(__dirname, '..', '..');
+const fs = require("fs");
+const path = require("path");
+const InfoHandler = require("./InfoHandler");
+const ManifestHandler = require("./ManifestHandler");
+const { copyFolderTreeWithMemoization, makeDir } = require("./FolderFunctions");
+const ROOTPATH = path.join(__dirname, "..", "..");
 
 /* RepoHandler handles all methods regarding repos. */
 module.exports = class RepoHandler {
-  constructor(userName, repoName, { sourcePath }) {
+  constructor(username, repoName, projectPath) {
+    console.log("(RH) projectPath=" + projectPath);
+
     // Store all properties regarding about the current repo
     this.repo = {
-      userName,
+      username,
       repoName,
-      sourcePath,
-      destRepoPath: path.join(ROOTPATH, 'database', userName, repoName)
+      projectPath
     };
 
     // Create a new manifest handler
-    this.manifestHandler = new Manifest({
-      userName,
+    this.manifestHandler = new ManifestHandler(
+      username,
       repoName,
-      destRepoPath: this.repo.destRepoPath
-    });
+      path.join(projectPath, "repo", "manifests")
+    );
+
+    // Initialize and write info.json
+    this.infoHandler = new InfoHandler(
+      username,
+      repoName,
+      path.join(projectPath, "repo")
+    );
+
+    // Command enumerations
+    this.command = {
+      CREATE: "create",
+      CHECKIN: "check-in",
+      CHECKOUT: "check-out",
+      MERGE: "merge"
+    };
   }
 
   /* Create Functionality */
   create() {
     // Add command to new manifest
-    this.manifestHandler.addCommand('create');
+    this.manifestHandler.addCommand(this.command.CREATE);
 
-    //Actual copying source repo to destination repo
-    const folderStructure = copyFolderTreeWithMemoization(
-      this.repo.sourcePath,
-      this.repo.destRepoPath
-    );
-    // console.log(folderStructure);
-    this.manifestHandler.addStructure(folderStructure);
+    // Calling manifestHandler write() to write the manifest into the system, it returns id and path of the newly created manifest.
+    const { manifestID, manifestPath } = this.manifestHandler.write();
 
-    // Create new manifest
-    this.manifestHandler.write();
+    // Update the info.json with the new manifest
+    this.infoHandler.addManifest(manifestID, manifestPath);
   }
 
   /* Label Functionality */
-  addLabel(manifestProp, label) {
-    this.manifestHandler.addLabel(manifestProp, label);
+  addLabel(manifestID, label) {
+    this.infoHandler.addLabel(manifestID, label);
   }
 
   /* Checkout Functionality */
   checkout(manifestID, destPath) {
-    const { userName, repoName } = this.repo;
+    const { username, repoName } = this.repo;
 
     // Add command to new manifest
-    this.manifestHandler.addCommand('checkout');
+    this.manifestHandler.addCommand("checkout");
 
     const manifestPath = this.manifestHandler.getManifestPath(manifestID);
 
@@ -62,14 +73,14 @@ module.exports = class RepoHandler {
     structure.forEach(item => {
       // Use regrex to grab the path of the folder after /database
       const escapedFileName = item.artifactNode
-        .replace('.', '\\.')
-        .replace('/', '\\/');
+        .replace(".", "\\.")
+        .replace("/", "\\/");
       const folderRegrex = new RegExp(
-        `(?<=${userName}).*(?=${escapedFileName})?`
+        `(?<=${username}).*(?=${escapedFileName})?`
       );
 
       const pathString = folderRegrex.exec(item.artifactAbsPath);
-      const relativeDestPath = pathString ? pathString[0] : '';
+      const relativeDestPath = pathString ? pathString[0] : "";
 
       // Append the folder path with the new target path
       const newDestPath = path.join(destPath, relativeDestPath);
@@ -107,7 +118,7 @@ module.exports = class RepoHandler {
 
     // Create a new manifest handler
     const repoManifest = new Manifest({
-      userName,
+      username,
       repoName,
       destRepoPath: path.join(destPath, repoName)
     });
@@ -116,20 +127,18 @@ module.exports = class RepoHandler {
   }
 
   /* Check In */
-  checkin(sourcePath) {
-    this.manifestHandler.addCommand('checkin');
+  checkin() {
+    const parentID = this.infoHandler.getCurrentHead();
 
-    // Repo path in database
-    const repoPath = path.join(
-      ROOTPATH,
-      'database',
-      this.repo.userName,
-      this.repo.repoName
+    // Add command to manifest handler
+    this.manifestHandler.addCommand(this.command.CHECKIN);
+
+    const folderStructure = copyFolderTreeWithMemoization(
+      this.repo.projectPath,
+      path.join(this.repo.projectPath, "repo")
     );
-    const folderStructure = copyFolderTreeWithMemoization(sourcePath, repoPath);
 
     this.manifestHandler.addStructure(folderStructure);
-
-    this.manifestHandler.write();
+    this.manifestHandler.write(parentID);
   }
 };

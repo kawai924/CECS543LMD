@@ -1,20 +1,24 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const Queue = require('./Queue');
-const createArtifactId = require('./Artifact');
+const Queue = require("./Queue");
+const createArtifactId = require("./Artifact");
 
 /* This function reads each file from source folder, create artifact id and copy to target folder */
-function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
+function copyFolderTreeWithMemoization(fromPath, toPath) {
+  console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
+
   let structure = [];
 
-  function copyFolderTree(sourcePath, targetFolder) {
+  function copyFolderTree(fromPath, toPath) {
     let fileQueue = new Queue(); //Queue to hold files
 
     //Add all files to a queue
-    const allFiles = fs.readdirSync(sourcePath);
+    const allFiles = fs.readdirSync(fromPath);
     for (let file of allFiles) {
-      fileQueue.enqueue(file);
+      if (file !== "repo") {
+        fileQueue.enqueue(file);
+      }
     }
 
     //Process each element in the queue
@@ -25,28 +29,28 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
       if (!/^(?!\.).*$/.test(fileName)) continue;
 
       // The current file is a DIRECTORY
-      if (isDirectory(sourcePath, fileName)) {
-        const dirPath = path.join(sourcePath, fileName);
-        const newTarget = path.join(targetFolder, fileName);
+      if (isDirectory(fromPath, fileName)) {
+        const dirPath = path.join(fromPath, fileName);
+        const newTarget = path.join(toPath, fileName);
 
         // Create the directory in the destination
         makeDir(newTarget);
 
         // Add """" : dirPath to structure
-        structure.push({ artifactNode: '', artifactAbsPath: newTarget });
+        structure.push({ artifactNode: "", artifactAbsPath: newTarget });
 
         //Recursively copy sub folders and files.
         copyFolderTree(dirPath, newTarget);
       } else {
         // The current file is a FILE
         // Grab the full path of leaf folder
-        const leafFolder = path.join(targetFolder, fileName);
+        const leafFolder = path.join(toPath, fileName);
 
         // Create the folder there
         makeDir(leafFolder);
 
         //Create artifact for the file
-        const filePath = path.join(sourcePath, fileName);
+        const filePath = path.join(fromPath, fileName);
         const artifact = createArtifactId(filePath);
 
         //Move the file with artifact name
@@ -57,7 +61,7 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
 
         // Grab the absolute path from database to the curent artifact
         const fileNameWithoutExtension = /.*(?=\.)/.exec(
-          fileName.split('/').pop()
+          fileName.split("/").pop()
         )[0];
         const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
         const fullArtifactPath = regrex.exec(artifactFullPath)[0];
@@ -70,7 +74,7 @@ function copyFolderTreeWithMemoization(sourcePath, targetFolder) {
       }
     }
   }
-  copyFolderTree(sourcePath, targetFolder);
+  copyFolderTree(fromPath, toPath);
   return structure;
 }
 

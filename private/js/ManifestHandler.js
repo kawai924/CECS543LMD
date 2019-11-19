@@ -1,20 +1,25 @@
-const fs = require('fs');
-const path = require('path');
-const { makeDir } = require('./FolderFunctions');
+const fs = require("fs");
+const path = require("path");
+const { makeDir } = require("./FolderFunctions");
 
-module.exports = class Manifest {
-  constructor({ userName, repoName, destRepoPath }) {
-    this.paths = {
-      destRepoPath,
-      masterJsonPath: path.join(destRepoPath, 'master_manifest.json')
-    };
+module.exports = class ManifestHandler {
+  constructor(userName, repoName, manifestFolderPath, parent = null) {
+    console.log("(MH) manifestFolderPath=" + manifestFolderPath);
+
+    this.manifestFolderPath = manifestFolderPath;
+
+    // If the manifest folder doesn't exist, make it.
+    if (!fs.existsSync(this.manifestFolderPath)) {
+      fs.mkdirSync(this.manifestFolderPath, { recursive: true });
+    }
+
+    // Store information about upcoming manifest
     this.newManifest = {
       user: userName,
       repo: repoName,
-      structure: []
+      structure: [],
+      parent
     };
-
-    this.masterManifest = this.getMasterManifest(); // Store master manifest
   }
 
   /* Setters */
@@ -22,16 +27,27 @@ module.exports = class Manifest {
     this.newManifest.command = command;
   }
 
+  // Add parents to the manifest file
+  addParent(...parents) {
+    if (parents.length > 2) {
+      throw new Error("Too many parents...");
+    }
+
+    parents.forEach(parent => {
+      this.newManifest.parent.push(parent);
+    });
+  }
+
   addStructure(folderStructure) {
     this.newManifest.structure = folderStructure;
   }
 
-  addLabel(manifestID, label) {
-    this.masterManifest.labels.push({ [label]: manifestID });
+  // addLabel(manifestID, label) {
+  //   this.masterManifest.labels.push({ [label]: manifestID });
 
-    // Update the master manifest
-    this.rewriteMasterManifest();
-  }
+  //   // Update the master manifest
+  //   this.rewriteMasterManifest();
+  // }
 
   /* Get manifest path from an id. ID can be LABEL or NUMBER */
   getManifestPath(id) {
@@ -46,50 +62,37 @@ module.exports = class Manifest {
     return this.masterManifest.manifest_lists[manifestID.toString()] || false;
   }
 
-  /* Write manifest into file and update master manifest */
-  write({ checkoutPath } = {}) {
-    const newID =
-      Object.keys(this.masterManifest.manifest_lists).length + 1 || 1;
-    this.newManifest.id = newID;
-    this.newManifest.datetime = new Date();
-
-    const manifestName = 'manifest_' + newID.toString() + '.json';
-    const newManifestPath = path.join(
-      this.paths.destRepoPath,
-      'manifests',
-      manifestName
-    );
-
-    // For "checkout" command, add checkout path to the destination repo
-    if (this.newManifest.command === 'checkout') {
-      if (checkoutPath === '')
-        throw new Error("manifest.write() doesn't have checkoutPath");
-      this.newManifest.checkoutPath = path.join(
-        checkoutPath,
-        this.newManifest.user,
-        this.newManifest.repo
-      );
+  /* Write manifest into file */
+  write(parentID = null) {
+    if (parentID !== null) {
+      this.newManifest.parent = [];
+      this.newManifest.parent.push(parentID);
     }
+    this.newManifest.datetime = new Date();
+    this.newManifest.id = this.newManifest.datetime.getTime();
 
+    const manifestName = this.newManifest.id.toString() + ".json";
+    const manifestPath = path.join(this.manifestFolderPath, manifestName);
     try {
       // Write manifest file into the manifest folder
-      fs.writeFileSync(newManifestPath, JSON.stringify(this.newManifest));
+      fs.writeFileSync(manifestPath, JSON.stringify(this.newManifest));
     } catch (err) {
-      console.log('Unable to write manifest file!!!', err);
+      console.log("Unable to write manifest file!!!", err);
     }
 
-    // Update the master manifest
-    this.masterManifest.manifest_lists[newID] = newManifestPath;
-    this.rewriteMasterManifest();
+    return {
+      manifestID: this.newManifest.id,
+      manifestPath: manifestPath
+    };
   }
 
   /* Helper functions */
   /* Grab master manifest */
   getMasterManifest() {
     // Create repo folder under database/[userName]/[repoName]
-    makeDir(this.paths.destRepoPath, { recursive: true });
+    makeDir(this.paths.writeToPath, { recursive: true });
     // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
-    makeDir(path.join(this.paths.destRepoPath, 'manifests'), {
+    makeDir(path.join(this.paths.writeToPath, "manifests"), {
       recursive: true
     });
 
@@ -120,7 +123,7 @@ module.exports = class Manifest {
         );
       } catch (err) {
         console.log(
-          'Unable to write master manifest file into alternate path!!!',
+          "Unable to write master manifest file into alternate path!!!",
           err
         );
       }
@@ -132,7 +135,7 @@ module.exports = class Manifest {
         JSON.stringify(this.masterManifest)
       );
     } catch (err) {
-      console.log('Unable to write master manifest file!!!', err);
+      console.log("Unable to write master manifest file!!!", err);
     }
   }
 };
