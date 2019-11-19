@@ -9,9 +9,10 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
   console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
 
   let structure = [];
+  const projectPath = fromPath;
 
-  function copyFolderTree(fromPath, toPath) {
-    let fileQueue = new Queue(); //Queue to hold files
+  (function copyFolderTree(fromPath, toPath) {
+    let fileQueue = new Queue();
 
     //Add all files to a queue
     const allFiles = fs.readdirSync(fromPath);
@@ -37,7 +38,10 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
         makeDir(newTarget);
 
         // Add """" : dirPath to structure
-        structure.push({ artifactNode: "", artifactAbsPath: newTarget });
+        structure.push({
+          artifactNode: "",
+          artifactAbsPath: relativePath(newTarget, projectPath)
+        });
 
         //Recursively copy sub folders and files.
         copyFolderTree(dirPath, newTarget);
@@ -69,12 +73,12 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
         // Add artifact and its path to manifest
         structure.push({
           artifactNode: path.join(fileName, artifact),
-          artifactAbsPath: fullArtifactPath
+          artifactAbsPath: relativePath(fullArtifactPath, projectPath)
         });
       }
     }
-  }
-  copyFolderTree(fromPath, toPath);
+  })(fromPath, toPath);
+
   return structure;
 }
 
@@ -89,6 +93,10 @@ function isDirectory(source, fileName) {
 /* Function to create a directory if directory is not exists */
 function makeDir(path, options = { recursive: true }) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
+}
+
+function relativePath(fullPath, commonPath) {
+  return fullPath.split(commonPath)[1];
 }
 
 module.exports = {

@@ -17,19 +17,19 @@ module.exports = class RepoHandler {
       projectPath
     };
 
-    // Create a new manifest handler
-    this.manifestHandler = new ManifestHandler(
-      username,
-      repoName,
-      path.join(projectPath, "repo", "manifests")
-    );
+    // // Create a new manifest handler
+    // this.manifestHandler = new ManifestHandler(
+    //   username,
+    //   repoName,
+    //   path.join(projectPath, "repo", "manifests")
+    // );
 
-    // Initialize and write info.json
-    this.infoHandler = new InfoHandler(
-      username,
-      repoName,
-      path.join(projectPath, "repo")
-    );
+    // // Initialize and write info.json
+    // this.infoHandler = new InfoHandler(
+    //   username,
+    //   repoName,
+    //   path.join(projectPath, "repo")
+    // );
 
     // Command enumerations
     this.command = {
@@ -40,37 +40,75 @@ module.exports = class RepoHandler {
     };
   }
 
-  /* Create Functionality */
+  /* Utility functions
+   *******************/
   create() {
-    // Add command to new manifest
-    this.manifestHandler.addCommand(this.command.CREATE);
+    // Setup repo and manifest folder
+    fs.mkdirSync(path.join(this.repo.projectPath, "repo", "manifests"), {
+      recursive: true
+    });
 
-    // Calling manifestHandler write() to write the manifest into the system, it returns id and path of the newly created manifest.
-    const { manifestID, manifestPath } = this.manifestHandler.write();
+    // Create a new manifest handler
+    const manifestHandler = this.getNewManifestHandler();
+    // Add command to new manifest
+    manifestHandler.addCommand(this.command.CREATE);
+    // manifestHandler.write() returns id and path of the newly created manifest.
+    const { manifestID, manifestPath } = manifestHandler.write();
+
+    console.log(
+      "(create), manifestID=" + manifestID + ", manifestPath=" + manifestPath
+    );
+
+    // Initialize and write info.json
+    const infoHandler = this.getNewInfoHandler();
+
+    // Write an default info.json first
+    infoHandler.write();
 
     // Update the info.json with the new manifest
-    this.infoHandler.addManifest(manifestID, manifestPath);
+    infoHandler.addManifest(manifestID, manifestPath);
   }
 
-  /* Label Functionality */
   addLabel(manifestID, label) {
-    this.infoHandler.addLabel(manifestID, label);
+    const infoHandler = this.getNewInfoHandler();
+    infoHandler.addLabel(manifestID, label);
   }
 
-  /* Checkout Functionality */
-  checkout(fromUser, fromRepoName, manifestID) {
-    const pathToSourceRepo = path.join(
-      ROOTPATH,
-      "database",
-      fromUser,
-      fromRepoName,
-      "repo"
+  checkin() {
+    const infoHandler = this.getNewInfoHandler();
+
+    // The manifestID in the head will be the parent of this new checkin manifest.
+    const parentID = infoHandler.getCurrentHead();
+
+    console.log("(checkin) parentID=" + parentID);
+
+    const manifestHandler = this.getNewManifestHandler();
+    // Add command to manifest handler
+    manifestHandler.addCommand(this.command.CHECKIN);
+
+    // Copy folder tree to repo
+    const folderStructure = copyFolderTreeWithMemoization(
+      this.repo.projectPath,
+      path.join(this.repo.projectPath, "repo")
     );
+
+    // Add the structure into the manifest.
+    manifestHandler.addStructure(folderStructure);
+
+    // Write the manifest into the file system. Attach the parentID to that manifest
+    const { manifestID, manifestPath } = manifestHandler.write(parentID);
+
+    // Update the info.json with the new manifest
+    infoHandler.addManifest(manifestID, manifestPath);
+  }
+
+  checkout(sourceProjectPath, manifestID) {
+    const pathToSourceRepo = path.join(sourceProjectPath, "repo");
 
     console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
-    console.log(
-      "(check-out) this.infoHanlder=" + JSON.stringify(this.infoHandler)
-    );
+    // console.log(
+    //   "(check-out) this.infoHanlder=" + JSON.stringify(this.infoHandler)
+    // );
 
     // Add command to new manifest
     this.manifestHandler.addCommand(this.command.CHECKOUT);
@@ -137,27 +175,8 @@ module.exports = class RepoHandler {
     this.manifestHandler.write(manifestID);
   }
 
-  /* Check In */
-  checkin() {
-    const parentID = this.infoHandler.getCurrentHead();
-
-    // Add command to manifest handler
-    this.manifestHandler.addCommand(this.command.CHECKIN);
-
-    const folderStructure = copyFolderTreeWithMemoization(
-      this.repo.projectPath,
-      path.join(this.repo.projectPath, "repo")
-    );
-
-    this.manifestHandler.addStructure(folderStructure);
-
-    const { manifestID, manifestPath } = this.manifestHandler.write(parentID);
-
-    // Update the info.json with the new manifest
-    this.infoHandler.addManifest(manifestID, manifestPath);
-  }
-
-  // Helper function
+  /* Helper functions
+   *******************/
   getManifestObject(pathToSourceRepo, manifestID) {
     const sourceRepoInfoObject = JSON.parse(
       fs.readFileSync(path.join(pathToSourceRepo, "info.json"))
@@ -185,5 +204,25 @@ module.exports = class RepoHandler {
     console.log("(getManifestObject), manifestPath=" + manifestPath);
 
     return JSON.parse(fs.readFileSync(manifestPath));
+  }
+
+  getNewManifestHandler() {
+    return new ManifestHandler(
+      this.repo.username,
+      this.repo.repoName,
+      path.join(this.repo.projectPath, "repo", "manifests")
+    );
+  }
+
+  getNewInfoHandler() {
+    return new InfoHandler(
+      this.repo.username,
+      this.repo.repoName,
+      path.join(this.repo.projectPath, "repo")
+    );
+  }
+
+  getHeadManifestID() {
+    return this.getNewInfoHandler().getCurrentHead();
   }
 };

@@ -8,11 +8,6 @@ module.exports = class ManifestHandler {
 
     this.manifestFolderPath = manifestFolderPath;
 
-    // If the manifest folder doesn't exist, make it.
-    if (!fs.existsSync(this.manifestFolderPath)) {
-      fs.mkdirSync(this.manifestFolderPath, { recursive: true });
-    }
-
     // Store information about upcoming manifest
     this.newManifest = {
       user: userName,

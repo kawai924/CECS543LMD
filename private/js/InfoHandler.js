@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-module.exports = class InfoManifest {
+module.exports = class InfoHandler {
   constructor(username, projectName, repoPath) {
     console.log("(IM) repoPath=" + repoPath);
 
@@ -22,6 +22,12 @@ module.exports = class InfoManifest {
   }
 
   addManifest(manifestID, manifestPath) {
+    // Grab current info.json from the repo
+    const currentInfoJSON = this.getInfoOBject();
+
+    // If it exists, set to it, or else, set to default
+    this.infoJSON = currentInfoJSON ? currentInfoJSON : this.infoJSON;
+
     console.log(
       "(addManifest), this.infoJSON.manifests=" +
         JSON.stringify(this.infoJSON.manifests)
@@ -35,16 +41,14 @@ module.exports = class InfoManifest {
   }
 
   getCurrentHead() {
-    return JSON.parse(fs.readFileSync(path.join(this.repoPath, "info.json")))
-      .head;
+    return this.getInfoOBject().head;
+  }
+
+  getInfoOBject() {
+    return JSON.parse(fs.readFileSync(path.join(this.repoPath, "info.json")));
   }
 
   write() {
-    // Check if manifest folder exists
-    if (!fs.existsSync(this.repoPath)) {
-      throw new Error("Manifest Folder doesn't exists...");
-    }
-
     fs.writeFileSync(
       path.join(this.repoPath, "info.json"),
       JSON.stringify(this.infoJSON)
