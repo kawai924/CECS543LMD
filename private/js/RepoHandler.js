@@ -61,9 +61,8 @@ module.exports = class RepoHandler {
   }
 
   checkin() {
-    const infoHandler = this.getNewInfoHandler();
-
     // The manifestID in the head will be the parent of this new checkin manifest.
+    const infoHandler = this.getNewInfoHandler();
     const parentID = infoHandler.getCurrentHead();
 
     console.log("(checkin) parentID=" + parentID);
@@ -88,7 +87,7 @@ module.exports = class RepoHandler {
     infoHandler.addManifest(manifestID, manifestPath);
   }
 
-  checkout(sourceProjectPath, manifestID) {
+  checkout(sourceProjectPath, sourceManifestID) {
     const pathToSourceRepo = path.join(sourceProjectPath, VSC_REPO_NAME);
 
     console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
@@ -97,7 +96,10 @@ module.exports = class RepoHandler {
     manifestHandler.addCommand(COMMANDS.CHECKOUT);
 
     // Grab info.json from source
-    const manifestObject = this.getManifestObject(pathToSourceRepo, manifestID);
+    const manifestObject = this.getManifestObject(
+      pathToSourceRepo,
+      sourceManifestID
+    );
     console.log("(check-out) manifestObject=" + JSON.stringify(manifestObject));
 
     // Copy source file into the checkout folder
@@ -118,7 +120,14 @@ module.exports = class RepoHandler {
     manifestHandler.addCheckoutFrom(sourceProjectPath);
 
     // Write a new manifest into file with the parentID = manifestID from parameter
-    manifestHandler.write(manifestID);
+    const { manifestID, manifestPath } = manifestHandler.write(
+      sourceManifestID
+    );
+
+    // Update the manifest lists
+    const infoHandler = this.getNewInfoHandler();
+    infoHandler.write();
+    infoHandler.addManifest(manifestID, manifestPath);
   }
 
   /* Helper functions
