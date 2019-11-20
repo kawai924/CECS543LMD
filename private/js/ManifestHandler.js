@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { makeDir } = require("./FolderFunctions");
+const { MANIFEST_DIR } = require("./../../constants");
 
 module.exports = class ManifestHandler {
   constructor(userName, repoName, manifestFolderPath, parent = null) {
@@ -91,7 +92,7 @@ module.exports = class ManifestHandler {
     // Create repo folder under database/[userName]/[repoName]
     makeDir(this.paths.writeToPath, { recursive: true });
     // Create folder named "manifests" with path: database/[userName]/[repoName]/manifests
-    makeDir(path.join(this.paths.writeToPath, "manifests"), {
+    makeDir(path.join(this.paths.writeToPath, MANIFEST_DIR), {
       recursive: true
     });
 

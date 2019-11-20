@@ -3,7 +3,12 @@ const path = require("path");
 const InfoHandler = require("./InfoHandler");
 const ManifestHandler = require("./ManifestHandler");
 const { copyFolderTreeWithMemoization, makeDir } = require("./FolderFunctions");
-const ROOTPATH = path.join(__dirname, "..", "..");
+const {
+  VSC_REPO_NAME,
+  MANIFEST_DIR,
+  COMMANDS,
+  MASTER_MANIFEST_NAME
+} = require("../../constants");
 
 /* RepoHandler handles all methods regarding repos. */
 module.exports = class RepoHandler {
@@ -16,28 +21,23 @@ module.exports = class RepoHandler {
       repoName,
       projectPath
     };
-
-    // Command enumerations
-    this.command = {
-      CREATE: "create",
-      CHECKIN: "check-in",
-      CHECKOUT: "check-out",
-      MERGE: "merge"
-    };
   }
 
   /* Utility functions
    *******************/
   create() {
     // Setup repo and manifest folder
-    fs.mkdirSync(path.join(this.repo.projectPath, "repo", "manifests"), {
-      recursive: true
-    });
+    fs.mkdirSync(
+      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR),
+      {
+        recursive: true
+      }
+    );
 
     // Create a new manifest handler
     const manifestHandler = this.getNewManifestHandler();
     // Add command to new manifest
-    manifestHandler.addCommand(this.command.CREATE);
+    manifestHandler.addCommand(COMMANDS.CREATE);
     // manifestHandler.write() returns id and path of the newly created manifest.
     const { manifestID, manifestPath } = manifestHandler.write();
 
@@ -70,12 +70,12 @@ module.exports = class RepoHandler {
 
     const manifestHandler = this.getNewManifestHandler();
     // Add command to manifest handler
-    manifestHandler.addCommand(this.command.CHECKIN);
+    manifestHandler.addCommand(COMMANDS.CHECKIN);
 
     // Copy folder tree to repo
     const folderStructure = copyFolderTreeWithMemoization(
       this.repo.projectPath,
-      path.join(this.repo.projectPath, "repo")
+      path.join(this.repo.projectPath, VSC_REPO_NAME)
     );
 
     // Add the structure into the manifest.
@@ -89,12 +89,12 @@ module.exports = class RepoHandler {
   }
 
   checkout(sourceProjectPath, manifestID) {
-    const pathToSourceRepo = path.join(sourceProjectPath, "repo");
+    const pathToSourceRepo = path.join(sourceProjectPath, VSC_REPO_NAME);
 
     console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
 
     const manifestHandler = this.getNewManifestHandler();
-    manifestHandler.addCommand(this.command.CHECKOUT);
+    manifestHandler.addCommand(COMMANDS.CHECKOUT);
 
     // Grab info.json from source
     const manifestObject = this.getManifestObject(pathToSourceRepo, manifestID);
@@ -108,9 +108,12 @@ module.exports = class RepoHandler {
     manifestHandler.addStructure(manifestObject.structure);
 
     // Setup repo and manifest folder
-    fs.mkdirSync(path.join(this.repo.projectPath, "repo", "manifests"), {
-      recursive: true
-    });
+    fs.mkdirSync(
+      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR),
+      {
+        recursive: true
+      }
+    );
 
     manifestHandler.addCheckoutFrom(sourceProjectPath);
 
@@ -122,7 +125,7 @@ module.exports = class RepoHandler {
    *******************/
   getManifestObject(pathToSourceRepo, manifestID) {
     const sourceRepoInfoObject = JSON.parse(
-      fs.readFileSync(path.join(pathToSourceRepo, "info.json"))
+      fs.readFileSync(path.join(pathToSourceRepo, MASTER_MANIFEST_NAME))
     );
 
     const manifestList = sourceRepoInfoObject.manifests;
@@ -153,7 +156,7 @@ module.exports = class RepoHandler {
     return new ManifestHandler(
       this.repo.username,
       this.repo.repoName,
-      path.join(this.repo.projectPath, "repo", "manifests")
+      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR)
     );
   }
 
@@ -161,7 +164,7 @@ module.exports = class RepoHandler {
     return new InfoHandler(
       this.repo.username,
       this.repo.repoName,
-      path.join(this.repo.projectPath, "repo")
+      path.join(this.repo.projectPath, VSC_REPO_NAME)
     );
   }
 

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { MASTER_MANIFEST_NAME } = require("./../../constants");
 
 module.exports = class InfoHandler {
   constructor(username, projectName, repoPath) {
@@ -45,12 +46,14 @@ module.exports = class InfoHandler {
   }
 
   getInfoOBject() {
-    return JSON.parse(fs.readFileSync(path.join(this.repoPath, "info.json")));
+    return JSON.parse(
+      fs.readFileSync(path.join(this.repoPath, MASTER_MANIFEST_NAME))
+    );
   }
 
   write() {
     fs.writeFileSync(
-      path.join(this.repoPath, "info.json"),
+      path.join(this.repoPath, MASTER_MANIFEST_NAME),
       JSON.stringify(this.infoJSON)
     );
   }
