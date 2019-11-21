@@ -143,6 +143,7 @@ module.exports = class RepoHandler {
       "(getManifestObject), manifestList=" + JSON.stringify(manifestList)
     );
 
+    // Looping through the manifest array to find matching manifest using ID.
     let manifestPath;
     for (let i = 0; i < manifestList.length; i++) {
       console.log(
@@ -189,8 +190,8 @@ module.exports = class RepoHandler {
       this.repo.projectPath,
       artifact.artifactRelPath
         .split("/")
-        .slice(2)
-        .join("/") // exclude /repo
+        .slice(2) // exclude /repo
+        .join("/")
     );
     console.log("(checkout-Artifact), newDestPath=", newDestPath);
 

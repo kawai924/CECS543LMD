@@ -1,16 +1,16 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
 
-const RepoHandler = require('../../private/js/RepoHandler');
-const ROOTPATH = path.join(__dirname, '..', '..');
+const RepoHandler = require("../../private/js/RepoHandler");
+const ROOTPATH = path.join(__dirname, "..", "..");
 
 const router = express.Router();
 
-router.get('/:username', function(req, res, next) {
+router.get("/:username", function(req, res, next) {
   // Grab data from request
   const userName = req.params.username;
-  const userPath = path.join(ROOTPATH, 'database', userName);
+  const userPath = path.join(ROOTPATH, "database", userName);
 
   // If it's a new user, create a folder in database
   if (!fs.existsSync(userPath)) {
@@ -22,10 +22,10 @@ router.get('/:username', function(req, res, next) {
   // Gather information for each repo
   const repoInfoList = buildRepoInfoList(repoList, userPath);
 
-  res.render('user', { userName, repoInfoList });
+  res.render("user", { userName, repoInfoList });
 });
 
-router.post('/:username', function(req, res, next) {
+router.post("/:username", function(req, res, next) {
   // Grab information from request
   const {
     command_option,
@@ -41,25 +41,25 @@ router.post('/:username', function(req, res, next) {
   // Create a repo handler to handle commands
   const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
   switch (command_option) {
-    case 'create':
+    case "create":
       repoHandler.create();
       break;
-    case 'check-out':
+    case "check-out":
       id = manifestID || label;
       repoHandler.checkout(id, destPath);
       break;
-    case 'check-in':
+    case "check-in":
       id = manifestID || label;
       repoHandler.checkin(sourcePath);
       break;
-    case 'label':
+    case "label":
       repoHandler.addLabel(manifestID, label);
       break;
     default:
-      console.log('Unknown command...');
+      console.log("Unknown command...");
   }
 
-  res.redirect('/user/' + userName);
+  res.redirect("/user/" + userName);
 });
 
 /* Helper functions */
@@ -78,14 +78,14 @@ function buildRepoInfoList(repoList, userPath) {
         labels: [],
         filepath: []
       };
-      const manifestFolderPath = path.join(userPath, repo, 'manifests');
+      const manifestFolderPath = path.join(userPath, repo, "manifests");
 
       // Grab list of manifests
       const manifestList = fs.readdirSync(manifestFolderPath);
 
       // Grab labels from master manifest
       repoInfoEach.labels = JSON.parse(
-        fs.readFileSync(path.join(userPath, repo, 'master_manifest.json'))
+        fs.readFileSync(path.join(userPath, repo, "master_manifest.json"))
       ).labels;
 
       // For each manifest, build an list of necessary information into an object
@@ -95,7 +95,7 @@ function buildRepoInfoList(repoList, userPath) {
           fs.readFileSync(path.join(manifestFolderPath, manifest))
         );
 
-        let list = '';
+        let list = "";
         for (i in manifestObject.structure) {
           let elem = manifestObject.structure[i];
           const elemarr = [];
@@ -105,12 +105,12 @@ function buildRepoInfoList(repoList, userPath) {
           let LIFO = elemarr.pop();
           list += elem[LIFO];
           LIFO = elemarr.pop();
-          list += elem[LIFO] + '\n';
+          list += elem[LIFO] + "\n";
         }
 
         let readdatetime = manifestObject.datetime
-          .replace(/T/, ' ')
-          .replace(/\..+/, '');
+          .replace(/T/, " ")
+          .replace(/\..+/, "");
 
         repoInfoEach.manifests.push({
           name: manifest,
