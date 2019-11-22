@@ -1,6 +1,11 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const {
+  VSC_REPO_NAME,
+  MANIFEST_DIR,
+  MASTER_MANIFEST_NAME
+} = require("./../../constants");
 
 const RepoHandler = require("../../private/js/RepoHandler");
 const ROOTPATH = path.join(__dirname, "..", "..");
@@ -26,38 +31,41 @@ router.get("/:username", function(req, res, next) {
 });
 
 router.post("/:username", function(req, res, next) {
-  // Grab information from request
-  const {
-    command_option,
-    repoName,
-    label,
-    manifestID,
-    sourcePath,
-    destPath
-  } = req.body;
-  const userName = req.params.username;
-  let id;
+  const { commandInput } = req.body;
+  console.log(commandInput);
 
-  // Create a repo handler to handle commands
-  const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
-  switch (command_option) {
-    case "create":
-      repoHandler.create();
-      break;
-    case "check-out":
-      id = manifestID || label;
-      repoHandler.checkout(id, destPath);
-      break;
-    case "check-in":
-      id = manifestID || label;
-      repoHandler.checkin(sourcePath);
-      break;
-    case "label":
-      repoHandler.addLabel(manifestID, label);
-      break;
-    default:
-      console.log("Unknown command...");
-  }
+  // // Grab information from request
+  // const {
+  //   command_option,
+  //   repoName,
+  //   label,
+  //   manifestID,
+  //   sourcePath,
+  //   destPath
+  // } = req.body;
+  const userName = req.params.username;
+  // let id;
+
+  // // Create a repo handler to handle commands
+  // const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
+  // switch (command_option) {
+  //   case "create":
+  //     repoHandler.create();
+  //     break;
+  //   case "check-out":
+  //     id = manifestID || label;
+  //     repoHandler.checkout(id, destPath);
+  //     break;
+  //   case "check-in":
+  //     id = manifestID || label;
+  //     repoHandler.checkin(sourcePath);
+  //     break;
+  //   case "label":
+  //     repoHandler.addLabel(manifestID, label);
+  //     break;
+  //   default:
+  //     console.log("Unknown command...");
+  // }
 
   res.redirect("/user/" + userName);
 });
@@ -78,14 +86,21 @@ function buildRepoInfoList(repoList, userPath) {
         labels: [],
         filepath: []
       };
-      const manifestFolderPath = path.join(userPath, repo, "manifests");
+      const manifestFolderPath = path.join(
+        userPath,
+        repo,
+        VSC_REPO_NAME,
+        MANIFEST_DIR
+      );
 
       // Grab list of manifests
       const manifestList = fs.readdirSync(manifestFolderPath);
 
       // Grab labels from master manifest
       repoInfoEach.labels = JSON.parse(
-        fs.readFileSync(path.join(userPath, repo, "master_manifest.json"))
+        fs.readFileSync(
+          path.join(userPath, repo, VSC_REPO_NAME, MASTER_MANIFEST_NAME)
+        )
       ).labels;
 
       // For each manifest, build an list of necessary information into an object
@@ -95,29 +110,36 @@ function buildRepoInfoList(repoList, userPath) {
           fs.readFileSync(path.join(manifestFolderPath, manifest))
         );
 
-        let list = "";
-        for (i in manifestObject.structure) {
-          let elem = manifestObject.structure[i];
-          const elemarr = [];
-          for (let key in elem) {
-            elemarr.push(key);
-          }
-          let LIFO = elemarr.pop();
-          list += elem[LIFO];
-          LIFO = elemarr.pop();
-          list += elem[LIFO] + "\n";
-        }
+        // let list = "";
+        // for (i in manifestObject.structure) {
+        //   let elem = manifestObject.structure[i];
+        //   const elemarr = [];
+        //   for (let key in elem) {
+        //     elemarr.push(key);
+        //   }
+        //   let LIFO = elemarr.pop();
+        //   list += elem[LIFO];
+        //   LIFO = elemarr.pop();
+        //   list += elem[LIFO] + "\n";
+        // }
 
         let readdatetime = manifestObject.datetime
           .replace(/T/, " ")
           .replace(/\..+/, "");
 
+        // repoInfoEach.manifests.push({
+        //   name: manifest,
+        //   command: manifestObject.command,
+        //   datetime: readdatetime,
+        //   // filepath: list,
+        //   ID: manifestObject.id
+        // });
+        const { user, repo, structure, ...desiredManifest } = manifestObject;
+
         repoInfoEach.manifests.push({
+          ...desiredManifest,
           name: manifest,
-          command: manifestObject.command,
-          datetime: readdatetime,
-          filepath: list,
-          ID: manifestObject.id
+          datetime: readdatetime
         });
       });
 

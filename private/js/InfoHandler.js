@@ -9,15 +9,13 @@ module.exports = class InfoHandler {
     this.infoJSON = {
       username,
       projectName,
-      head: null
+      head: null,
+      labels: []
     };
     this.repoPath = repoPath;
   }
 
   addLabel(manifestID, label) {
-    if (!this.infoJSON.labels) {
-      this.infoJSON.labels = [];
-    }
     this.infoJSON.labels.push({ label, manifestID });
     this.write();
   }
