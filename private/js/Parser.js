@@ -2,16 +2,14 @@ const RepoHandler = require("./RepoHandler");
 const { ROOTPATH, COMMANDS } = require("./../../constants");
 const path = require("path");
 
-const test_create = "create project_name";
-
-const test_checkin = "checkin project_name path";
-
 let manifestID;
-const test_checkout = "checkout project_name target_path manifestID";
 
-// const test_merge_out =
-//   "mergeout project_name source_manifest_id target_manifest_id";
-// const test_merge_in = "mergein merge_out_manifest_id";
+const test_create = "create project_name";
+const test_checkin = "checkin project_name path";
+const test_checkout = "checkout project_name source_username source_manifestID";
+const test_merge_out =
+  "mergeout project_name source_manifest_id target_manifest_id";
+const test_merge_in = "mergein merge_out_manifest_id";
 
 function parser(prompt) {
   const argsArr = prompt.split(" ");
