@@ -1,4 +1,4 @@
-const PathHandler = require("./PathHandler");
+const PathHandler = require("../PathHandler");
 const fs = require("fs-extra");
 
 const alicePathHandler = PathHandler("Alice", "ProjectX");
