@@ -1,19 +1,37 @@
 const fs = require("fs");
-const path = require("path");
-
-const { MASTER_MANIFEST_NAME } = require("./../../constants");
+const PathHandler = require("./PathHandler");
 
 module.exports = class InfoHandler {
   constructor(username, projectName, repoPath) {
     console.log("(IM) repoPath=" + repoPath);
 
-    this.infoJSON = {
-      username,
-      projectName,
-      head: null,
-      labels: []
-    };
-    this.repoPath = repoPath;
+    // Temporary fix: change repoPath to project path, so we can use pathHandler for now.
+    const pathArray = repoPath.split("/");
+    const projectPath = pathArray.slice(0, -1).join("/");
+
+    console.log("Adapter: " + projectPath);
+    this.pathHandler = PathHandler(username, projectName, projectPath);
+
+    // If info.json doesn't exist, write a fresh one.
+    if (!fs.existsSync(this.pathHandler.getInfoJSONPath())) {
+      const freshInfoJSON = {
+        username,
+        projectName,
+        head: null,
+        labels: [],
+        manifests: []
+      };
+
+      fs.writeFileSync(
+        this.pathHandler.getInfoJSONPath(),
+        JSON.stringify(freshInfoJSON)
+      );
+    }
+
+    // Grab info.json from user's project folder
+    this.infoJSON = JSON.parse(
+      fs.readFileSync(this.pathHandler.getInfoJSONPath())
+    );
   }
 
   addLabel(manifestID, label) {
@@ -22,21 +40,9 @@ module.exports = class InfoHandler {
   }
 
   addManifest(manifestID, manifestPath) {
-    // Grab current info.json from the repo
-    const currentInfoJSON = this.getInfoOBject();
-
-    // If it exists, set to it, or else, set to default
-    this.infoJSON = currentInfoJSON ? currentInfoJSON : this.infoJSON;
-
-    console.log(
-      "(addManifest), this.infoJSON.manifests=" +
-        JSON.stringify(this.infoJSON.manifests)
-    );
-    if (!this.infoJSON.manifests) {
-      this.infoJSON.manifests = [];
-    }
     this.infoJSON.manifests.push({ manifestID, manifestPath });
     this.infoJSON.head = manifestID;
+
     this.write();
   }
 
@@ -45,14 +51,12 @@ module.exports = class InfoHandler {
   }
 
   getInfoOBject() {
-    return JSON.parse(
-      fs.readFileSync(path.join(this.repoPath, MASTER_MANIFEST_NAME))
-    );
+    return JSON.parse(fs.readFileSync(this.pathHandler.getInfoJSONPath()));
   }
 
   write() {
     fs.writeFileSync(
-      path.join(this.repoPath, MASTER_MANIFEST_NAME),
+      this.pathHandler.getInfoJSONPath(),
       JSON.stringify(this.infoJSON)
     );
   }
