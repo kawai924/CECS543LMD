@@ -144,9 +144,13 @@ module.exports = class RepoHandler {
 
     const manifestList = sourceRepoInfoObject.manifests;
 
-    // Check if manifestID is a label
+    // Retrieve manifest ID from label. If exits, set that to manifestID
+    const result = this.retrieveIDFromLabel(sourceRepoInfoObject, manifestID);
+    if (result) {
+      manifestID = result;
+    }
 
-    // Looping through the manifest array to find matching manifest using ID.
+    // Find manifest with the ID
     for (let i = 0; i < manifestList.length; i++) {
       if (manifestList[i].manifestID == manifestID) {
         const manifestPath = manifestList[i].manifestPath;
@@ -157,7 +161,20 @@ module.exports = class RepoHandler {
     throw new Error("Can't get master manifest file");
   }
 
-  isLabelPresent(masterManifestObj, labelName) {}
+  retrieveIDFromLabel(masterManifestObj, labelName) {
+    const labelList = masterManifestObj.labels;
+
+    for (let i = 0; i < labelList.length; i++) {
+      const labelObj = labelList[i];
+      const [currentLabelName] = Object.keys(labelObj);
+
+      if (currentLabelName === labelName) {
+        return labelObj[currentLabelName];
+      }
+    }
+
+    return null;
+  }
 
   getNewManifestHandler() {
     return new ManifestHandler(

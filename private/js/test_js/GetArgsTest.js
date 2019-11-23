@@ -1,4 +1,4 @@
-const { COMMANDS } = require("./../../../constants");
+const { COMMANDS } = require("../../../constants");
 
 let command_guides = {
   [COMMANDS.CREATE]: "create | <project name> | <project path>",
