@@ -1,21 +1,23 @@
+/********** IMPORT MODULES **********/
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+
 const {
+  ROOTPATH,
   VSC_REPO_NAME,
   MANIFEST_DIR,
+  DATABASE_NAME,
   MASTER_MANIFEST_NAME
 } = require("./../../constants");
-
-const RepoHandler = require("../../private/js/RepoHandler");
-const ROOTPATH = path.join(__dirname, "..", "..");
+/****************************************/
 
 const router = express.Router();
 
 router.get("/:username", function(req, res, next) {
   // Grab data from request
   const userName = req.params.username;
-  const userPath = path.join(ROOTPATH, "database", userName);
+  const userPath = path.join(ROOTPATH, DATABASE_NAME, userName);
 
   // If it's a new user, create a folder in database
   if (!fs.existsSync(userPath)) {
