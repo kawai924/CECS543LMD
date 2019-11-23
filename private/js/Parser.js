@@ -1,29 +1,29 @@
 const path = require("path");
-const { ROOTPATH, COMMANDS } = require("./../../constants");
-const PathHandler = require("./PathHandler");
+const { COMMANDS } = require("./../../constants");
 const DBHandler = require("./DBHandler");
 const RepoHandler = require("./RepoHandler");
 
-let manifestID;
-const test_create = "create project_name project_path";
-const test_checkin = "check-in project_name";
-const test_checkout =
-  "check-out | <target_path> | <from_username> | <from_repoName> | <from manifest id> OR <label name";
-const test_merge_out =
-  "merge-out project_name target_manifest_id source_path source_manifest_id";
-const test_merge_in = "merge-in merge_out_manifest_id";
-
 module.exports = function() {
+  let _command_guides = {
+    [COMMANDS.CREATE]: "create | <project name> | <target folder>",
+    [COMMANDS.CHECKIN]: "check-in | <project name>",
+    [COMMANDS.CHECKOUT]:
+      "check-out | <target_path> | <from_username> | <from_repoName> | <from manifest id> OR <label name",
+    [COMMANDS.MERGE_OUT]:
+      "merge-out | <project name> | <target manifest id> | <source username> | <souce manifest id>",
+    [COMMANDS.MERGE_IN]: "merge-in | <project name>"
+  };
+
   const commandParse = (prompt, { username }) => {
     const command = prompt.split(" ")[0];
-    let args, projectName, currProjectPath;
+    let args, projectName, targetFolder;
 
     switch (command) {
       case COMMANDS.CREATE:
         args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
         projectName = args[1];
-        currProjectPath = args[2];
-
+        targetFolder = args[2];
+        const currProjectPath = path.join(targetFolder, projectName);
         new RepoHandler(username, projectName, currProjectPath).create();
         break;
 
@@ -63,24 +63,31 @@ module.exports = function() {
         break;
 
       default:
-        throw new Error("Invalid commands");
+        throw new Error("Unable to parse command");
     }
   };
 
   /** Helper functions
    * *****************/
-  const getNumberArgs = (command, numberArgs) => {
+  const getNumberArgs = command => {
     switch (command) {
       case COMMANDS.CREATE:
-        return 3;
-        break;
+        return getArgsCount(_command_guides[COMMANDS.CREATE]);
       case COMMANDS.CHECKIN:
-        return 2;
-        break;
+        return getArgsCount(_command_guides[COMMANDS.CHECKIN]);
       case COMMANDS.CHECKOUT:
-        return 5;
-        break;
+        return getArgsCount(_command_guides[COMMANDS.CHECKOUT]);
+      case COMMANDS.MERGE_OUT:
+        return getArgsCount(_command_guides[COMMANDS.MERGE_OUT]);
+      case COMMANDS.MERGE_IN:
+        return getArgsCount(_command_guides[COMMANDS.MERGE_IN]);
+      default:
+        throw new Error("Can't get args count of the command");
     }
+  };
+
+  const getArgsCount = str => {
+    return str.split("|").length;
   };
 
   const splitAndAppend = (str, delim, count) => {
