@@ -5,8 +5,6 @@ const { MANIFEST_DIR } = require("./../../constants");
 
 module.exports = class ManifestHandler {
   constructor(userName, repoName, manifestFolderPath, parent = null) {
-    // console.log("(MH) manifestFolderPath=" + manifestFolderPath);
-
     this.manifestFolderPath = manifestFolderPath;
 
     // Store information about upcoming manifest

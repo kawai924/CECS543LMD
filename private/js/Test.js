@@ -9,6 +9,7 @@ const {
   USERS_FILENAME
 } = require("./../../constants");
 
+let manifestID;
 const user1 = "Alice";
 const repo1 = "ProjectX"; // Grab from project folder.
 // const alicePathHandler.getProjectPath() = path.join(ROOTPATH, "database", user1, repo1); // This should be the path to the project
@@ -32,7 +33,7 @@ repoHandler1.create(); // manifest_1
 alice4CheckIn();
 
 // Bob check out
-const manifestID = repoHandler1.getHeadManifestID();
+manifestID = repoHandler1.getHeadManifestID();
 const repoHandler2 = new RepoHandler(
   user2,
   repo2,
@@ -44,7 +45,8 @@ bob3CheckIn();
 // Alice check in
 alice3CheckIn();
 
-// Helper functions
+/****** Helper functions
+ * *********************************/
 function alice4CheckIn() {
   fs.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "data.txt"),
@@ -58,6 +60,8 @@ function alice4CheckIn() {
     "I'm under foo"
   );
   repoHandler1.checkin();
+  manifestID = repoHandler1.getHeadManifestID();
+  repoHandler1.addLabel(manifestID, "label_1");
 
   fs.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "bar", "baz"), {
     recursive: true
@@ -74,6 +78,8 @@ function alice4CheckIn() {
     "I just changed..."
   );
   repoHandler1.checkin();
+  manifestID = repoHandler1.getHeadManifestID();
+  repoHandler1.addLabel(manifestID, "label_2");
 }
 
 function alice3CheckIn() {
@@ -87,6 +93,8 @@ function alice3CheckIn() {
     "Alice is happy"
   );
   repoHandler1.checkin();
+  manifestID = repoHandler1.getHeadManifestID();
+  repoHandler1.addLabel(manifestID, "label_3");
 
   fs.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "data.txt"),

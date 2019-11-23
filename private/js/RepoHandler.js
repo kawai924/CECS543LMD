@@ -15,7 +15,6 @@ const {
   MASTER_MANIFEST_NAME
 } = require("../../constants");
 
-/* RepoHandler handles all methods regarding repos. */
 module.exports = class RepoHandler {
   constructor(username, repoName, projectPath) {
     // Store all properties regarding about the current repo
@@ -25,7 +24,7 @@ module.exports = class RepoHandler {
       projectPath
     };
 
-    // Put user into users.json
+    // Add user into users.json
     DBHandler().addUser(username);
   }
 
@@ -60,6 +59,7 @@ module.exports = class RepoHandler {
   }
 
   addLabel(manifestID, label) {
+    // Add label to info.json
     const infoHandler = this.getNewInfoHandler();
     infoHandler.addLabel(manifestID, label);
   }
@@ -144,6 +144,8 @@ module.exports = class RepoHandler {
 
     const manifestList = sourceRepoInfoObject.manifests;
 
+    // Check if manifestID is a label
+
     // Looping through the manifest array to find matching manifest using ID.
     for (let i = 0; i < manifestList.length; i++) {
       if (manifestList[i].manifestID == manifestID) {
@@ -154,6 +156,8 @@ module.exports = class RepoHandler {
 
     throw new Error("Can't get master manifest file");
   }
+
+  isLabelPresent(masterManifestObj, labelName) {}
 
   getNewManifestHandler() {
     return new ManifestHandler(
