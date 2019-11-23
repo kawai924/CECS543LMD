@@ -1,84 +1,94 @@
-const RepoHandlerTest = require("./RepoHandlerTest");
-const { ROOTPATH, COMMANDS } = require("./../../constants");
 const path = require("path");
+const { ROOTPATH, COMMANDS } = require("./../../constants");
+const PathHandler = require("./PathHandler");
+const DBHandler = require("./DBHandler");
+const RepoHandler = require("./RepoHandler");
 
 let manifestID;
-
-const test_create = "username create project_name";
-const test_checkin = "username check-in project_name";
+const test_create = "create project_name project_path";
+const test_checkin = "check-in project_name";
 const test_checkout =
-  "username check-out project_name source_path source_manifestID";
+  "check-out | <target_path> | <from_username> | <from_repoName> | <from manifest id> OR <label name";
 const test_merge_out =
-  "username merge-out project_name target_manifest_id source_path source_manifest_id";
-const test_merge_in = "username merge-in merge_out_manifest_id";
+  "merge-out project_name target_manifest_id source_path source_manifest_id";
+const test_merge_in = "merge-in merge_out_manifest_id";
 
-function parser(prompt) {
-  const argsArr = prompt.split(" ");
+module.exports = function() {
+  const commandParse = (prompt, { username }) => {
+    const command = prompt.split(" ")[0];
+    let args, projectName, currProjectPath;
 
-  const username = argsArr[0].toLowerCase();
-  const inputCommand = argsArr[1].toLowerCase();
-  const projectName = argsArr[2].toLowerCase();
+    switch (command) {
+      case COMMANDS.CREATE:
+        args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
+        projectName = args[1];
+        currProjectPath = args[2];
 
-  // Check whether enough arguments are supplied
-  if (!validNumberArgs(inputCommand, argsArr.length)) {
-    throw new Error("Not enough arguments");
-  }
+        new RepoHandler(username, projectName, currProjectPath).create();
+        break;
 
-  switch (inputCommand) {
-    case "create":
-      new RepoHandlerTest(
-        username,
-        projectName,
-        path.join(ROOTPATH, username, projectName)
-      ).create();
-      break;
-    case "check-in":
-      new RepoHandlerTest(
-        username,
-        projectName,
-        path.join(ROOTPATH, username, projectName)
-      ).checkin();
-      break;
-    case "check-out":
-      new RepoHandlerTest(
-        username,
-        projectName,
-        path.join(ROOTPATH, username, projectName)
-      ).checkout(argsArr[3], argsArr[4]);
-      break;
-    // case "merge-out":
-    //   new RepoHandler(username, projectName, path.join(ROOTPATH, username, projectName)).mergeOut(argsArr[3], argsArr[4], argsArr[5]);
-    //   break;
-    // case "merge-in":
-    //   new RepoHandler(username, projectName, path.join(ROOTPATH, username, projectName)).mergeIn(argsArr[2]);
-    //   break;
-    default:
-      throw new Error("Invalid commands");
-  }
-}
+      case COMMANDS.CHECKIN:
+        args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
+        projectName = args[1];
 
-parser(test_create);
-parser(test_checkin);
-parser(test_checkout);
-// parser(test_merge_out);
-// parser(test_merge_in);
+        new RepoHandler(
+          username,
+          projectName,
+          DBHandler().getProjectPath(username, projectName)
+        ).checkin();
+        break;
 
-/** Helper functions
- * *****************/
-function mapCommand(commandStr) {}
+      case COMMANDS.CHECKOUT:
+        args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
+        const target_path = args[4];
+        const from_username = args[1];
+        const from_repoName = args[2];
+        const sourceManifestID = args[3];
+        const targetProjectPath = path.join(target_path, from_repoName);
 
-function validNumberArgs(command, numberArgs) {
-  return numberArgs === getNumberArgs(command);
-}
+        console.log({
+          username,
+          from_username,
+          from_repoName,
+          sourceManifestID,
+          target_path,
+          targetProjectPath
+        });
 
-function getNumberArgs(command) {
-  const numArgsPerCommandDict = {
-    [COMMANDS.CREATE]: 3,
-    [COMMANDS.CHECKIN]: 3,
-    [COMMANDS.CHECKOUT]: 5,
-    [COMMANDS.MERGE_OUT]: 6,
-    [COMMANDS.MERGE_IN]: 3
+        new RepoHandler(username, from_repoName, targetProjectPath).checkout(
+          from_username,
+          from_repoName,
+          sourceManifestID
+        );
+        break;
+
+      default:
+        throw new Error("Invalid commands");
+    }
   };
 
-  return numArgsPerCommandDict[command];
-}
+  /** Helper functions
+   * *****************/
+  const getNumberArgs = (command, numberArgs) => {
+    switch (command) {
+      case COMMANDS.CREATE:
+        return 3;
+        break;
+      case COMMANDS.CHECKIN:
+        return 2;
+        break;
+      case COMMANDS.CHECKOUT:
+        return 5;
+        break;
+    }
+  };
+
+  const splitAndAppend = (str, delim, count) => {
+    const arr = str.split(delim);
+    return [...arr.splice(0, count), arr.join(delim)];
+  };
+
+  return {
+    commandParse
+  };
+};

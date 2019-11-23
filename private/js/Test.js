@@ -38,7 +38,7 @@ const repoHandler2 = new RepoHandler(
   repo2,
   bobPathHandler.getProjectPath()
 );
-repoHandler2.checkout(alicePathHandler.getProjectPath(), manifestID);
+repoHandler2.checkout(user1, repo1, manifestID);
 bob3CheckIn();
 
 // Alice check in

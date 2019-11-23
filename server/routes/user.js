@@ -11,6 +11,7 @@ const {
   MASTER_MANIFEST_NAME
 } = require("./../../constants");
 const DBHandler = require("../../private/js/DBHandler");
+const Parser = require("./../../private/js/Parser");
 /****************************************/
 
 const router = express.Router();
@@ -35,7 +36,8 @@ router.get("/:username", function(req, res, next) {
 
 router.post("/:username", function(req, res, next) {
   const { commandInput } = req.body;
-  console.log(commandInput);
+  const username = req.params.username;
+  Parser().commandParse(commandInput, { username });
 
   // // Grab information from request
   // const {
@@ -46,7 +48,6 @@ router.post("/:username", function(req, res, next) {
   //   sourcePath,
   //   destPath
   // } = req.body;
-  const userName = req.params.username;
   // let id;
 
   // // Create a repo handler to handle commands
@@ -70,7 +71,7 @@ router.post("/:username", function(req, res, next) {
   //     console.log("Unknown command...");
   // }
 
-  res.redirect("/user/" + userName);
+  res.redirect("/user/" + username);
 });
 
 /* Helper functions */

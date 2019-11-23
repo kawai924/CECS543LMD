@@ -15,7 +15,7 @@ const {
 /* RepoHandler handles all methods regarding repos. */
 module.exports = class RepoHandler {
   constructor(username, repoName, projectPath) {
-    console.log("(RH) projectPath=" + projectPath);
+    // console.log("(RH) projectPath=" + projectPath);
 
     // Store all properties regarding about the current repo
     this.repo = {
@@ -46,9 +46,9 @@ module.exports = class RepoHandler {
     // manifestHandler.write() returns id and path of the newly created manifest.
     const { manifestID, manifestPath } = manifestHandler.write();
 
-    console.log(
-      "(create), manifestID=" + manifestID + ", manifestPath=" + manifestPath
-    );
+    // console.log(
+    //   "(create), manifestID=" + manifestID + ", manifestPath=" + manifestPath
+    // );
 
     // Initialize and write info.json
     const infoHandler = this.getNewInfoHandler();
@@ -77,7 +77,7 @@ module.exports = class RepoHandler {
     const infoHandler = this.getNewInfoHandler();
     const parentID = infoHandler.getCurrentHead();
 
-    console.log("(checkin) parentID=" + parentID);
+    // console.log("(checkin) parentID=" + parentID);
 
     const manifestHandler = this.getNewManifestHandler();
     // Add command to manifest handler
@@ -99,10 +99,26 @@ module.exports = class RepoHandler {
     infoHandler.addManifest(manifestID, manifestPath);
   }
 
-  checkout(sourceProjectPath, sourceManifestID) {
-    const pathToSourceRepo = path.join(sourceProjectPath, VSC_REPO_NAME);
+  checkout(fromUsername, fromRepoName, sourceManifestID) {
+    // Scaffolding data
+    fs.mkdirSync(
+      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR),
+      {
+        recursive: true
+      }
+    );
 
-    console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
+    const sourceProjectPath = DBHandler().getProjectPath(
+      fromUsername,
+      fromRepoName
+    );
+
+    const pathToSourceRepo = path.join(
+      DBHandler().getProjectPath(fromUsername, fromRepoName),
+      VSC_REPO_NAME
+    );
+
+    // console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
 
     const manifestHandler = this.getNewManifestHandler();
     manifestHandler.addCommand(COMMANDS.CHECKOUT);
@@ -158,27 +174,28 @@ module.exports = class RepoHandler {
 
     const manifestList = sourceRepoInfoObject.manifests;
 
-    console.log(
-      "(getManifestObject), manifestList=" + JSON.stringify(manifestList)
-    );
+    // console.log(
+    //   "(getManifestObject), manifestList=" + JSON.stringify(manifestList)
+    // );
 
     // Looping through the manifest array to find matching manifest using ID.
-    let manifestPath;
     for (let i = 0; i < manifestList.length; i++) {
       console.log(
         "(getManifestObject), manifestList[i].manifestID=" +
           manifestList[i].manifestID +
           ", manifestID=" +
-          manifestID
+          manifestID +
+          ", boolean= " +
+          (manifestList[i].manifestID == manifestID)
       );
-      if (manifestList[i].manifestID === manifestID) {
-        manifestPath = manifestList[i].manifestPath;
+      if (manifestList[i].manifestID == manifestID) {
+        const manifestPath = manifestList[i].manifestPath;
+        return JSON.parse(fs.readFileSync(manifestPath));
       }
     }
 
-    console.log("(getManifestObject), manifestPath=" + manifestPath);
-
-    return JSON.parse(fs.readFileSync(manifestPath));
+    throw new Error("Can't get master manifest file");
+    // console.log("(getManifestObject), manifestPath=" + manifestPath);
   }
 
   getNewManifestHandler() {
@@ -212,7 +229,7 @@ module.exports = class RepoHandler {
         .slice(2) // exclude /repo
         .join("/")
     );
-    console.log("(checkout-Artifact), newDestPath=", newDestPath);
+    // console.log("(checkout-Artifact), newDestPath=", newDestPath);
 
     // Recursively make folders in the destination
     makeDir(newDestPath);
