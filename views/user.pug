@@ -18,27 +18,33 @@ block content
         
 
     .row.justify-content-center.mb-4
-      .col-sm-6#command-guide.border.border-info.p-4.border-right-0
-        p.text-info.font-weight-bold Checkout ~>&emsp;
-          span.text-dark.font-weight-normal create | &lt;project name&gt; | &lt;project path&gt;
+      .col-sm-8#command-guide.border.border-info.p-4.border-right-0
+        p.text-info.font-weight-bold Create ~>&emsp;
+          span.text-dark.font-weight-normal create | &lt;project name&gt; | &lt;target folder&gt;
+        p Example: create ProjectAlpha /SomeFolder
         p.text-info.font-weight-bold Check-in ~>&emsp;
           span.text-dark.font-weight-normal check-in | &lt;project name&gt;
+        p Example: check-in ProjectAlpha
         p.text-info.font-weight-bold Check-out ~>&emsp;
           span.text-dark.font-weight-normal check-out  | &lt;from_username&gt; | &lt;from_repoName&gt; | &lt;from manifest id&gt; OR &lt;label name | &lt;target_path&gt;
+        p Example with ID: check-out Bob ProjectBeta 123456 /BobTargetFolder
+        p Example with label:  check-out Bob ProjectBeta somelabel /BobTargetFolder
         p.text-info.font-weight-bold Merge-out ~>&emsp;
           span.text-dark.font-weight-normal merge-out | &lt;project name&gt; | &lt;target manifest id&gt; | &lt;source username&gt; | &lt;souce manifest id&gt;
+        p Example: merge-out ProjectBeta Alice_manifestID Bob Bob_manifestID
         p.text-info.font-weight-bold Merge-in ~>&emsp;
           span.text-dark.font-weight-normal merge-in | &lt;project name&gt; 
+        p Example: merge-in ProjectBeta
       .col-sm-4.border.border-info.p-4.border-left-0
         ul
-          li This [USERNAME] issues these commands
+          li Assume this [USERNAME] issues these commands
           li Target = this [USERNAME]
           li Source = other [USERNAME]
           li | = a space between element
 
 
     .row.text-center.justify-content-center
-      .col-lg-12
+      .col-lg-9
         form(method='POST').form
           .input-group.mb-3
             .input-group-prepend
@@ -46,32 +52,32 @@ block content
             textarea.form-control(type="text", aria-label="Your command here..." placeholder="Command line" name="commandInput")
             button#command-button.btn.btn-outline-primary.small-margin-top(type='submit') Submit     
 
-    .row.justify-content-center.text-center.mt-5
-      .col-sm-9
-        h2.text-info.font Old Ways (Recondering...)
-    .row.text-center.justify-content-center
-      .col-lg-9
-        form(method='POST')
-          .btn-group.btn-group-toggle(data-toggle='buttons')
-            label.btn.btn-secondary Create Repo 
-              input#create-repo-button(type='radio' name='command_option' value="create" autocomplete='off')
-            label.btn.btn-secondary Check In 
-              input#check-in-button(type='radio' name='command_option' value="check-in" autocomplete='off')
-            label.btn.btn-secondary Check Out 
-              input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
-            label.btn.btn-secondary Label 
-              input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
-          p#form-message.mt-3.text-danger
-          input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
-          input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='From Path (Absolute)')
-          input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label')
-          input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest ID')
-          input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (Absolute)')
-          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
+    //- .row.justify-content-center.text-center.mt-5
+    //-   .col-sm-9
+    //-     h2.text-info.font Old Ways (Recondering...)
+    //- .row.text-center.justify-content-center
+    //-   .col-lg-9
+    //-     form(method='POST')
+    //-       .btn-group.btn-group-toggle(data-toggle='buttons')
+    //-         label.btn.btn-secondary Create Repo 
+    //-           input#create-repo-button(type='radio' name='command_option' value="create" autocomplete='off')
+    //-         label.btn.btn-secondary Check In 
+    //-           input#check-in-button(type='radio' name='command_option' value="check-in" autocomplete='off')
+    //-         label.btn.btn-secondary Check Out 
+    //-           input#check-out-button(type='radio' name='command_option' value="check-out" autocomplete='off')
+    //-         label.btn.btn-secondary Label 
+    //-           input#label-button(type='radio' name='command_option' value="label" autocomplete='off')
+    //-       p#form-message.mt-3.text-danger
+    //-       input#repo-name.form-control.user-input.small-margin-bottom(type='text' name='repoName' placeholder='Repo Name')
+    //-       input#source-path.form-control.user-input.small-margin-bottom(type='text' name='sourcePath' placeholder='From Path (Absolute)')
+    //-       input#label.form-control.user-input.small-margin-bottom(type='text' name='label' placeholder='Enter Label')
+    //-       input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest ID')
+    //-       input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (Absolute)')
+    //-       input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
 
     .row
       .col-lg-12
-        .data-list.mt-5
+        .data-list.mt-2
           h5 YOU HAVE #{repoInfoList.length} REPOS:
           .card-columns
             each repo in repoInfoList
@@ -81,20 +87,19 @@ block content
                       .card-text
                         p 
                           span.font-weight-bold Labels: 
-                          span [Name] &rarr; [Manifest ID]
                           ul
                             each label in repo.labels
                               - const labelName = Object.keys(label)
-                              li #{labelName} &rarr; ID: #{label[labelName]}
+                              li #{labelName} &rarr; #{label[labelName]}
                         p 
                           span.font-weight-bold Manifests:
                           ul
                            each manifest in repo.manifests
                             li
-                              span.badge.badge-secondary #{manifest.name}
+                              span.badge.badge-success #{manifest.name}
                               ul
                                 each key in Object.keys(manifest)
-                                  if (key !== 'name' && key !=='filepath')
+                                  if (key !== "id" && key !== "name")
                                     li
                                       span.badge.badge-light #{key}
                                       span  #{manifest[key]}
