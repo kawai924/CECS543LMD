@@ -128,7 +128,7 @@ module.exports = class RepoHandler {
       pathToSourceRepo,
       sourceManifestID
     );
-    console.log("(check-out) manifestObject=" + JSON.stringify(manifestObject));
+    // console.log("(check-out) manifestObject=" + JSON.stringify(manifestObject));
 
     // Copy source file into the checkout folder
     manifestObject.structure.forEach(artifact =>
@@ -180,14 +180,14 @@ module.exports = class RepoHandler {
 
     // Looping through the manifest array to find matching manifest using ID.
     for (let i = 0; i < manifestList.length; i++) {
-      console.log(
-        "(getManifestObject), manifestList[i].manifestID=" +
-          manifestList[i].manifestID +
-          ", manifestID=" +
-          manifestID +
-          ", boolean= " +
-          (manifestList[i].manifestID == manifestID)
-      );
+      // console.log(
+      //   "(getManifestObject), manifestList[i].manifestID=" +
+      //     manifestList[i].manifestID +
+      //     ", manifestID=" +
+      //     manifestID +
+      //     ", boolean= " +
+      //     (manifestList[i].manifestID == manifestID)
+      // );
       if (manifestList[i].manifestID == manifestID) {
         const manifestPath = manifestList[i].manifestPath;
         return JSON.parse(fs.readFileSync(manifestPath));

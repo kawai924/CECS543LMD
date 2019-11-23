@@ -3,13 +3,13 @@ const PathHandler = require("./PathHandler");
 
 module.exports = class InfoHandler {
   constructor(username, projectName, repoPath) {
-    console.log("(IM) repoPath=" + repoPath);
+    // console.log("(IM) repoPath=" + repoPath);
 
     // Temporary fix: change repoPath to project path, so we can use pathHandler for now.
     const pathArray = repoPath.split("/");
     const projectPath = pathArray.slice(0, -1).join("/");
 
-    console.log("Adapter: " + projectPath);
+    // console.log("Adapter: " + projectPath);
     this.pathHandler = PathHandler(username, projectName, projectPath);
 
     // If info.json doesn't exist, write a fresh one.
