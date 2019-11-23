@@ -18,8 +18,6 @@ const {
 /* RepoHandler handles all methods regarding repos. */
 module.exports = class RepoHandler {
   constructor(username, repoName, projectPath) {
-    // console.log("(RH) projectPath=" + projectPath);
-
     // Store all properties regarding about the current repo
     this.repo = {
       username,
@@ -34,9 +32,10 @@ module.exports = class RepoHandler {
   /* Utility functions
    *******************/
   create() {
-    // Setup repo and manifest folder
+    // Step 1: Set up manifests folder
     makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
 
+    // Step 2: Writing new manifest
     // Create a new manifest handler
     const manifestHandler = this.getNewManifestHandler();
     // Add command to new manifest
@@ -44,20 +43,15 @@ module.exports = class RepoHandler {
     // manifestHandler.write() returns id and path of the newly created manifest.
     const { manifestID, manifestPath } = manifestHandler.write();
 
-    // console.log(
-    //   "(create), manifestID=" + manifestID + ", manifestPath=" + manifestPath
-    // );
-
+    // Step 3: Update info.json with new manifest file
     // Initialize and write info.json
     const infoHandler = this.getNewInfoHandler();
-
     // Write an default info.json first
     infoHandler.write();
-
     // Update the info.json with the new manifest
     infoHandler.addManifest(manifestID, manifestPath);
 
-    // Add project into users.json
+    // Step 4: Add project to users.json
     DBHandler().addProjectForUser(
       this.repo.username,
       this.repo.repoName,
@@ -71,86 +65,74 @@ module.exports = class RepoHandler {
   }
 
   checkin() {
-    // The manifestID in the head will be the parent of this new checkin manifest.
+    // Step 1: Get the parent of this check-in.
     const infoHandler = this.getNewInfoHandler();
     const parentID = infoHandler.getCurrentHead();
 
-    // console.log("(checkin) parentID=" + parentID);
-
+    // Step 2: Writing a new manifest
     const manifestHandler = this.getNewManifestHandler();
-    // Add command to manifest handler
     manifestHandler.addCommand(COMMANDS.CHECKIN);
-
-    // Copy folder tree to repo
+    // Scan through project tree and update repo
     const folderStructure = copyFolderTreeWithMemoization(
       this.repo.projectPath,
       path.join(this.repo.projectPath, VSC_REPO_NAME)
     );
-
-    // Add the structure into the manifest.
+    // Add all artifacts path to the new manifest.
     manifestHandler.addStructure(folderStructure);
-
     // Write the manifest into the file system. Attach the parentID to that manifest
     const { manifestID, manifestPath } = manifestHandler.write(parentID);
 
-    // Update the info.json with the new manifest
+    // Step 3: Update info.json with new manifest file
     infoHandler.addManifest(manifestID, manifestPath);
   }
 
   checkout(fromUsername, fromRepoName, sourceManifestID) {
-    // Scaffolding data
-    makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
-
-    const sourceProjectPath = DBHandler().getProjectPath(
-      fromUsername,
-      fromRepoName
-    );
-
-    const pathToSourceRepo = path.join(
-      DBHandler().getProjectPath(fromUsername, fromRepoName),
-      VSC_REPO_NAME
-    );
-
-    // console.log("(check-out) pathToSourceRepo=" + pathToSourceRepo);
-
-    const manifestHandler = this.getNewManifestHandler();
-    manifestHandler.addCommand(COMMANDS.CHECKOUT);
-
-    // Grab info.json from source
-    const manifestObject = this.getManifestObject(
-      pathToSourceRepo,
-      sourceManifestID
-    );
-    // console.log("(check-out) manifestObject=" + JSON.stringify(manifestObject));
-
-    // Copy source file into the checkout folder
-    manifestObject.structure.forEach(artifact =>
-      this.checkoutArtifact(artifact, sourceProjectPath)
-    );
-    // Copy the structure that uses to checkout
-    manifestHandler.addStructure(manifestObject.structure);
-
-    // Setup repo and manifest folder
-    makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
-
-    manifestHandler.addCheckoutFrom(sourceProjectPath);
-
-    // Write a new manifest into file with the parentID = manifestID from parameter
-    const { manifestID, manifestPath } = manifestHandler.write(
-      sourceManifestID
-    );
-
-    // Update the manifest lists
-    const infoHandler = this.getNewInfoHandler();
-    infoHandler.write();
-    infoHandler.addManifest(manifestID, manifestPath);
-
-    // Add project into users.json
+    // Step 1: Preparing for repo system
+    // Add project path to users.json
     DBHandler().addProjectForUser(
       this.repo.username,
       this.repo.repoName,
       this.repo.projectPath
     );
+    // Make neccessary folders
+    makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
+    // Write a fresh info.json
+    const infoHandler = this.getNewInfoHandler();
+    infoHandler.write();
+
+    // Step 2: Checkout files from source to target
+    // Get the source repo path
+    const sourceProjectPath = DBHandler().getProjectPath(
+      fromUsername,
+      fromRepoName
+    );
+    const pathToSourceRepo = path.join(
+      DBHandler().getProjectPath(fromUsername, fromRepoName),
+      VSC_REPO_NAME
+    );
+    // Grab source manifest using ID
+    const manifestObject = this.getManifestObject(
+      pathToSourceRepo,
+      sourceManifestID
+    );
+    // Copy source file into the checkout folder
+    manifestObject.structure.forEach(artifact =>
+      this.checkoutArtifact(artifact, sourceProjectPath)
+    );
+
+    // Step 3: Write a new manifest
+    const manifestHandler = this.getNewManifestHandler();
+    manifestHandler.addCommand(COMMANDS.CHECKOUT);
+    // Add all artifacts path to the new manifest.
+    manifestHandler.addStructure(manifestObject.structure);
+    manifestHandler.addCheckoutFrom(sourceProjectPath);
+    // Write a new manifest into file with the parentID = manifestID from parameter
+    const { manifestID, manifestPath } = manifestHandler.write(
+      sourceManifestID
+    );
+
+    // Step 4: Update the info.json with the new manifest
+    infoHandler.addManifest(manifestID, manifestPath);
   }
 
   /* Helper functions
@@ -162,20 +144,8 @@ module.exports = class RepoHandler {
 
     const manifestList = sourceRepoInfoObject.manifests;
 
-    // console.log(
-    //   "(getManifestObject), manifestList=" + JSON.stringify(manifestList)
-    // );
-
     // Looping through the manifest array to find matching manifest using ID.
     for (let i = 0; i < manifestList.length; i++) {
-      // console.log(
-      //   "(getManifestObject), manifestList[i].manifestID=" +
-      //     manifestList[i].manifestID +
-      //     ", manifestID=" +
-      //     manifestID +
-      //     ", boolean= " +
-      //     (manifestList[i].manifestID == manifestID)
-      // );
       if (manifestList[i].manifestID == manifestID) {
         const manifestPath = manifestList[i].manifestPath;
         return JSON.parse(fs.readFileSync(manifestPath));
@@ -183,7 +153,6 @@ module.exports = class RepoHandler {
     }
 
     throw new Error("Can't get master manifest file");
-    // console.log("(getManifestObject), manifestPath=" + manifestPath);
   }
 
   getNewManifestHandler() {
@@ -214,13 +183,11 @@ module.exports = class RepoHandler {
       this.repo.projectPath,
       artifact.artifactRelPath
         .split("/")
-        .slice(2) // exclude /repo
+        .slice(2) // exclude "" and repo folder name
         .join("/")
     );
-    // console.log("(checkout-Artifact), newDestPath=", newDestPath);
 
     // Recursively make folders in the destination
-    // makeDir(newDestPath);
     fs.mkdirSync(newDestPath, { recursive: true });
 
     // Regrex to get the filename from leaf folder
