@@ -10,6 +10,7 @@ const {
   DATABASE_NAME,
   MASTER_MANIFEST_NAME
 } = require("./../../constants");
+const DBHandler = require("../../private/js/DBHandler");
 /****************************************/
 
 const router = express.Router();

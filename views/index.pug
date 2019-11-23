@@ -8,10 +8,28 @@ block content
           .container
             h1.display-4 LMD Version Control System
             p.lead A lightweight, web-based, intuitive VCS.
-    .row.text-center.justify-content-center
+
+    .row.text-center.justify-content-center.border-bottom.border-dark
       .col-lg-6
         form(method='POST')
           input#username.form-control.user-input.small-margin-bottom(type='text' name='username' placeholder='Username')
-          input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
+          input#create-repo-button.btn.btn-outline-primary.small-margin-top.mt-4(type='submit')
         p.mt-5.border.border-secondary If leave blank, username = 
           span.font-weight-bold johndoe
+
+    .row.text-center.justify-content-center.mt-4
+      h2.text-info Existing Users
+      
+    .row.mt-4
+      .col-lg-12#usersList
+        .card-columns.p-3(style="width: 46rem;")
+          each user in Object.keys(users)
+            .card.p-3
+              .card-body
+                  h5.card-title.badge.badge-primary #{user}
+              .card-text
+                ul
+                  each project in users[user]
+                    - const [projectName] =Object.keys(project)
+                    li.text-dark #{projectName}
+

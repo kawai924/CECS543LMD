@@ -37,8 +37,6 @@ const DatabaseHandler = () => {
       const users = getUsers();
       users[username] = [];
       updateUsersJSON(users);
-    } else {
-      throw new Error("Can't add an existing user");
     }
   };
 

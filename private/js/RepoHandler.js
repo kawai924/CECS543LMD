@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
+
 const InfoHandler = require("./InfoHandler");
 const ManifestHandler = require("./ManifestHandler");
+const DBHandler = require("./DBHandler");
 const { copyFolderTreeWithMemoization, makeDir } = require("./FolderFunctions");
 const {
   VSC_REPO_NAME,
@@ -21,6 +23,9 @@ module.exports = class RepoHandler {
       repoName,
       projectPath
     };
+
+    // Put user into users.json
+    DBHandler().addUser(username);
   }
 
   /* Utility functions
@@ -53,6 +58,13 @@ module.exports = class RepoHandler {
 
     // Update the info.json with the new manifest
     infoHandler.addManifest(manifestID, manifestPath);
+
+    // Add project into users.json
+    DBHandler().addProjectForUser(
+      this.repo.username,
+      this.repo.repoName,
+      this.repo.projectPath
+    );
   }
 
   addLabel(manifestID, label) {
@@ -128,6 +140,13 @@ module.exports = class RepoHandler {
     const infoHandler = this.getNewInfoHandler();
     infoHandler.write();
     infoHandler.addManifest(manifestID, manifestPath);
+
+    // Add project into users.json
+    DBHandler().addProjectForUser(
+      this.repo.username,
+      this.repo.repoName,
+      this.repo.projectPath
+    );
   }
 
   /* Helper functions
