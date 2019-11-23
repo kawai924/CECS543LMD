@@ -1,10 +1,10 @@
-var fs = require('fs');
+var fs = require("fs");
 
 /* Read file content and return the artifactID */
-function createArtifactId(fileName) {
+module.exports = function(fileName) {
   // Read the file and grab the extension
-  let data = fs.readFileSync(fileName, 'utf8');
-  let ext = fileName.substring(fileName.lastIndexOf('.'));
+  let data = fs.readFileSync(fileName, "utf8");
+  let ext = fileName.substring(fileName.lastIndexOf("."));
   let weights = [1, 3, 7, 11, 13];
   const len = data.length;
   let weight;
@@ -20,6 +20,4 @@ function createArtifactId(fileName) {
   sum = sum % (Math.pow(2, 31) - 1);
   let artifactName = `${sum}-L${len}${ext}`;
   return artifactName;
-}
-
-module.exports = createArtifactId;
+};

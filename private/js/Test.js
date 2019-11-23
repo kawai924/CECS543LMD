@@ -1,10 +1,13 @@
-const RepoHandler = require("./RepoHandler");
-const InfoHandler = require("./InfoHandler");
-const PathHandler = require("./PathHandler");
-
 const fs = require("fs-extra");
 const path = require("path");
-const ROOTPATH = path.join(__dirname, "..", "..");
+
+const RepoHandler = require("./RepoHandler");
+const PathHandler = require("./PathHandler");
+const {
+  ROOTPATH,
+  DATABASE_NAME,
+  USERS_FILENAME
+} = require("./../../constants");
 
 const user1 = "Alice";
 const repo1 = "ProjectX"; // Grab from project folder.
@@ -129,6 +132,7 @@ function bob3CheckIn() {
 function reset() {
   fs.removeSync(path.join(alicePathHandler.getProjectPath()));
   fs.removeSync(path.join(bobPathHandler.getProjectPath()));
+  fs.removeSync(path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME));
 }
 
 // const headManifestID = repoHandler.getHeadManifestID();

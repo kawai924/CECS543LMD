@@ -1,17 +1,26 @@
-module.exports = class Queue {
-  constructor() {
-    this.data = [];
-  }
-  enqueue(element) {
-    this.data.unshift(element);
-  }
-  dequeue() {
-    return this.data.shift();
-  }
-  isEmpty() {
-    return this.data.length === 0;
-  }
-  print() {
-    console.log(this.data);
-  }
+module.exports = function() {
+  let _data = [];
+
+  const enqueue = element => {
+    _data.unshift(element);
+  };
+
+  const dequeue = () => {
+    return _data.shift();
+  };
+
+  const isEmpty = () => {
+    return _data.length === 0;
+  };
+
+  const print = () => {
+    console.log(_data);
+  };
+
+  return {
+    enqueue,
+    dequeue,
+    isEmpty,
+    print
+  };
 };
