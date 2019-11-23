@@ -14,7 +14,7 @@ block content
         form(method='POST')
           input#username.form-control.user-input.small-margin-bottom(type='text' name='username' placeholder='Username')
           input#create-repo-button.btn.btn-outline-primary.small-margin-top.mt-4(type='submit')
-        p.mt-5.border.border-secondary If leave blank, username = 
+        p.mt-3.border.border-secondary If leave blank, username = 
           span.font-weight-bold johndoe
 
     .row.text-center.justify-content-center.mt-4
@@ -22,7 +22,7 @@ block content
       
     .row.mt-4
       .col-lg-12#usersList
-        .card-columns.p-3(style="width: 46rem;")
+        .card-columns
           each user in Object.keys(users)
             .card.p-3
               .card-body
@@ -32,4 +32,6 @@ block content
                   each project in users[user]
                     - const [projectName] =Object.keys(project)
                     li.text-dark #{projectName}
+                      ul
+                        li #{project[projectName]}
 
