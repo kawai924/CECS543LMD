@@ -15,20 +15,12 @@
 const path = require("path");
 const fs = require("fs");
 
-const {
-  ROOTPATH,
-  VSC_REPO_NAME,
-  MANIFEST_DIR,
-  DATABASE_NAME,
-  MASTER_MANIFEST_NAME,
-  ALL_USER_FILENAME
-} = require("../../constants");
+const { ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("../../constants");
 /****************************************/
 
 const DatabaseHandler = () => {
   const _databasePath = path.join(ROOTPATH, DATABASE_NAME);
-  const _FILENAME = ALL_USER_FILENAME;
-  const _filePath = path.join(_databasePath, _FILENAME);
+  const _filePath = path.join(_databasePath, USERS_FILENAME);
 
   /** Public Interface **/
   const getUsers = () => {
@@ -53,7 +45,7 @@ const DatabaseHandler = () => {
   const addProjectForUser = (username, projectName, projectPath) => {
     const users = getUsers();
 
-    if (isUserPresent(username) && !isProjectPresent(username, projectName)) {
+    if (!isProjectPresent(username, projectName)) {
       users[username].push({
         [projectName]: projectPath
       });
@@ -61,6 +53,29 @@ const DatabaseHandler = () => {
       updateUsersJSON(users);
     } else {
       throw new Error("Can't add an existing project");
+    }
+  };
+
+  const updateProjectPath = (username, projectName, newProjectPath) => {
+    const users = getUsers();
+
+    if (isProjectPresent(username, projectName)) {
+      const projectList = users[username];
+      for (let i = 0; i < projectList.length; i++) {
+        newProjectList = projectList.filter(project => {
+          const [currentProjectName] = Object.keys(project);
+          return currentProjectName !== projectName;
+        });
+
+        newProjectList.push({
+          [projectName]: newProjectPath
+        });
+      }
+
+      users[username] = newProjectList;
+      updateUsersJSON(users);
+    } else {
+      throw new Error(`${projectName} doesn't exist`);
     }
   };
 
@@ -97,22 +112,12 @@ const DatabaseHandler = () => {
     return false;
   };
 
-  const getUser = username => {
-    const userJSON = getUsers().allUsers;
-
-    if (isUserPresent(username)) {
-      userJSON.allUsers[username].push({
-        projectName,
-        projectPath
-      });
-    }
-  };
-
   /** RETURN PUBLIC INTERFACE **/
   return {
     getUsers,
     addUser,
-    addProjectForUser
+    addProjectForUser,
+    updateProjectPath
   };
 };
 
