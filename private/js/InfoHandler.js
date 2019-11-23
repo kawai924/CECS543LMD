@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+
 const { MASTER_MANIFEST_NAME } = require("./../../constants");
 
 module.exports = class InfoHandler {
