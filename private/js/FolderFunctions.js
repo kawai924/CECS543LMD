@@ -6,7 +6,7 @@ const createArtifactId = require("./Artifact");
 
 /* This function reads each file from source folder, create artifact id and copy to target folder */
 function copyFolderTreeWithMemoization(fromPath, toPath) {
-  console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
+  // console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
 
   let structure = [];
   const projectPath = fromPath;
@@ -35,7 +35,7 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
         const newTarget = path.join(toPath, fileName);
 
         // Create the directory in the destination
-        makeDir(newTarget);
+        makeDirSync(newTarget);
 
         // Add """" : dirPath to structure
         structure.push({
@@ -51,7 +51,7 @@ function copyFolderTreeWithMemoization(fromPath, toPath) {
         const leafFolder = path.join(toPath, fileName);
 
         // Create the folder there
-        makeDir(leafFolder);
+        makeDirSync(leafFolder);
 
         //Create artifact for the file
         const filePath = path.join(fromPath, fileName);
@@ -91,7 +91,7 @@ function isDirectory(source, fileName) {
 }
 
 /* Function to create a directory if directory is not exists */
-function makeDir(path, options = { recursive: true }) {
+function makeDirSync(path, options = { recursive: true }) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
 }
 
@@ -102,5 +102,5 @@ function relativePath(fullPath, commonPath) {
 module.exports = {
   copyFolderTreeWithMemoization,
   isDirectory,
-  makeDir
+  makeDirSync
 };

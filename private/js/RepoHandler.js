@@ -4,7 +4,10 @@ const path = require("path");
 const InfoHandler = require("./InfoHandler");
 const ManifestHandler = require("./ManifestHandler");
 const DBHandler = require("./DBHandler");
-const { copyFolderTreeWithMemoization, makeDir } = require("./FolderFunctions");
+const {
+  copyFolderTreeWithMemoization,
+  makeDirSync
+} = require("./FolderFunctions");
 const {
   VSC_REPO_NAME,
   MANIFEST_DIR,
@@ -32,12 +35,7 @@ module.exports = class RepoHandler {
    *******************/
   create() {
     // Setup repo and manifest folder
-    fs.mkdirSync(
-      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR),
-      {
-        recursive: true
-      }
-    );
+    makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
 
     // Create a new manifest handler
     const manifestHandler = this.getNewManifestHandler();
@@ -101,12 +99,7 @@ module.exports = class RepoHandler {
 
   checkout(fromUsername, fromRepoName, sourceManifestID) {
     // Scaffolding data
-    fs.mkdirSync(
-      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR),
-      {
-        recursive: true
-      }
-    );
+    makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
 
     const sourceProjectPath = DBHandler().getProjectPath(
       fromUsername,
@@ -138,12 +131,7 @@ module.exports = class RepoHandler {
     manifestHandler.addStructure(manifestObject.structure);
 
     // Setup repo and manifest folder
-    fs.mkdirSync(
-      path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR),
-      {
-        recursive: true
-      }
-    );
+    makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
 
     manifestHandler.addCheckoutFrom(sourceProjectPath);
 
@@ -219,7 +207,7 @@ module.exports = class RepoHandler {
   }
 
   checkoutArtifact(artifact, sourceProjectPath) {
-    const escapedFileName = this.escapeRegExp(artifact.artifactNode);
+    // const escapedFileName = this.escapeRegExp(artifact.artifactNode);
 
     // Append the folder path with the new target path
     const newDestPath = path.join(
@@ -232,7 +220,8 @@ module.exports = class RepoHandler {
     // console.log("(checkout-Artifact), newDestPath=", newDestPath);
 
     // Recursively make folders in the destination
-    makeDir(newDestPath);
+    // makeDir(newDestPath);
+    fs.mkdirSync(newDestPath, { recursive: true });
 
     // Regrex to get the filename from leaf folder
     const regrexForFileName = /.+(?=\/)/;
@@ -252,7 +241,7 @@ module.exports = class RepoHandler {
       );
 
       // Create the folder
-      makeDir(newDestPath);
+      makeDirSync(newDestPath);
 
       // Copy the file
       fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
