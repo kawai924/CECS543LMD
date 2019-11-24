@@ -236,4 +236,32 @@ module.exports = class RepoHandler {
   escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
   }
+
+  // Duplicates two files into a given target directory
+  // rPath = absolute path of repo path
+  // gPath = absolute path of grandma path
+  // targetPath = absolute path of intended target directory
+  moveFiles(rPath, gPath, targetPath) {
+
+    let rPathDest = path.join(targetPath, path.basename(rPath));
+    let gPathDest = path.join(targetPath, path.basename(gPath));
+    let extensionR = path.extname(rPath);
+    let extensionG = path.extname(gPath)
+
+    // Duplicate rPath to targetPath
+    fs.copyFile(rPath, rPathDest, (err) => {
+      if (err) throw err;
+      console.log(path.basename(rPath), " copied to ", rPathDest);
+    });
+
+    // Duplicate gPath to targetPath
+    fs.copyFile(gPath, gPathDest, (err) => {
+      if (err) throw err;
+      console.log(path.basename(gPath), " copied to ", gPathDest);
+    });
+
+    // Append _mr or _mg to the duplicated filenames
+    fs.renameSync((rPathDest), path.join(rPathDest.replace(/\.[^/.]+$/, "") + "_mr" + extensionR));
+    fs.renameSync((gPathDest), path.join(gPathDest.replace(/\.[^/.]+$/, "") + "_mg" + extensionG));
+  }
 };
