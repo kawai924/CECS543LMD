@@ -22,11 +22,13 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6-alpha.4",
     "fs-extra": "^8.1.0",
-    "nodemon": "^1.19.4",
     "pug": "^2.0.4"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.2",
+    "mock-fs": "^4.10.3",
+    "nodemon": "^2.0.1",
+    "sinon": "^7.5.0"
   }
 }
