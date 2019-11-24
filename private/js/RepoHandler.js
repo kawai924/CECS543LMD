@@ -221,6 +221,22 @@ module.exports = class RepoHandler {
       fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
     }
   }
+  
+  // Returns list of of all ID's up to the root.
+  // Need to add implementations for branching segments
+  getParentList(targetID, sourceID) {
+    // For building and testing
+    // TargetId => Bob's manifest_id, sourceID => Alice's manifest_id
+    // Hardcoding paths for now...
+    let targetPath = path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR);
+    console.log("targetPath debugging: " , targetPath);
+    const manifestData = JSON.parse(
+      fs.readFileSync(path.join(targetPath, targetID.toString() + '.json'))
+    );
+    console.log("Target Manfiest data: ", manifestData.parent);
+
+
+  }
 
   escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string

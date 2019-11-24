@@ -33,6 +33,12 @@ repoHandler = new RepoHandler(
 );
 repoHandler.checkout(projectPath, manifestID);
 
+
+
+// getParentList function
+repoHandler.getParentList(repoHandler.getHeadManifestID(), 1574307093170);
+
+
 // Helper functions
 function writeTestFiles(toPath) {
   fs.writeFileSync(
