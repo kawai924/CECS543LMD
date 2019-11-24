@@ -1,3 +1,7 @@
+/********** IMPORT MODULES **********/
+const { fs, path, ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("./");
+/****************************************/
+
 /**
  * This handler allows use to organize all users who using our VSC systems.
  * Features:
@@ -10,13 +14,6 @@
  *          .....
  *      ]
  */
-
-/********** IMPORT MODULES **********/
-const path = require("path");
-const fs = require("fs");
-
-const { ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("../../constants");
-/****************************************/
 
 const DatabaseHandler = () => {
   const usersDBPath = path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME);

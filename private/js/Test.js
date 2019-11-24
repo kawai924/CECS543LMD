@@ -1,13 +1,6 @@
-const fs = require("fs-extra");
-const path = require("path");
-
+const { path, fsExt, ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("./");
 const RepoHandler = require("./RepoHandler");
 const PathHandler = require("./PathHandler");
-const {
-  ROOTPATH,
-  DATABASE_NAME,
-  USERS_FILENAME
-} = require("./../../constants");
 
 let manifestID;
 const user1 = "Alice";
@@ -48,14 +41,14 @@ alice3CheckIn();
 /****** Helper functions
  * *********************************/
 function alice4CheckIn() {
-  fs.writeFileSync(
+  fsExt.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "data.txt"),
     "Hello World"
   );
   repoHandler1.checkin();
 
-  fs.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "foo"));
-  fs.writeFileSync(
+  fsExt.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "foo"));
+  fsExt.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "foo", "test1.txt"),
     "I'm under foo"
   );
@@ -63,17 +56,17 @@ function alice4CheckIn() {
   manifestID = repoHandler1.getHeadManifestID();
   repoHandler1.addLabel(manifestID, "label_1");
 
-  fs.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "bar", "baz"), {
+  fsExt.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "bar", "baz"), {
     recursive: true
   });
-  fs.writeFileSync(
+  fsExt.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "bar", "baz", "test2.txt"),
     "I'm under bar/baz"
   );
   repoHandler1.checkin();
 
-  fs.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "foo"));
-  fs.writeFileSync(
+  fsExt.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "foo"));
+  fsExt.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "foo", "test1.txt"),
     "I just changed..."
   );
@@ -83,8 +76,10 @@ function alice4CheckIn() {
 }
 
 function alice3CheckIn() {
-  fs.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "alice_folder"));
-  fs.writeFileSync(
+  fsExt.mkdirpSync(
+    path.join(alicePathHandler.getProjectPath(), "alice_folder")
+  );
+  fsExt.writeFileSync(
     path.join(
       alicePathHandler.getProjectPath(),
       "alice_folder",
@@ -96,16 +91,19 @@ function alice3CheckIn() {
   manifestID = repoHandler1.getHeadManifestID();
   repoHandler1.addLabel(manifestID, "label_3");
 
-  fs.writeFileSync(
+  fsExt.writeFileSync(
     path.join(alicePathHandler.getProjectPath(), "data.txt"),
     "Alice writes data.txt"
   );
   repoHandler1.checkin();
 
-  fs.mkdirpSync(path.join(alicePathHandler.getProjectPath(), "alice_secret"), {
-    recursive: true
-  });
-  fs.writeFileSync(
+  fsExt.mkdirpSync(
+    path.join(alicePathHandler.getProjectPath(), "alice_secret"),
+    {
+      recursive: true
+    }
+  );
+  fsExt.writeFileSync(
     path.join(
       alicePathHandler.getProjectPath(),
       "alice_secret",
@@ -117,20 +115,20 @@ function alice3CheckIn() {
 }
 
 function bob3CheckIn() {
-  fs.mkdirpSync(path.join(bobPathHandler.getProjectPath(), "bob_folder"));
-  fs.writeFileSync(
+  fsExt.mkdirpSync(path.join(bobPathHandler.getProjectPath(), "bob_folder"));
+  fsExt.writeFileSync(
     path.join(bobPathHandler.getProjectPath(), "bob_folder", "run.txt"),
     "Bob is running"
   );
   repoHandler2.checkin();
 
-  fs.writeFileSync(
+  fsExt.writeFileSync(
     path.join(bobPathHandler.getProjectPath(), "bob_folder", "walk.txt"),
     "Bob is tired, walking"
   );
   repoHandler2.checkin();
 
-  fs.writeFileSync(
+  fsExt.writeFileSync(
     path.join(bobPathHandler.getProjectPath(), "data.txt"),
     "Bob overwrites file..."
   );
@@ -138,9 +136,9 @@ function bob3CheckIn() {
 }
 
 function reset() {
-  fs.removeSync(path.join(alicePathHandler.getProjectPath()));
-  fs.removeSync(path.join(bobPathHandler.getProjectPath()));
-  fs.removeSync(path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME));
+  fsExt.removeSync(path.join(alicePathHandler.getProjectPath()));
+  fsExt.removeSync(path.join(bobPathHandler.getProjectPath()));
+  fsExt.removeSync(path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME));
 }
 
 // const headManifestID = repoHandler.getHeadManifestID();

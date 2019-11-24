@@ -1,5 +1,4 @@
-const path = require("path");
-const { COMMANDS } = require("./../../constants");
+const { path, COMMANDS } = require("./");
 const DBHandler = require("./DBHandler");
 const RepoHandler = require("./RepoHandler");
 
@@ -45,15 +44,6 @@ module.exports = function() {
         const from_repoName = args[2];
         const sourceManifestID = args[3];
         const targetProjectPath = path.join(target_path, from_repoName);
-
-        // console.log({
-        //   username,
-        //   from_username,
-        //   from_repoName,
-        //   sourceManifestID,
-        //   target_path,
-        //   targetProjectPath
-        // });
 
         new RepoHandler(username, from_repoName, targetProjectPath).checkout(
           from_username,

@@ -1,16 +1,16 @@
-const fs = require("fs");
-const path = require("path");
-
-const InfoHandler = require("./InfoHandler");
-const ManifestHandler = require("./ManifestHandler");
-const DBHandler = require("./DBHandler");
-const { copyDirTree, makeDirSync } = require("./FolderFunctions");
 const {
+  fs,
+  path,
   VSC_REPO_NAME,
   MANIFEST_DIR,
   COMMANDS,
   MASTER_MANIFEST_NAME
-} = require("../../constants");
+} = require("./");
+
+const InfoHandler = require("./InfoHandler");
+const ManifestHandler = require("./ManifestHandler");
+const DBHandler = require("./DBHandler");
+const { copyDirTree, makeDirSync } = require("./Functions");
 
 module.exports = class RepoHandler {
   constructor(username, repoName, projectPath) {

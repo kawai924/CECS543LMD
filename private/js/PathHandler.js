@@ -1,11 +1,11 @@
-const path = require("path");
 const {
+  path,
   ROOTPATH,
   VSC_REPO_NAME,
   MANIFEST_DIR,
   MASTER_MANIFEST_NAME,
   DATABASE_NAME
-} = require("./../../constants");
+} = require("./");
 
 /**
  * This function is to encapsulate the path of a particular project.

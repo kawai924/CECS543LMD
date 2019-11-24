@@ -1,13 +1,13 @@
-const fs = require("fs");
+const { fs, path, VSC_REPO_NAME } = require("./");
 const PathHandler = require("./PathHandler");
 
 module.exports = class InfoHandler {
   constructor(username, projectName, repoPath) {
     // Temporary fix: change repoPath to project path, so we can use pathHandler for now.
     const projectPath = repoPath
-      .split("/")
+      .split(path.sep)
       .slice(0, -1)
-      .join("/");
+      .join(path.sep);
 
     // This handler handles all paths regarding the current project
     this.pathHandler = PathHandler(username, projectName, projectPath);
