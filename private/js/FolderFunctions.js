@@ -34,7 +34,9 @@ function copyDirTree(fromPath, toPath) {
 
         struct.push({
           artifactNode: "",
-          artifactRelPath: getRelPath(targetFile, projectPath)
+          artifactRelPath: path.normalize(
+            path.relative(projectPath, targetFile)
+          )
         });
 
         //Recursive call
@@ -54,13 +56,12 @@ function copyDirTree(fromPath, toPath) {
         fs.copyFileSync(filePath, aAbsPath);
 
         // Grab the absolute path from database to the curent artifact
-        const fileName = /.*(?=\.)/.exec(file.split("/").pop())[0];
-        const aDirPath = new RegExp(`.*(?=${fileName})`).exec(aAbsPath)[0];
+        const aDirPath = path.parse(leafFolder).dir;
 
         // Add artifact and its path to manifest
         struct.push({
           artifactNode: path.join(file, aID),
-          artifactRelPath: getRelPath(aDirPath, projectPath)
+          artifactRelPath: path.normalize(path.relative(projectPath, aDirPath))
         });
       }
     }
@@ -80,10 +81,6 @@ function isDir(source, fileName) {
 /* Function to create a directory if directory is not exists */
 function makeDirSync(path, options = { recursive: true }) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
-}
-
-function getRelPath(fullPath, commonPath) {
-  return fullPath.split(commonPath)[1];
 }
 
 module.exports = {

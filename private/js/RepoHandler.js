@@ -194,47 +194,28 @@ module.exports = class RepoHandler {
   }
 
   checkoutArtifact(artifact, sourceProjectPath) {
-    // const escapedFileName = this.escapeRegExp(artifact.artifactNode);
-
     // Append the folder path with the new target path
     const newDestPath = path.join(
       this.repo.projectPath,
-      artifact.artifactRelPath
-        .split("/")
-        .slice(2) // exclude "" and repo folder name
-        .join("/")
+      path.relative(VSC_REPO_NAME, artifact.artifactRelPath)
     );
 
     // Recursively make folders in the destination
     fs.mkdirSync(newDestPath, { recursive: true });
 
-    // Regrex to get the filename from leaf folder
-    const regrexForFileName = /.+(?=\/)/;
-    // If no match, return null
-    const fileNameMatches = regrexForFileName.exec(artifact.artifactNode);
+    // Get full file path from source
+    const fileSource = path.join(
+      sourceProjectPath,
+      artifact.artifactRelPath,
+      artifact.artifactNode
+    );
 
-    // If there is a file in the repo folder
-    if (fileNameMatches) {
-      // Grab fileName from regrex
-      const fileName = fileNameMatches[0];
+    // Create the folder
+    makeDirSync(newDestPath);
 
-      // Get full file path from source
-      const fileSource = path.join(
-        sourceProjectPath,
-        artifact.artifactRelPath,
-        artifact.artifactNode
-      );
-
-      // Create the folder
-      makeDirSync(newDestPath);
-
-      // Copy the file
-      fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
-    }
-  }
-
-  escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+    // Copy the file
+    const fileName = path.basename(artifact.artifactNode);
+    fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
   }
 
   // Duplicates two files into a given target directory
@@ -242,26 +223,31 @@ module.exports = class RepoHandler {
   // gPath = absolute path of grandma path
   // targetPath = absolute path of intended target directory
   moveFiles(rPath, gPath, targetPath) {
-
     let rPathDest = path.join(targetPath, path.basename(rPath));
     let gPathDest = path.join(targetPath, path.basename(gPath));
     let extensionR = path.extname(rPath);
-    let extensionG = path.extname(gPath)
+    let extensionG = path.extname(gPath);
 
     // Duplicate rPath to targetPath
-    fs.copyFile(rPath, rPathDest, (err) => {
+    fs.copyFile(rPath, rPathDest, err => {
       if (err) throw err;
       console.log(path.basename(rPath), " copied to ", rPathDest);
     });
 
     // Duplicate gPath to targetPath
-    fs.copyFile(gPath, gPathDest, (err) => {
+    fs.copyFile(gPath, gPathDest, err => {
       if (err) throw err;
       console.log(path.basename(gPath), " copied to ", gPathDest);
     });
 
     // Append _mr or _mg to the duplicated filenames
-    fs.renameSync((rPathDest), path.join(rPathDest.replace(/\.[^/.]+$/, "") + "_mr" + extensionR));
-    fs.renameSync((gPathDest), path.join(gPathDest.replace(/\.[^/.]+$/, "") + "_mg" + extensionG));
+    fs.renameSync(
+      rPathDest,
+      path.join(rPathDest.replace(/\.[^/.]+$/, "") + "_mr" + extensionR)
+    );
+    fs.renameSync(
+      gPathDest,
+      path.join(gPathDest.replace(/\.[^/.]+$/, "") + "_mg" + extensionG)
+    );
   }
 };
