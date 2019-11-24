@@ -4,10 +4,7 @@ const path = require("path");
 const InfoHandler = require("./InfoHandler");
 const ManifestHandler = require("./ManifestHandler");
 const DBHandler = require("./DBHandler");
-const {
-  copyFolderTreeWithMemoization,
-  makeDirSync
-} = require("./FolderFunctions");
+const { copyDirTree, makeDirSync } = require("./FolderFunctions");
 const {
   VSC_REPO_NAME,
   MANIFEST_DIR,
@@ -73,7 +70,7 @@ module.exports = class RepoHandler {
     const manifestHandler = this.getNewManifestHandler();
     manifestHandler.addCommand(COMMANDS.CHECKIN);
     // Scan through project tree and update repo
-    const folderStructure = copyFolderTreeWithMemoization(
+    const folderStructure = copyDirTree(
       this.repo.projectPath,
       path.join(this.repo.projectPath, VSC_REPO_NAME)
     );
