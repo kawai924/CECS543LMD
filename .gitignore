@@ -10,3 +10,4 @@ database/*
 testing/*
 !testing/.gitkeep 
 
+test/
