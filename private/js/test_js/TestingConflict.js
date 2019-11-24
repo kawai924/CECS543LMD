@@ -1,31 +1,3 @@
-const express = require("express");
-const DBHandler = require("./../../private/js/DBHandler");
-
-const router = express.Router();
-
-router.get("/", function(req, res, next) {
-  return res.render("index", { users: DBHandler().getUsers() });
-});
-
-router.post("/", function(req, res) {
-  const userName = req.body.username === "" ? "johndoe" : req.body.username;
-
-  // Add user into users.json
-  DBHandler().addUser(userName);
-
-  res.redirect("/user/" + userName);
-});
-router.get("/test", function(req, res, next) {
-  var json = numberOfConflict(
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Friend",
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Enemy",
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo"
-  );
-  console.log(json);
-});
-
-module.exports = router;
-
 function numberOfConflict(gdir, rdir, tdir) {
   //var gdir = "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Friend";
   var filelist = walkSync(gdir);
@@ -143,3 +115,5 @@ function walkSync(dir, filelist) {
 
   return filelist;
 }
+
+numberOfConflict();
