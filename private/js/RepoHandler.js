@@ -33,7 +33,7 @@ module.exports = class RepoHandler {
 
     // Step 2: Writing new manifest
     // Create a new manifest handler
-    const manifestHandler = this.getNewManifestHandler();
+    const manifestHandler = this.createManifestHandler();
     // Add command to new manifest
     manifestHandler.addCommand(COMMANDS.CREATE);
     // manifestHandler.write() returns id and path of the newly created manifest.
@@ -41,7 +41,7 @@ module.exports = class RepoHandler {
 
     // Step 3: Update info.json with new manifest file
     // Initialize and write info.json
-    const infoHandler = this.getNewInfoHandler();
+    const infoHandler = this.createInfoHandler();
     // Write an default info.json first
     infoHandler.write();
     // Update the info.json with the new manifest
@@ -57,17 +57,17 @@ module.exports = class RepoHandler {
 
   addLabel(manifestID, label) {
     // Add label to info.json
-    const infoHandler = this.getNewInfoHandler();
+    const infoHandler = this.createInfoHandler();
     infoHandler.addLabel(manifestID, label);
   }
 
   checkin() {
     // Step 1: Get the parent of this check-in.
-    const infoHandler = this.getNewInfoHandler();
+    const infoHandler = this.createInfoHandler();
     const parentID = infoHandler.getCurrentHead();
 
     // Step 2: Writing a new manifest
-    const manifestHandler = this.getNewManifestHandler();
+    const manifestHandler = this.createManifestHandler();
     manifestHandler.addCommand(COMMANDS.CHECKIN);
     // Scan through project tree and update repo
     const folderStructure = copyDirTree(
@@ -94,7 +94,7 @@ module.exports = class RepoHandler {
     // Make neccessary folders
     makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
     // Write a fresh info.json
-    const infoHandler = this.getNewInfoHandler();
+    const infoHandler = this.createInfoHandler();
     infoHandler.write();
 
     // Step 2: Checkout files from source to target
@@ -118,7 +118,7 @@ module.exports = class RepoHandler {
     );
 
     // Step 3: Write a new manifest
-    const manifestHandler = this.getNewManifestHandler();
+    const manifestHandler = this.createManifestHandler();
     manifestHandler.addCommand(COMMANDS.CHECKOUT);
     // Add all artifacts path to the new manifest.
     manifestHandler.addStructure(manifestObject.structure);
@@ -173,7 +173,7 @@ module.exports = class RepoHandler {
     return null;
   }
 
-  getNewManifestHandler() {
+  createManifestHandler() {
     return new ManifestHandler(
       this.repo.username,
       this.repo.repoName,
@@ -181,7 +181,7 @@ module.exports = class RepoHandler {
     );
   }
 
-  getNewInfoHandler() {
+  createInfoHandler() {
     return new InfoHandler(
       this.repo.username,
       this.repo.repoName,
@@ -190,7 +190,7 @@ module.exports = class RepoHandler {
   }
 
   getHeadManifestID() {
-    return this.getNewInfoHandler().getCurrentHead();
+    return this.createInfoHandler().getCurrentHead();
   }
 
   checkoutArtifact(artifact, sourceProjectPath) {

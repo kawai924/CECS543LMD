@@ -51,30 +51,27 @@ const DatabaseHandler = () => {
     } else {
       throw new Error("Can't add an existing project");
     }
-    // users[username].push({
-    //   [projectName]: projectPath
-    // });
 
     updateUsersDB(users);
   };
 
-  const updateProjectPath = (username, projectName, newProjectPath) => {
+  const updateProjectPath = (username, projectName, newPath) => {
     const users = getUsers();
 
     if (isProjectPresent(username, projectName)) {
       const projectList = users[username];
       for (let i = 0; i < projectList.length; i++) {
-        newProjectList = projectList.filter(project => {
+        filteredList = projectList.filter(project => {
           const [currentProjectName] = Object.keys(project);
           return currentProjectName !== projectName;
         });
 
-        newProjectList.push({
-          [projectName]: newProjectPath
+        filteredList.push({
+          [projectName]: newPath
         });
       }
 
-      users[username] = newProjectList;
+      users[username] = filteredList;
       updateUsersDB(users);
     } else {
       throw new Error(`${projectName} doesn't exist`);
@@ -124,7 +121,6 @@ const DatabaseHandler = () => {
         }
       }
     }
-
     return false;
   };
 

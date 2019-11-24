@@ -4,28 +4,28 @@ const PathHandler = require("./PathHandler");
 module.exports = class InfoHandler {
   constructor(username, projectName, repoPath) {
     // Temporary fix: change repoPath to project path, so we can use pathHandler for now.
-    const pathArray = repoPath.split("/");
-    const projectPath = pathArray.slice(0, -1).join("/");
+    const projectPath = repoPath
+      .split("/")
+      .slice(0, -1)
+      .join("/");
 
     // This handler handles all paths regarding the current project
     this.pathHandler = PathHandler(username, projectName, projectPath);
 
-    /* Save info.json */
     // If info.json doesn't exist, write a fresh one.
     if (!fs.existsSync(this.pathHandler.getInfoJSONPath())) {
-      const freshInfoJSON = {
-        username,
-        projectName,
-        head: null,
-        labels: [],
-        manifests: []
-      };
-
       fs.writeFileSync(
         this.pathHandler.getInfoJSONPath(),
-        JSON.stringify(freshInfoJSON)
+        JSON.stringify({
+          username,
+          projectName,
+          head: null,
+          labels: [],
+          manifests: []
+        })
       );
     }
+
     // Grab info.json from user's project folder
     this.infoJSON = JSON.parse(
       fs.readFileSync(this.pathHandler.getInfoJSONPath())
