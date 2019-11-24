@@ -4,8 +4,8 @@ const { makeDirSync } = require("./FolderFunctions");
 const { MANIFEST_DIR } = require("./../../constants");
 
 module.exports = class ManifestHandler {
-  constructor(userName, repoName, manifestFolderPath, parent = null) {
-    this.manifestFolderPath = manifestFolderPath;
+  constructor(userName, repoName, manifestDirPath, parent = null) {
+    this.manifestDirPath = manifestDirPath;
 
     // Store information about upcoming manifest
     this.newManifest = {
@@ -36,16 +36,9 @@ module.exports = class ManifestHandler {
     });
   }
 
-  addStructure(folderStructure) {
-    this.newManifest.structure = folderStructure;
+  addStructure(struct) {
+    this.newManifest.structure = struct;
   }
-
-  // addLabel(manifestID, label) {
-  //   this.masterManifest.labels.push({ [label]: manifestID });
-
-  //   // Update the master manifest
-  //   this.rewriteMasterManifest();
-  // }
 
   /* Get manifest path from an id. ID can be LABEL or NUMBER */
   getManifestPath(id) {
@@ -70,7 +63,7 @@ module.exports = class ManifestHandler {
     this.newManifest.id = this.newManifest.datetime.getTime();
 
     const manifestName = this.newManifest.id.toString() + ".json";
-    const manifestPath = path.join(this.manifestFolderPath, manifestName);
+    const manifestPath = path.join(this.manifestDirPath, manifestName);
     try {
       // Write manifest file into the manifest folder
       fs.writeFileSync(manifestPath, JSON.stringify(this.newManifest));

@@ -19,16 +19,15 @@ const { ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("../../constants");
 /****************************************/
 
 const DatabaseHandler = () => {
-  const _databasePath = path.join(ROOTPATH, DATABASE_NAME);
-  const _filePath = path.join(_databasePath, USERS_FILENAME);
+  const usersDBPath = path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME);
 
   /** Public Interface **/
   const getUsers = () => {
-    if (!isUsersJSONPresent()) {
-      writeFreshAllUserInfo();
+    if (!isUsersDBPresent()) {
+      writeFreshUsersDB();
     }
 
-    return JSON.parse(fs.readFileSync(_filePath));
+    return JSON.parse(fs.readFileSync(usersDBPath));
   };
 
   const addUser = username => {
@@ -36,7 +35,7 @@ const DatabaseHandler = () => {
     if (!isUserPresent(username)) {
       const users = getUsers();
       users[username] = [];
-      updateUsersJSON(users);
+      updateUsersDB(users);
     }
   };
 
@@ -48,35 +47,32 @@ const DatabaseHandler = () => {
         [projectName]: projectPath
       });
 
-      updateUsersJSON(users);
+      updateUsersDB(users);
     } else {
       throw new Error("Can't add an existing project");
     }
-    // users[username].push({
-    //   [projectName]: projectPath
-    // });
 
-    updateUsersJSON(users);
+    updateUsersDB(users);
   };
 
-  const updateProjectPath = (username, projectName, newProjectPath) => {
+  const updateProjectPath = (username, projectName, newPath) => {
     const users = getUsers();
 
     if (isProjectPresent(username, projectName)) {
       const projectList = users[username];
       for (let i = 0; i < projectList.length; i++) {
-        newProjectList = projectList.filter(project => {
+        filteredList = projectList.filter(project => {
           const [currentProjectName] = Object.keys(project);
           return currentProjectName !== projectName;
         });
 
-        newProjectList.push({
-          [projectName]: newProjectPath
+        filteredList.push({
+          [projectName]: newPath
         });
       }
 
-      users[username] = newProjectList;
-      updateUsersJSON(users);
+      users[username] = filteredList;
+      updateUsersDB(users);
     } else {
       throw new Error(`${projectName} doesn't exist`);
     }
@@ -97,16 +93,16 @@ const DatabaseHandler = () => {
   };
 
   /** Private Functions **/
-  const writeFreshAllUserInfo = () => {
-    fs.writeFileSync(_filePath, JSON.stringify({}));
+  const writeFreshUsersDB = () => {
+    fs.writeFileSync(usersDBPath, JSON.stringify({}));
   };
 
-  const isUsersJSONPresent = () => {
-    return fs.existsSync(_filePath);
+  const isUsersDBPresent = () => {
+    return fs.existsSync(usersDBPath);
   };
 
-  const updateUsersJSON = newUserJSON => {
-    fs.writeFileSync(_filePath, JSON.stringify(newUserJSON));
+  const updateUsersDB = newUserJSON => {
+    fs.writeFileSync(usersDBPath, JSON.stringify(newUserJSON));
   };
 
   const isUserPresent = username => {
@@ -125,7 +121,6 @@ const DatabaseHandler = () => {
         }
       }
     }
-
     return false;
   };
 

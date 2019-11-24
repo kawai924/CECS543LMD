@@ -12,21 +12,16 @@ const {
  * Parameters:
  *  - username: required
  *  - projectName: required
- *  - projectAbsolutePath: optional. The default location is assumed in DATABASE
+ *  - projectAbsPath: optional. The default location is assumed in DATABASE
  */
 const PathHandler = (
   username,
   projectName,
-  projectAbsolutePath = path.join(
-    ROOTPATH,
-    DATABASE_NAME,
-    username,
-    projectName
-  )
+  projectAbsPath = path.join(ROOTPATH, DATABASE_NAME, username, projectName)
 ) => {
   let _username = username;
   let _projectName = projectName;
-  let _projectPath = projectAbsolutePath;
+  let _projectPath = projectAbsPath;
 
   const getProjectPath = () => {
     return _projectPath;

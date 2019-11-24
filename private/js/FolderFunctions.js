@@ -1,91 +1,78 @@
 const fs = require("fs");
 const path = require("path");
-
 const Queue = require("./Queue");
-const createArtifactId = require("./Artifact");
+const artifactFile = require("./Artifact");
 
 /* This function reads each file from source folder, create artifact id and copy to target folder */
-function copyFolderTreeWithMemoization(fromPath, toPath) {
+function copyDirTree(fromPath, toPath) {
   // console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
 
-  let structure = [];
+  let struct = [];
   const projectPath = fromPath;
 
-  (function copyFolderTree(fromPath, toPath) {
-    let fileQueue = new Queue();
+  (function copyDirTreeRec(fromPath, toPath) {
+    const queue = new Queue();
 
-    //Add all files to a queue
     const allFiles = fs.readdirSync(fromPath);
     for (let file of allFiles) {
-      if (file !== "repo") {
-        fileQueue.enqueue(file);
-      }
+      queue.enqueue(file);
     }
 
-    //Process each element in the queue
-    while (!fileQueue.isEmpty()) {
-      const fileName = fileQueue.dequeue();
+    while (!queue.isEmpty()) {
+      const file = queue.dequeue();
 
-      //Check if fileName is a DOT FILE (ex: .DS_STORE), ignore
-      if (!/^(?!\.).*$/.test(fileName)) continue;
+      //Ignore DOT FILE (ex: .DS_STORE)
+      if (!/^(?!\.).*$/.test(file)) continue;
 
-      // The current file is a DIRECTORY
-      if (isDirectory(fromPath, fileName)) {
-        const dirPath = path.join(fromPath, fileName);
-        const newTarget = path.join(toPath, fileName);
+      // For Dir file
+      if (isDir(fromPath, file)) {
+        const sourceFile = path.join(fromPath, file);
+        const targetFile = path.join(toPath, file);
 
-        // Create the directory in the destination
-        makeDirSync(newTarget);
+        // Create dir at target
+        makeDirSync(targetFile);
 
-        // Add """" : dirPath to structure
-        structure.push({
+        struct.push({
           artifactNode: "",
-          artifactRelPath: relativePath(newTarget, projectPath)
+          artifactRelPath: getRelPath(targetFile, projectPath)
         });
 
-        //Recursively copy sub folders and files.
-        copyFolderTree(dirPath, newTarget);
+        //Recursive call
+        copyDirTreeRec(sourceFile, targetFile);
       } else {
-        // The current file is a FILE
-        // Grab the full path of leaf folder
-        const leafFolder = path.join(toPath, fileName);
+        // For FILE
+        const leafFolder = path.join(toPath, file);
 
         // Create the folder there
         makeDirSync(leafFolder);
 
-        //Create artifact for the file
-        const filePath = path.join(fromPath, fileName);
-        const artifact = createArtifactId(filePath);
+        const filePath = path.join(fromPath, file);
+        const aID = artifactFile(filePath);
 
         //Move the file with artifact name
-        const artifactFullPath = path.join(leafFolder, artifact);
-        fs.copyFile(filePath, artifactFullPath, err => {
-          if (err) throw err;
-        });
+        const aAbsPath = path.join(leafFolder, aID);
+        fs.copyFileSync(filePath, aAbsPath);
 
         // Grab the absolute path from database to the curent artifact
-        const fileNameWithoutExtension = /.*(?=\.)/.exec(
-          fileName.split("/").pop()
-        )[0];
-        const regrex = new RegExp(`.*(?=${fileNameWithoutExtension})`);
-        const fullArtifactPath = regrex.exec(artifactFullPath)[0];
+        const fileName = /.*(?=\.)/.exec(file.split("/").pop())[0];
+        const aDirPath = new RegExp(`.*(?=${fileName})`).exec(aAbsPath)[0];
 
         // Add artifact and its path to manifest
-        structure.push({
-          artifactNode: path.join(fileName, artifact),
-          artifactRelPath: relativePath(fullArtifactPath, projectPath)
+        struct.push({
+          artifactNode: path.join(file, aID),
+          artifactRelPath: getRelPath(aDirPath, projectPath)
         });
       }
     }
   })(fromPath, toPath);
 
-  return structure;
+  return struct;
 }
 
 /**
  * Check if a file from a source is a directory
  */
-function isDirectory(source, fileName) {
+function isDir(source, fileName) {
   const filePath = path.join(source, fileName);
   return fs.statSync(filePath).isDirectory();
 }
@@ -95,12 +82,12 @@ function makeDirSync(path, options = { recursive: true }) {
   !fs.existsSync(path) && fs.mkdirSync(path, options);
 }
 
-function relativePath(fullPath, commonPath) {
+function getRelPath(fullPath, commonPath) {
   return fullPath.split(commonPath)[1];
 }
 
 module.exports = {
-  copyFolderTreeWithMemoization,
-  isDirectory,
+  copyDirTree,
+  isDir,
   makeDirSync
 };
