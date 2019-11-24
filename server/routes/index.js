@@ -15,88 +15,89 @@ router.post("/", function(req, res) {
 
   res.redirect("/user/" + userName);
 });
+
+
 router.get("/test", function(req, res, next) {
   var json = numberOfConflict(
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Friend",
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Enemy",
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo"
+    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_3.json",
+    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_1.json"
   );
   console.log(json);
+
 });
 
 module.exports = router;
 
-function numberOfConflict(gdir, rdir, tdir) {
-  //var gdir = "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Friend";
-  var filelist = walkSync(gdir);
-  //before
-  //console.log(filelist)
-  //remove the first charater if all item has it
+function numberOfConflict(mania, manib) {
+  
+  //mania = "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_3.json";
+  var maniadata = require(mania);
   gsmallfilelist = [];
   gfolderlist = [];
-  filelist.forEach(function(value) {
-    var shortvalue = value.replace(gdir, "");
-    gsmallfilelist.push(shortvalue);
-    var tar = shortvalue.lastIndexOf("/");
-    var file = shortvalue.substring(0, tar);
-    gfolderlist.push(file);
-  });
-  //console.log(gsmallfilelist, gfolderlist);
-
-  //var rdir = "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo Enemy";
-  var filelist = walkSync(rdir);
-  //before
-  //console.log(filelist)
-  //remove the first charater if all item has it
-  rsmallfilelist = [];
-  rfolderlist = [];
-
-  filelist.forEach(function(value) {
-    var shortvalue = value.replace(rdir, "");
-    rsmallfilelist.push(shortvalue);
-    var tar = shortvalue.lastIndexOf("/");
-    var file = shortvalue.substring(0, tar);
-    rfolderlist.push(file);
-  });
-  //console.log(rsmallfilelist, rfolderlist);
-
-  //var tdir = "/Users/dennislo/Desktop/git/school/CECS543LMD/database/johndoe/Foo";
-  var filelist = walkSync(tdir);
-  //before
-  //console.log(filelist)
-  //remove the first charater if all item has it
+  for( let prop in maniadata ){
+    if(prop == 'structure'){
+      //console.log( maniadata[prop] );
+      var structure = maniadata[prop];
+      for (let x in structure ){
+        //console.log(structure[x]);
+        var file = structure[x];
+        for (let y in file ){
+          if(y == 'artifactNode'){
+            //console.log(file[y]);
+            //var shortvalue = value.replace(gdir, "");
+            gsmallfilelist.push(file[y]);
+            var tar = file[y].lastIndexOf("/");
+            var file = file[y].substring(0, tar);
+            gfolderlist.push(file);
+            
+          }
+        }
+      }
+    }
+  }
+  //manib = "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_1.json";
+  var manibdata = require(manib);
   tsmallfilelist = [];
   tfolderlist = [];
-  filelist.forEach(function(value) {
-    var shortvalue = value.replace(tdir, "");
-    tsmallfilelist.push(shortvalue);
-    var tar = shortvalue.lastIndexOf("/");
-    var file = shortvalue.substring(0, tar);
-    tfolderlist.push(file);
-  });
-  //console.log(tsmallfilelist, tfolderlist);
+  for( let prop in manibdata ){
+    if(prop == 'structure'){
+      //console.log( maniadata[prop] );
+      var structure = manibdata[prop];
+      for (let x in structure ){
+        //console.log(structure[x]);
+        var file = structure[x];
+        for (let y in file ){
+          if(y == 'artifactNode'){
+            //console.log(file[y]);
+            //var shortvalue = value.replace(gdir, "");
+            tsmallfilelist.push(file[y]);
+            var tar = file[y].lastIndexOf("/");
+            var file = file[y].substring(0, tar);
+            tfolderlist.push(file);
+            
+          }
+        }
+      }
+    }
+  }
+  //console.log(gsmallfilelist, gfolderlist, tsmallfilelist, tfolderlist);
 
   var conflict = 0;
-  //var data = [];
+  var data = {};
   for (const [key, value] of Object.entries(gfolderlist)) {
-    var rkey = rfolderlist.indexOf(value);
     var tkey = tfolderlist.indexOf(value);
 
     if (
-      gsmallfilelist[key] != rsmallfilelist[rkey] ||
-      rsmallfilelist[key] != tsmallfilelist[rkey] ||
-      tsmallfilelist[key] != gsmallfilelist[rkey]
+      tsmallfilelist[tkey] != gsmallfilelist[key]
     ) {
-      console.log(key, value);
-      console.log(
-        gsmallfilelist[key],
-        rsmallfilelist[rkey],
-        tsmallfilelist[tkey]
-      );
+      // console.log(key, value);
+      // console.log(
+      //   gsmallfilelist[key],
+      //   tsmallfilelist[tkey]
+      // );
       if (conflict == 0) {
-        var data = {
+        data = {
           gtarget: gsmallfilelist[key],
-          rtarget: rsmallfilelist[rkey],
           ttarget: tsmallfilelist[tkey]
         };
       } else {
@@ -105,7 +106,6 @@ function numberOfConflict(gdir, rdir, tdir) {
           "," +
           {
             gtarget: gsmallfilelist[key],
-            rtarget: rsmallfilelist[rkey],
             ttarget: tsmallfilelist[tkey]
           };
       }
@@ -113,33 +113,32 @@ function numberOfConflict(gdir, rdir, tdir) {
       conflict++;
     }
   }
-  console.log("total conflict: " + conflict);
+  //console.log("total conflict: " + conflict);
   var json = [
     {
-      grandma: gdir,
-      repo: rdir,
-      target: tdir,
       keyconflict: conflict,
       keyconflictfile: data
     }
   ];
+  //console.log(json);
   return json;
 }
 
 // List all files in a directory in Node.js recursively in a synchronous fashion
-function walkSync(dir, filelist) {
-  var fs = fs || require("fs"),
-    files = fs.readdirSync(dir);
-  filelist = filelist || [];
-  files.forEach(function(file) {
-    if (fs.statSync(dir + "/" + file).isDirectory()) {
-      filelist = walkSync(dir + "/" + file, filelist);
-    } else {
-      filename = dir + "/" + file;
-      //filename.replace(dir, "")
-      filelist.push(filename);
-    }
-  });
+//read the artifacts instead
+// function walkSync(dir, filelist) {
+//   var fs = fs || require("fs"),
+//     files = fs.readdirSync(dir);
+//   filelist = filelist || [];
+//   files.forEach(function(file) {
+//     if (fs.statSync(dir + "/" + file).isDirectory()) {
+//       filelist = walkSync(dir + "/" + file, filelist);
+//     } else {
+//       filename = dir + "/" + file;
+//       //filename.replace(dir, "")
+//       filelist.push(filename);
+//     }
+//   });
 
-  return filelist;
-}
+//   return filelist;
+// }
