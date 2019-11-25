@@ -1,8 +1,10 @@
 /********** IMPORT MODULES **********/
 const express = require("express");
 const { buildRepoInfoList } = require("../../private/js/Functions");
-const { fs, path, ROOTPATH, DATABASE_NAME } = require("../../private/js/");
+const { ROOTPATH, DATABASE_NAME } = require("../../private/js/");
 // const DBHandler = require("../../private/js/DBHandler");
+const path = require("path");
+const fs = require("fs");
 const Parser = require("./../../private/js/Parser");
 /****************************************/
 
@@ -25,9 +27,8 @@ router.get("/:username", function(req, res, next) {
 
   res.render("user", {
     username,
-    repoInfoList,
+    repoInfoList
     // users: DBHandler().getUsers()
-    users: {}
   });
 });
 
