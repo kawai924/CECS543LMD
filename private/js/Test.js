@@ -3,14 +3,12 @@ const RepoHandler = require("./RepoHandler");
 const PathHandler = require("./PathHandler");
 
 let manifestID;
-const user1 = "Alice";
+const user1 = "alice";
 const repo1 = "ProjectX"; // Grab from project folder.
-// const alicePathHandler.getProjectPath() = path.join(ROOTPATH, "database", user1, repo1); // This should be the path to the project
 const alicePathHandler = PathHandler(user1, repo1);
 
-const user2 = "Bob";
+const user2 = "bob";
 const repo2 = "ProjectX";
-// // const bobPathHandler.getProjectPath() = path.join(ROOTPATH, "database", "Bob", "ProjectX");
 const bobPathHandler = PathHandler(user2, repo2);
 
 reset();

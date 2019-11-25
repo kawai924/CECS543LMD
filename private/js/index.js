@@ -11,10 +11,11 @@ const USERS_FILENAME = "users.json";
 
 const COMMANDS = {
   CREATE: "create",
-  CHECKIN: "check-in",
-  CHECKOUT: "check-out",
-  MERGE_OUT: "merge-out",
-  MERGE_IN: "merge-in"
+  CHECKIN: "checkin",
+  CHECKOUT: "checkout",
+  MERGE_OUT: "mergeout",
+  MERGE_IN: "mergein",
+  LABEL: "label"
 };
 
 module.exports = {

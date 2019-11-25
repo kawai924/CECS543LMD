@@ -1,6 +1,8 @@
 const {
   fs,
   path,
+  ROOTPATH,
+  DATABASE_NAME,
   VSC_REPO_NAME,
   MANIFEST_DIR,
   COMMANDS,
@@ -47,7 +49,7 @@ module.exports = class RepoHandler {
     // Update the info.json with the new manifest
     infoHandler.addManifest(manifestID, manifestPath);
 
-    // Step 4: Add project to users.json
+    // // Step 4: Add project to users.json
     DBHandler().addProjectForUser(
       this.repo.username,
       this.repo.repoName,
@@ -61,7 +63,9 @@ module.exports = class RepoHandler {
     infoHandler.addLabel(manifestID, label);
   }
 
-  checkin() {
+  checkin(fromPath) {
+    fromPath = fromPath || this.repo.projectPath;
+
     // Step 1: Get the parent of this check-in.
     const infoHandler = this.createInfoHandler();
     const parentID = infoHandler.getCurrentHead();
@@ -71,7 +75,7 @@ module.exports = class RepoHandler {
     manifestHandler.addCommand(COMMANDS.CHECKIN);
     // Scan through project tree and update repo
     const folderStructure = copyDirTree(
-      this.repo.projectPath,
+      fromPath,
       path.join(this.repo.projectPath, VSC_REPO_NAME)
     );
     // Add all artifacts path to the new manifest.
@@ -103,10 +107,12 @@ module.exports = class RepoHandler {
       fromUsername,
       fromRepoName
     );
+
     const pathToSourceRepo = path.join(
       DBHandler().getProjectPath(fromUsername, fromRepoName),
       VSC_REPO_NAME
     );
+
     // Grab source manifest using ID
     const manifestObject = this.getManifestObject(
       pathToSourceRepo,
@@ -194,6 +200,10 @@ module.exports = class RepoHandler {
   }
 
   checkoutArtifact(artifact, sourceProjectPath) {
+    if (artifact.artifactNode == "") {
+      return;
+    }
+
     // Append the folder path with the new target path
     const newDestPath = path.join(
       this.repo.projectPath,
@@ -222,7 +232,7 @@ module.exports = class RepoHandler {
   // rPath = absolute path of repo path
   // gPath = absolute path of grandma path
   // targetPath = absolute path of intended target directory
-  moveFiles(rPath, gPath, targetPath) {
+  mergeOutMoveFiles(rPath, gPath, targetPath) {
     let rPathDest = path.join(targetPath, path.basename(rPath));
     let gPathDest = path.join(targetPath, path.basename(gPath));
     let extensionR = path.extname(rPath);
@@ -231,13 +241,13 @@ module.exports = class RepoHandler {
     // Duplicate rPath to targetPath
     fs.copyFile(rPath, rPathDest, err => {
       if (err) throw err;
-      console.log(path.basename(rPath), " copied to ", rPathDest);
+      // console.log(path.basename(rPath), " copied to ", rPathDest);
     });
 
     // Duplicate gPath to targetPath
     fs.copyFile(gPath, gPathDest, err => {
       if (err) throw err;
-      console.log(path.basename(gPath), " copied to ", gPathDest);
+      // console.log(path.basename(gPath), " copied to ", gPathDest);
     });
 
     // Append _mr or _mg to the duplicated filenames
