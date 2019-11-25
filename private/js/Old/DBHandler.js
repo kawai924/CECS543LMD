@@ -1,5 +1,5 @@
 /********** IMPORT MODULES **********/
-const { fs, path, ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("./");
+const { fs, path, ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("..");
 /****************************************/
 
 /**

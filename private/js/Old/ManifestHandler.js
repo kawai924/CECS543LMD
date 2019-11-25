@@ -1,5 +1,5 @@
-const { fs, path, MANIFEST_DIR } = require("./");
-const { makeDirSync } = require("./Functions");
+const { fs, path, MANIFEST_DIR } = require("..");
+const { makeDirSync } = require("../Functions");
 
 module.exports = class ManifestHandler {
   constructor(userName, repoName, manifestDirPath, parent = null) {

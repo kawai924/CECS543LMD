@@ -8,8 +8,7 @@ const {
   DATABASE_NAME,
   USERS_FILENAME
 } = require("./");
-const DBHandler = require("./DBHandler");
-const RepoHandler = require("./RepoHandler");
+// const RepoHandler = require("./RepoHandler");
 
 module.exports = function() {
   let _command_guides = {

@@ -1,12 +1,12 @@
 const {
-  fs,
-  path,
   ROOTPATH,
   DATABASE_NAME,
   MASTER_MANIFEST_NAME,
   VSC_REPO_NAME,
   MANIFEST_DIR
 } = require(".");
+const fs = require("fs");
+const path = require("path");
 
 /* This function reads each file from source folder, create artifact id and copy to target folder */
 function copyDirTree(fromPath, toPath) {

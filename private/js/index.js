@@ -1,6 +1,4 @@
-const fs = require("fs");
 const path = require("path");
-const fsExt = require("fs-extra");
 
 const ROOTPATH = path.join(__dirname, "../..");
 const VSC_REPO_NAME = ".vcsx";
@@ -21,9 +19,6 @@ const COMMANDS = {
 };
 
 module.exports = {
-  fs,
-  path,
-  fsExt,
   ROOTPATH,
   VSC_REPO_NAME,
   MANIFEST_DIR,

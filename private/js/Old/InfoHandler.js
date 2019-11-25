@@ -1,4 +1,4 @@
-const { fs, path, VSC_REPO_NAME } = require("./");
+const { fs, path, VSC_REPO_NAME } = require("..");
 const PathHandler = require("./PathHandler");
 
 module.exports = class InfoHandler {

@@ -2,7 +2,7 @@
 const express = require("express");
 const { buildRepoInfoList } = require("../../private/js/Functions");
 const { fs, path, ROOTPATH, DATABASE_NAME } = require("../../private/js/");
-const DBHandler = require("../../private/js/DBHandler");
+// const DBHandler = require("../../private/js/DBHandler");
 const Parser = require("./../../private/js/Parser");
 /****************************************/
 
@@ -26,7 +26,8 @@ router.get("/:username", function(req, res, next) {
   res.render("user", {
     username,
     repoInfoList,
-    users: DBHandler().getUsers()
+    // users: DBHandler().getUsers()
+    users: {}
   });
 });
 
