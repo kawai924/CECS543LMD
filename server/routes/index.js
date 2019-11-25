@@ -26,21 +26,3 @@ router.get("/test", function(req, res, next) {
 
 module.exports = router;
 
-// List all files in a directory in Node.js recursively in a synchronous fashion
-//read the artifacts instead
-// function walkSync(dir, filelist) {
-//   var fs = fs || require("fs"),
-//     files = fs.readdirSync(dir);
-//   filelist = filelist || [];
-//   files.forEach(function(file) {
-//     if (fs.statSync(dir + "/" + file).isDirectory()) {
-//       filelist = walkSync(dir + "/" + file, filelist);
-//     } else {
-//       filename = dir + "/" + file;
-//       //filename.replace(dir, "")
-//       filelist.push(filename);
-//     }
-//   });
-
-//   return filelist;
-// }
