@@ -9,6 +9,8 @@ const MASTER_MANIFEST_NAME = "info.json";
 const DATABASE_NAME = "database";
 const USERS_FILENAME = "users.json";
 
+const DB_PATH = ROOTPATH + DATABASE_NAME;
+
 const COMMANDS = {
   CREATE: "create",
   CHECKIN: "checkin",
@@ -28,5 +30,6 @@ module.exports = {
   MASTER_MANIFEST_NAME,
   DATABASE_NAME,
   USERS_FILENAME,
-  COMMANDS
+  COMMANDS,
+  DB_PATH
 };
