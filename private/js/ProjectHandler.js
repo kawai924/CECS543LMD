@@ -34,7 +34,10 @@ class ProjectHandler {
     const masManWriter = new MasterManWriter(this.username, this.projectName);
 
     // Step 3: Build and write a manifest
-    const newMan = manWriter.addCommand(COMMANDS.CREATE).write();
+    const newMan = manWriter
+      .addCommand(COMMANDS.CREATE)
+      .addStructure()
+      .write();
 
     // Step 4: Add new manifest to master manifest
     masManWriter.writeFreshMasMan();
@@ -84,7 +87,9 @@ class ProjectHandler {
     // Step 3: Checkout files
     const sMan = sManReader.getMan(sID);
     const sProjectPath = path.join(DB_PATH, sUsername, sProject);
-    sMan.structure.forEach(artifact =>
+    const sArtifactList = sMan.structure || [];
+
+    sArtifactList.forEach(artifact =>
       this._checkoutArtifact(artifact, sProjectPath)
     );
 
@@ -105,7 +110,6 @@ class ProjectHandler {
     if (artifact.artifactNode == "") {
       return;
     }
-
     // Append the folder path with the new target path
     const newDestPath = path.join(
       this.projectPath,
@@ -126,7 +130,9 @@ class ProjectHandler {
     makeDirSync(newDestPath);
 
     // Copy the file
-    const fileName = path.basename(artifact.artifactNode);
+    const fileName = artifact.artifactNode.split(path.sep)[0];
+
+    console.log({ fileSource, fileDest: path.join(newDestPath, fileName) });
     fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
   }
 

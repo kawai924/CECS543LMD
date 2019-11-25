@@ -13,27 +13,23 @@ class MasterManReader {
   constructor(username, projectName) {
     this.username = username;
     this.projectName = projectName;
-    this.rPath = path.join(
-      DB_PATH,
-      username,
-      projectName,
-      VSC_REPO_NAME,
-      MASTER_MANIFEST_NAME
-    );
+    this.rPath = path.join(DB_PATH, username, projectName, VSC_REPO_NAME);
   }
 
   /** Get master manifest */
   //tested
   getMasMan() {
-    return JSON.parse(fs.readFileSync(this.rPath));
+    const masManFilePath = path.join(this.rPath, MASTER_MANIFEST_NAME);
+    if (!fs.existsSync(masManFilePath)) {
+      throw new Error("Invalid master manifest file path");
+    }
+    return JSON.parse(fs.readFileSync(masManFilePath));
   }
 
   //tested
   getHead() {
     const masManReader = new MasterManReader(this.username, this.projectName);
-    const masMan = masManReader.getMasMan();
-
-    return masMan.head;
+    return masManReader.getMasMan().head;
   }
 }
 
@@ -61,8 +57,11 @@ class MasterManWriter {
       labels: [],
       manifests: []
     };
-
-    fs.writeFileSync(this.masManFilePath, JSON.stringify(freshMasMan));
+    try {
+      fs.writeFileSync(this.masManFilePath, JSON.stringify(freshMasMan));
+    } catch (e) {
+      throw new Error("Unable to write fresh master manifest file");
+    }
   }
 
   // tested
@@ -76,8 +75,11 @@ class MasterManWriter {
 
     const masMan = masManReader.getMasMan();
     masMan.manifests.push(man);
-    fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
-
+    try {
+      fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
+    } catch (e) {
+      throw new Error("Unable to write master manifest to add new manifest");
+    }
     // Update head
     masManWriter.addHead(man.manifestID);
   }
@@ -89,8 +91,11 @@ class MasterManWriter {
 
     const newLabel = { [label]: manID };
     masMan.labels.push(newLabel);
-
-    fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
+    try {
+      fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
+    } catch (e) {
+      throw new Error("Unable to write master manifest to update label");
+    }
   }
 
   //tested

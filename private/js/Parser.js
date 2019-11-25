@@ -1,14 +1,16 @@
 const {
-  path,
   COMMANDS,
   ROOTPATH,
   VSC_REPO_NAME,
   MANIFEST_DIR,
   MASTER_MANIFEST_NAME,
   DATABASE_NAME,
+  DB_PATH,
   USERS_FILENAME
 } = require("./");
+const path = require("path");
 // const RepoHandler = require("./RepoHandler");
+const { ProjectHandler } = require("./ProjectHandler");
 
 module.exports = function() {
   let _command_guides = {
@@ -24,17 +26,13 @@ module.exports = function() {
 
   const commandParse = (prompt, { username }) => {
     const [command, projectName] = prompt.split(" ");
-    const projectPath = path.join(
-      ROOTPATH,
-      DATABASE_NAME,
-      username,
-      projectName
-    );
+    const projectPath = path.join(DB_PATH, username, projectName);
     let fromPath, manifestID;
 
     switch (command) {
       case COMMANDS.CREATE:
-        new RepoHandler(username, projectName, projectPath).create();
+        // new RepoHandler(username, projectName, projectPath).create();
+        new ProjectHandler(username).forProject(projectName).create();
         break;
 
       case COMMANDS.CHECKIN:
@@ -44,7 +42,8 @@ module.exports = function() {
           getNumberArgs(command) - 1
         );
 
-        new RepoHandler(username, projectName, projectPath).checkin(fromPath);
+        // new RepoHandler(username, projectName, projectPath).checkin(fromPath);
+        new ProjectHandler(username).forProject(projectName).checkin(fromPath);
         break;
 
       case COMMANDS.CHECKOUT:
@@ -53,11 +52,14 @@ module.exports = function() {
           " ",
           getNumberArgs(command) - 1
         );
-        new RepoHandler(username, projectName, projectPath).checkout(
-          fUsername,
-          projectName,
-          fManifestID
-        );
+        // new RepoHandler(username, projectName, projectPath).checkout(
+        //   fUsername,
+        //   projectName,
+        //   fManifestID
+        // );
+        new ProjectHandler(username)
+          .forProject(projectName)
+          .checkout(fUsername, projectName, fManifestID);
         break;
       case COMMANDS.LABEL:
         [, , lName, manifestID] = splitAndAppend(
@@ -66,10 +68,13 @@ module.exports = function() {
           getNumberArgs(command) - 1
         );
 
-        new RepoHandler(username, projectName, projectPath).addLabel(
-          manifestID,
-          lName
-        );
+        // new RepoHandler(username, projectName, projectPath).addLabel(
+        //   manifestID,
+        //   lName
+        // );
+        new ProjectHandler(username)
+          .forProject(projectName)
+          .label(manifestID, lName);
         break;
 
       default:
