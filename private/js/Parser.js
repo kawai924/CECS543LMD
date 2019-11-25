@@ -19,7 +19,8 @@ module.exports = function() {
       "checkout | <project name> | <from_username> | <from manifest id> OR <label name",
     [COMMANDS.MERGE_OUT]:
       "mergeout | <project name> | <target manifest id> | <source username> | <souce manifest id>",
-    [COMMANDS.MERGE_IN]: "mergein | <project name>"
+    [COMMANDS.MERGE_IN]: "<mergein> | <project name>",
+    [COMMANDS.LABEL]: "<label> | <project name> | <label name> | <manifest id>"
   };
 
   const commandParse = (prompt, { username }) => {
@@ -30,7 +31,7 @@ module.exports = function() {
       username,
       projectName
     );
-    let fromPath;
+    let fromPath, manifestID;
 
     switch (command) {
       case COMMANDS.CREATE:
@@ -59,6 +60,18 @@ module.exports = function() {
           fManifestID
         );
         break;
+      case COMMANDS.LABEL:
+        [, , lName, manifestID] = splitAndAppend(
+          prompt,
+          " ",
+          getNumberArgs(command) - 1
+        );
+
+        new RepoHandler(username, projectName, projectPath).addLabel(
+          manifestID,
+          lName
+        );
+        break;
 
       default:
         throw new Error("Unable to parse command");
@@ -79,6 +92,8 @@ module.exports = function() {
         return getArgsCount(_command_guides[COMMANDS.MERGE_OUT]);
       case COMMANDS.MERGE_IN:
         return getArgsCount(_command_guides[COMMANDS.MERGE_IN]);
+      case COMMANDS.LABEL:
+        return getArgsCount(_command_guides[COMMANDS.LABEL]);
       default:
         throw new Error("Can't get args count of the command");
     }

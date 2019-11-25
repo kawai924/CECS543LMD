@@ -14,7 +14,8 @@ const COMMANDS = {
   CHECKIN: "checkin",
   CHECKOUT: "checkout",
   MERGE_OUT: "mergeout",
-  MERGE_IN: "mergein"
+  MERGE_IN: "mergein",
+  LABEL: "label"
 };
 
 module.exports = {

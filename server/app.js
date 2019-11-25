@@ -5,8 +5,9 @@ const PORT = 3000;
 
 const app = express();
 
-const index = require("./routes/index.js");
+const index = require("./routes/");
 const user = require("./routes/user");
+const users = require("./routes/user");
 
 // Set up middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,6 +17,7 @@ app.set("view engine", "pug");
 // Routings
 app.use("/", index);
 app.use("/user", user);
+app.use("/users", users);
 
 // Server entry point
 app.listen(PORT, () => console.log("Listening..."));
