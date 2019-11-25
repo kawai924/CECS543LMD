@@ -8,7 +8,10 @@ block content
           .container
             h1.display-4 ALL EXISTING USERS 
             p.lead LMD VSC is at your service
-            a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
+            if (username)
+              a.btn.btn-outline-danger.small-margin-top.ml-2(href=`/user/${username}`) Back
+            else
+              a.btn.btn-outline-danger.small-margin-top.ml-2(href=`/`) Back
   .row.mt-4
       .col-lg-12#usersList
         .card-columns

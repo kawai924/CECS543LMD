@@ -11,6 +11,8 @@ const {
 const router = express.Router();
 
 router.get("/", function(req, res, next) {
+  const username = req.query.username;
+
   let users = fs.readdirSync(path.join(ROOTPATH, DATABASE_NAME));
   users = users.filter(user => user !== ".gitkeep" && user !== "users.json"); // filter out system files
 
@@ -28,9 +30,7 @@ router.get("/", function(req, res, next) {
     });
   });
 
-  console.log(JSON.stringify(usersAndRepos[0].repos[0].manifests[0]));
-
-  return res.render("users", { usersAndRepos });
+  return res.render("users", { usersAndRepos, username });
 });
 
 module.exports = router;
