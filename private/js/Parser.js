@@ -1,54 +1,62 @@
-const { path, COMMANDS } = require("./");
+const {
+  path,
+  COMMANDS,
+  ROOTPATH,
+  VSC_REPO_NAME,
+  MANIFEST_DIR,
+  MASTER_MANIFEST_NAME,
+  DATABASE_NAME,
+  USERS_FILENAME
+} = require("./");
 const DBHandler = require("./DBHandler");
 const RepoHandler = require("./RepoHandler");
 
 module.exports = function() {
   let _command_guides = {
-    [COMMANDS.CREATE]: "create | <project name> | <target folder>",
-    [COMMANDS.CHECKIN]: "check-in | <project name>",
+    [COMMANDS.CREATE]: "create | <project name>",
+    [COMMANDS.CHECKIN]: "checkin | <project name> | <(optional) from path>",
     [COMMANDS.CHECKOUT]:
-      "check-out | <target_path> | <from_username> | <from_repoName> | <from manifest id> OR <label name",
+      "checkout | <project name> | <from_username> | <from manifest id> OR <label name",
     [COMMANDS.MERGE_OUT]:
-      "merge-out | <project name> | <target manifest id> | <source username> | <souce manifest id>",
-    [COMMANDS.MERGE_IN]: "merge-in | <project name>"
+      "mergeout | <project name> | <target manifest id> | <source username> | <souce manifest id>",
+    [COMMANDS.MERGE_IN]: "mergein | <project name>"
   };
 
   const commandParse = (prompt, { username }) => {
-    const command = prompt.split(" ")[0];
-    let args, projectName, targetFolder;
+    const [command, projectName] = prompt.split(" ");
+    const projectPath = path.join(
+      ROOTPATH,
+      DATABASE_NAME,
+      username,
+      projectName
+    );
+    let fromPath;
 
     switch (command) {
       case COMMANDS.CREATE:
-        args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
-        projectName = args[1];
-        targetFolder = args[2];
-        const currProjectPath = path.join(targetFolder, projectName);
-        new RepoHandler(username, projectName, currProjectPath).create();
+        new RepoHandler(username, projectName, projectPath).create();
         break;
 
       case COMMANDS.CHECKIN:
-        args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
-        projectName = args[1];
+        [, , fromPath] = splitAndAppend(
+          prompt,
+          " ",
+          getNumberArgs(command) - 1
+        );
 
-        new RepoHandler(
-          username,
-          projectName,
-          DBHandler().getProjectPath(username, projectName)
-        ).checkin();
+        new RepoHandler(username, projectName, projectPath).checkin(fromPath);
         break;
 
       case COMMANDS.CHECKOUT:
-        args = splitAndAppend(prompt, " ", getNumberArgs(command) - 1);
-        const target_path = args[4];
-        const from_username = args[1];
-        const from_repoName = args[2];
-        const sourceManifestID = args[3];
-        const targetProjectPath = path.join(target_path, from_repoName);
-
-        new RepoHandler(username, from_repoName, targetProjectPath).checkout(
-          from_username,
-          from_repoName,
-          sourceManifestID
+        [, , fUsername, fManifestID] = splitAndAppend(
+          prompt,
+          " ",
+          getNumberArgs(command) - 1
+        );
+        new RepoHandler(username, projectName, projectPath).checkout(
+          fUsername,
+          projectName,
+          fManifestID
         );
         break;
 

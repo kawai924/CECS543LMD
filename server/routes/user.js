@@ -9,7 +9,7 @@ const {
   MANIFEST_DIR,
   DATABASE_NAME,
   MASTER_MANIFEST_NAME
-} = require("./../../constants");
+} = require("../../private/js/index");
 const DBHandler = require("../../private/js/DBHandler");
 const Parser = require("./../../private/js/Parser");
 /****************************************/
@@ -18,8 +18,8 @@ const router = express.Router();
 
 router.get("/:username", function(req, res, next) {
   // Grab data from request
-  const userName = req.params.username;
-  const userPath = path.join(ROOTPATH, DATABASE_NAME, userName);
+  const username = req.params.username;
+  const userPath = path.join(ROOTPATH, DATABASE_NAME, username);
 
   // If it's a new user, create a folder in database
   if (!fs.existsSync(userPath)) {
@@ -31,7 +31,7 @@ router.get("/:username", function(req, res, next) {
   // Gather information for each repo
   const repoInfoList = buildRepoInfoList(repoList, userPath);
 
-  res.render("user", { userName, repoInfoList });
+  res.render("user", { username, repoInfoList, users: DBHandler().getUsers() });
 });
 
 router.post("/:username", function(req, res, next) {
@@ -51,7 +51,7 @@ router.post("/:username", function(req, res, next) {
   // let id;
 
   // // Create a repo handler to handle commands
-  // const repoHandler = new RepoHandler(userName, repoName, { sourcePath });
+  // const repoHandler = new RepoHandler(username, repoName, { sourcePath });
   // switch (command_option) {
   //   case "create":
   //     repoHandler.create();

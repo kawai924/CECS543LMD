@@ -1,6 +1,8 @@
 const {
   fs,
   path,
+  ROOTPATH,
+  DATABASE_NAME,
   VSC_REPO_NAME,
   MANIFEST_DIR,
   COMMANDS,
@@ -22,7 +24,7 @@ module.exports = class RepoHandler {
     };
 
     // Add user into users.json
-    // DBHandler().addUser(username);
+    DBHandler().addUser(username);
   }
 
   /* Utility functions
@@ -47,7 +49,7 @@ module.exports = class RepoHandler {
     // Update the info.json with the new manifest
     infoHandler.addManifest(manifestID, manifestPath);
 
-    // Step 4: Add project to users.json
+    // // Step 4: Add project to users.json
     DBHandler().addProjectForUser(
       this.repo.username,
       this.repo.repoName,
@@ -61,7 +63,9 @@ module.exports = class RepoHandler {
     infoHandler.addLabel(manifestID, label);
   }
 
-  checkin() {
+  checkin(fromPath) {
+    fromPath = fromPath || this.repo.projectPath;
+
     // Step 1: Get the parent of this check-in.
     const infoHandler = this.createInfoHandler();
     const parentID = infoHandler.getCurrentHead();
@@ -71,7 +75,7 @@ module.exports = class RepoHandler {
     manifestHandler.addCommand(COMMANDS.CHECKIN);
     // Scan through project tree and update repo
     const folderStructure = copyDirTree(
-      this.repo.projectPath,
+      fromPath,
       path.join(this.repo.projectPath, VSC_REPO_NAME)
     );
     // Add all artifacts path to the new manifest.
@@ -103,10 +107,12 @@ module.exports = class RepoHandler {
       fromUsername,
       fromRepoName
     );
+
     const pathToSourceRepo = path.join(
       DBHandler().getProjectPath(fromUsername, fromRepoName),
       VSC_REPO_NAME
     );
+
     // Grab source manifest using ID
     const manifestObject = this.getManifestObject(
       pathToSourceRepo,
@@ -194,6 +200,10 @@ module.exports = class RepoHandler {
   }
 
   checkoutArtifact(artifact, sourceProjectPath) {
+    if (artifact.artifactNode == "") {
+      return;
+    }
+
     // Append the folder path with the new target path
     const newDestPath = path.join(
       this.repo.projectPath,

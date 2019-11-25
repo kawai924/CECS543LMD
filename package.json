@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./server/app.js",
     "test": "nodemon ./server/app.js",
-    "mocha": "mocha || true"
+    "mocha": "mocha --watch || true",
+    "Test.js": "node private/js/Test.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.6-alpha.4",
+    "express-fileupload": "^1.1.6",
     "fs-extra": "^8.1.0",
     "pug": "^2.0.4"
   },

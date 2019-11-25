@@ -6,7 +6,7 @@ block content
       .col-lg-12
         .jumbotron.jumbotron-fluid.text-center.bg-white
           .container
-            h1.display-4 WELCOME #{userName.toUpperCase()} 
+            h1.display-4 WELCOME #{username.toUpperCase()} 
             p.lead LMD VSC is at your service
             a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
     
@@ -20,23 +20,31 @@ block content
     .row.justify-content-center.mb-4
       .col-sm-8#command-guide.border.border-info.p-4.border-right-0
         p.text-info.font-weight-bold Create ~>&emsp;
-          span.text-dark.font-weight-normal create | &lt;project name&gt; | &lt;target folder&gt;
-        p Example: create ProjectAlpha /SomeFolder
+          span.text-dark.font-weight-normal create | &lt;project name&gt;
+        ul
+          li Example: create ProjectAlpha /SomeFolder
 
-        p.text-info.font-weight-bold Check-in ~>&emsp;
-          span.text-dark.font-weight-normal check-in | &lt;project name&gt;
-        p Example: check-in ProjectAlpha
+        p.text-info.font-weight-bold Check-in ~> &emsp;
+          span.text-dark.font-weight-normal check-in | &lt;project name&gt; | &lt;(optional) from path&gt;
+        ul
+          li Example: check-in ProjectAlpha
+        
         p.text-info.font-weight-bold Check-out ~>&emsp;
-          span.text-dark.font-weight-normal check-out  | &lt;from_username&gt; | &lt;from_repoName&gt; | &lt;from manifest id&gt; OR &lt;label name | &lt;target_path&gt;
-        p Example with ID: check-out Bob ProjectBeta 123456 /BobTargetFolder
-        p Example with label:  check-out Bob ProjectBeta somelabel /BobTargetFolder
+          span.text-dark.font-weight-normal check-out | &lt;project name&gt; | &lt;from_username&gt; | &lt;from manifest id&gt; OR &lt;label name
+        ul 
+          li Example with ID: check-out Bob ProjectBeta 123456 /BobTargetFolder
+          li Example with label:  check-out Bob ProjectBeta somelabel /BobTargetFolder
+
         p.text-info.font-weight-bold Merge-out ~>&emsp;
           span.text-dark.font-weight-normal merge-out | &lt;project name&gt; | &lt;target manifest id&gt; | &lt;source username&gt; | &lt;souce manifest id&gt;
-        p Example: merge-out ProjectBeta Alice_manifestID Bob Bob_manifestID
+        ul
+          li Example: merge-out ProjectBeta Alice_manifestID Bob Bob_manifestID
+        
         p.text-info.font-weight-bold Merge-in ~>&emsp;
           span.text-dark.font-weight-normal merge-in | &lt;project name&gt; 
-        p Example: merge-in ProjectBeta
-      .col-sm-4.border.border-info.p-4.border-left-0
+        ul
+          li Example: merge-in ProjectBeta
+      .col-sm-4.border.border-info.p-4
         ul
           li Assume this [USERNAME] issues these commands
           li Target = this [USERNAME]
@@ -75,11 +83,13 @@ block content
     //-       input#manifest-target.form-control.user-input.small-margin-bottom(type='text' name='manifestID' placeholder='Enter manifest ID')
     //-       input#dest-path.form-control.user-input.small-margin-bottom(type='text' name='destPath' placeholder='To Path (Absolute)')
     //-       input#create-repo-button.btn.btn-outline-primary.small-margin-top(type='submit')
-
+    .row.justify-content-center.m-4
+      pre . . . 
+      
     .row
       .col-lg-12
         .data-list.mt-2
-          h5 YOU HAVE #{repoInfoList.length} REPOS:
+          h5.text-center.mb-4.text-primary YOU HAVE #{repoInfoList.length} REPOS:
           .card-columns
             each repo in repoInfoList
               .card.border-info.rounded
@@ -104,5 +114,25 @@ block content
                                     li
                                       span.badge.badge-light #{key}
                                       span  #{manifest[key]}
+    .row.justify-content-center.m-4
+      pre . . . 
+
+    .row.text-center.justify-content-center.mt-4
+      h2.text-primary Existing Users
+      
+    .row.mt-4
+      .col-lg-12#usersList
+        .card-columns
+          each user in Object.keys(users)
+            .card.p-3
+              .card-body
+                  h5.card-title.badge.badge-primary #{user}
+              .card-text
+                ul
+                  each project in users[user]
+                    - const [projectName] =Object.keys(project)
+                    li.text-dark #{projectName}
+                      ul
+                        li #{project[projectName]}
   script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
   script(type="text/javascript" src='/app/js/user.js')
