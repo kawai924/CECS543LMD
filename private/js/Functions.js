@@ -1,4 +1,12 @@
-const { fs, path } = require(".");
+const {
+  fs,
+  path,
+  ROOTPATH,
+  DATABASE_NAME,
+  MASTER_MANIFEST_NAME,
+  VSC_REPO_NAME,
+  MANIFEST_DIR
+} = require(".");
 
 /* This function reads each file from source folder, create artifact id and copy to target folder */
 function copyDirTree(fromPath, toPath) {
@@ -220,10 +228,89 @@ function numberOfConflict(mania, manib) {
   return json;
 }
 
+/* Gather information about repos in database of a user */
+function buildRepoInfoList(repoList, userPath) {
+  const repoInfoList = [];
+
+  // Build an object containing information for each repo
+  repoList.forEach(repo => {
+    // Check if it is a directory
+    if (fs.lstatSync(path.join(userPath, repo)).isDirectory()) {
+      // Initialize
+      const repoInfoEach = {
+        name: repo,
+        manifests: [],
+        labels: [],
+        filepath: []
+      };
+      const manifestFolderPath = path.join(
+        userPath,
+        repo,
+        VSC_REPO_NAME,
+        MANIFEST_DIR
+      );
+
+      // Grab list of manifests
+      const manifestList = fs.readdirSync(manifestFolderPath);
+
+      // Grab labels from master manifest
+      repoInfoEach.labels = JSON.parse(
+        fs.readFileSync(
+          path.join(userPath, repo, VSC_REPO_NAME, MASTER_MANIFEST_NAME)
+        )
+      ).labels;
+
+      // For each manifest, build an list of necessary information into an object
+      // then push that object into repoInfoEach.manifests array
+      manifestList.forEach(manifest => {
+        const manifestObject = JSON.parse(
+          fs.readFileSync(path.join(manifestFolderPath, manifest))
+        );
+
+        // let list = "";
+        // for (i in manifestObject.structure) {
+        //   let elem = manifestObject.structure[i];
+        //   const elemarr = [];
+        //   for (let key in elem) {
+        //     elemarr.push(key);
+        //   }
+        //   let LIFO = elemarr.pop();
+        //   list += elem[LIFO];
+        //   LIFO = elemarr.pop();
+        //   list += elem[LIFO] + "\n";
+        // }
+
+        let readdatetime = manifestObject.datetime
+          .replace(/T/, " ")
+          .replace(/\..+/, "");
+
+        // repoInfoEach.manifests.push({
+        //   name: manifest,
+        //   command: manifestObject.command,
+        //   datetime: readdatetime,
+        //   // filepath: list,
+        //   ID: manifestObject.id
+        // });
+        const { user, repo, structure, ...desiredManifest } = manifestObject;
+
+        repoInfoEach.manifests.push({
+          ...desiredManifest,
+          name: manifest,
+          datetime: readdatetime
+        });
+      });
+
+      repoInfoList.push(repoInfoEach);
+    }
+  });
+  return repoInfoList;
+}
+
 module.exports = {
   copyDirTree,
   isDir,
   makeDirSync,
   numberOfConflict,
-  makeQueue
+  makeQueue,
+  buildRepoInfoList
 };

@@ -7,7 +7,7 @@ const app = express();
 
 const index = require("./routes/");
 const user = require("./routes/user");
-const users = require("./routes/user");
+const users = require("./routes/users");
 
 // Set up middlewares
 app.use(bodyParser.urlencoded({ extended: true }));

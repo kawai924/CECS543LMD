@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  .container#content
+    .row.small-margin-top
+      .col-lg-12
+        .jumbotron.jumbotron-fluid.text-center.bg-white
+          .container
+            h1.display-4 ALL EXISTING USERS 
+            p.lead LMD VSC is at your service
+            a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
+  .row.mt-4
+      .col-lg-12#usersList
+        .card-columns
+          each userAndRepos in usersAndRepos
+            .card.p-3
+              .card-body
+                  h5.card-title.badge.badge-primary #{userAndRepos.username}
+              .card-text
+                ul
+                  each repo in userAndRepos.repos
+                    //- - const [projectName] =Object.keys(project)
+                    li.badge.badge-success #{repo.name}
+                    div
+                      each manifest in repo.manifests
+                        p.badge.badge-info #{manifest.name}
+                          ul
+                            li.text-dark COMMAND: #{manifest.command}
+                            li.text-dark DATETIME: #{manifest.datetime}
+                  //-     ul
+                  //-       li #{project[projectName]}

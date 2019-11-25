@@ -9,6 +9,7 @@ block content
             h1.display-4 WELCOME #{username.toUpperCase()} 
             p.lead LMD VSC is at your service
             a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
+            a.btn.btn-outline-primary.small-margin-top.ml-2(href='/users') All Users
     
     .row.justify-content-center.text-center.mb-4
       .col-sm-6.text-center
@@ -96,7 +97,11 @@ block content
     .row
       .col-lg-12
         .data-list.mt-2
-          h5.text-center.mb-4.text-primary YOU HAVE #{repoInfoList.length} REPOS:
+          h5.text-center.mb-4.text-primary #{repoInfoList.length} 
+            if  repoInfoList.length < 2 
+              span REPO:
+            else
+              span REPOS:
           .card-columns
             each repo in repoInfoList
               .card.border-info.rounded
@@ -121,25 +126,5 @@ block content
                                     li
                                       span.badge.badge-light #{key}
                                       span  #{manifest[key]}
-    .row.justify-content-center.m-4
-      pre . . . 
 
-    .row.text-center.justify-content-center.mt-4
-      h2.text-primary Existing Users
-      
-    .row.mt-4
-      .col-lg-12#usersList
-        .card-columns
-          each user in Object.keys(users)
-            .card.p-3
-              .card-body
-                  h5.card-title.badge.badge-primary #{user}
-              .card-text
-                ul
-                  each project in users[user]
-                    - const [projectName] =Object.keys(project)
-                    li.text-dark #{projectName}
-                      ul
-                        li #{project[projectName]}
-  script(src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous')
-  script(type="text/javascript" src='/app/js/user.js')
+  //- script(type="text/javascript" src='/app/js/user.js')
