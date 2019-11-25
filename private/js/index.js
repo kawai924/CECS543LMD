@@ -9,7 +9,7 @@ const MASTER_MANIFEST_NAME = "info.json";
 const DATABASE_NAME = "database";
 const USERS_FILENAME = "users.json";
 
-const DB_PATH = ROOTPATH + DATABASE_NAME;
+const DB_PATH = path.join(ROOTPATH, DATABASE_NAME);
 
 const COMMANDS = {
   CREATE: "create",
