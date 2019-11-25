@@ -224,5 +224,6 @@ module.exports = {
   copyDirTree,
   isDir,
   makeDirSync,
-  numberOfConflict
+  numberOfConflict,
+  makeQueue
 };

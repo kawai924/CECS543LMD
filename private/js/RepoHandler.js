@@ -22,7 +22,7 @@ module.exports = class RepoHandler {
     };
 
     // Add user into users.json
-    DBHandler().addUser(username);
+    // DBHandler().addUser(username);
   }
 
   /* Utility functions
@@ -222,7 +222,7 @@ module.exports = class RepoHandler {
   // rPath = absolute path of repo path
   // gPath = absolute path of grandma path
   // targetPath = absolute path of intended target directory
-  moveFiles(rPath, gPath, targetPath) {
+  mergeOutMoveFiles(rPath, gPath, targetPath) {
     let rPathDest = path.join(targetPath, path.basename(rPath));
     let gPathDest = path.join(targetPath, path.basename(gPath));
     let extensionR = path.extname(rPath);
@@ -231,13 +231,13 @@ module.exports = class RepoHandler {
     // Duplicate rPath to targetPath
     fs.copyFile(rPath, rPathDest, err => {
       if (err) throw err;
-      console.log(path.basename(rPath), " copied to ", rPathDest);
+      // console.log(path.basename(rPath), " copied to ", rPathDest);
     });
 
     // Duplicate gPath to targetPath
     fs.copyFile(gPath, gPathDest, err => {
       if (err) throw err;
-      console.log(path.basename(gPath), " copied to ", gPathDest);
+      // console.log(path.basename(gPath), " copied to ", gPathDest);
     });
 
     // Append _mr or _mg to the duplicated filenames
