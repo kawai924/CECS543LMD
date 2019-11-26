@@ -35,7 +35,7 @@ router.get("/:username", function(req, res, next) {
 router.post("/:username", function(req, res, next) {
   const { commandInput } = req.body;
   const username = req.params.username;
-  Parser().commandParse(commandInput, { username });
+  Parser().commandParse(username, commandInput);
 
   // // Grab information from request
   // const {

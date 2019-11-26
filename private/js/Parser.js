@@ -9,7 +9,6 @@ const {
   USERS_FILENAME
 } = require("./");
 const path = require("path");
-// const RepoHandler = require("./RepoHandler");
 const { ProjectHandler } = require("./ProjectHandler");
 
 module.exports = function() {
@@ -21,10 +20,10 @@ module.exports = function() {
     [COMMANDS.MERGE_OUT]:
       "mergeout | <project name> | <target manifest id> | <source username> | <souce manifest id>",
     [COMMANDS.MERGE_IN]: "<mergein> | <project name>",
-    [COMMANDS.LABEL]: "<label> | <project name> | <label name> | <manifest id>"
+    [COMMANDS.LABEL]: "label | <project name> | <label name> | <manifest id>"
   };
 
-  const commandParse = (prompt, { username }) => {
+  const commandParse = (username, prompt) => {
     const [command, projectName] = prompt.split(" ");
     const projectPath = path.join(DB_PATH, username, projectName);
     let fromPath, manifestID;

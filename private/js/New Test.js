@@ -37,10 +37,10 @@ alice4CheckIn();
 // Bob check out
 manifestID = aMasManReader.getHead();
 bPH.checkout(user1, proj1, manifestID);
-// bob3CheckIn();
+bob3CheckIn();
 
 // Alice check in
-// alice3CheckIn();
+alice3CheckIn();
 
 /****** Helper functions
  * *********************************/

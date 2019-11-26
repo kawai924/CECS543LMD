@@ -132,7 +132,6 @@ class ProjectHandler {
     // Copy the file
     const fileName = artifact.artifactNode.split(path.sep)[0];
 
-    console.log({ fileSource, fileDest: path.join(newDestPath, fileName) });
     fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
   }
 
