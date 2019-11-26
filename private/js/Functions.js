@@ -214,6 +214,7 @@ function buildRepoInfoList(repoList, userPath) {
       repoInfoList.push(repoInfoEach);
     }
   });
+  // console.log(repoInfoList);
   return repoInfoList;
 }
 

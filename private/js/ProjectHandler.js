@@ -109,14 +109,8 @@ class ProjectHandler {
     if (artifact.artifactNode == "") {
       return;
     }
-    // Append the folder path with the new target path
-    const newDestPath = path.join(
-      this.projectPath,
-      path.relative(VSC_REPO_NAME, artifact.artifactRelPath)
-    );
-
-    // Recursively make folders in the destination
-    fs.mkdirSync(newDestPath, { recursive: true });
+    const newDestPath = path.join(this.projectPath, artifact.artifactRelPath);
+    fs.mkdirSync(newDestPath, { recursive: true }); // Recursively make folders in the destination
 
     // Get full file path from source
     const fileSource = path.join(
@@ -125,11 +119,6 @@ class ProjectHandler {
       artifact.artifactRelPath,
       artifact.artifactNode
     );
-
-    // Create the folder
-    makeDirSync(newDestPath);
-
-    // Copy the file
     const fileName = artifact.artifactNode.split(path.sep)[0];
 
     fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
