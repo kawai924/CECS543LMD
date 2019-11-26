@@ -1,4 +1,4 @@
-const { View, ViewAll, ViewOneUserOneProj } = require("../View");
+const { View, ViewAll, ViewOneUser, ViewOneUserOneProj } = require("../View");
 
 // const nSingleView = new ViewOneUserOneProj("alice", "ProjectX");
 // result = JSON.stringify(nSingleView.execute());
@@ -21,3 +21,4 @@ const { View, ViewAll, ViewOneUserOneProj } = require("../View");
 // ]
 
 const oSingleUser = new ViewOneUser("alice");
+oSingleUser.execute();

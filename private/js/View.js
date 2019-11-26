@@ -41,7 +41,18 @@ class ViewOneUser {
     const userPath = path.join(DB_PATH, this.username);
     const projects = fs.readdirSync(userPath);
 
-    console.log(projects);
+    const output = [
+      {
+        user: this.username
+      }
+    ];
+
+    return {
+      user: this.username,
+      projects: projects.map(proj =>
+        new ViewOneUserOneProj(this.username, proj).execute()
+      )
+    };
   }
 }
 
