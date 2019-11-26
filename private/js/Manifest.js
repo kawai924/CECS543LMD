@@ -7,7 +7,6 @@ const {
 } = require("./index");
 const path = require("path");
 const fs = require("fs");
-const { copyDirTree, makeDirSync } = require("./Functions");
 
 const { MasterManReader } = require("./Master");
 

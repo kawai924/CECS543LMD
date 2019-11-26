@@ -7,7 +7,7 @@ const {
 } = require("./");
 const path = require("path");
 const fs = require("fs");
-const { copyDirTree, makeDirSync } = require("./Functions");
+const { makeDirSync, makeQueue, isDir } = require("./Functions");
 
 const { ManifestWriter, ManifestReader } = require("./Manifest");
 const { MasterManWriter, MasterManReader } = require("./Master");
@@ -58,7 +58,7 @@ class ProjectHandler {
     const masManReader = new MasterManReader(this.username, this.projectName);
 
     // Step 3: Get artifacts
-    const artifactsList = copyDirTree(fromPath, this.repoPath);
+    const artifactsList = this._checkinProjectTree(fromPath, this.repoPath);
 
     // Step 5: Get head
     const head = masManReader.getHead();
@@ -166,6 +166,98 @@ class ProjectHandler {
       gPathDest,
       path.join(gPathDest.replace(/\.[^/.]+$/, "") + "_mg" + extensionG)
     );
+  }
+
+  /* This function reads each file from source folder, create artifact id and copy to target folder */
+  _checkinProjectTree(fromPath, toPath) {
+    // console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
+
+    let struct = [];
+    const projectPath = fromPath;
+    const _createArtifactID = this._createArtifactID;
+
+    (function _checkinProjectTreeRec(fromPath, toPath) {
+      const queue = makeQueue();
+
+      const allFiles = fs.readdirSync(fromPath);
+      for (let file of allFiles) {
+        queue.enqueue(file);
+      }
+
+      while (!queue.isEmpty()) {
+        const file = queue.dequeue();
+
+        //Ignore DOT FILE (ex: .DS_STORE)
+        if (!/^(?!\.).*$/.test(file)) continue;
+
+        // For Dir file
+        if (isDir(fromPath, file)) {
+          const sourceFile = path.join(fromPath, file);
+          const targetFile = path.join(toPath, file);
+
+          // Create dir at target
+          makeDirSync(targetFile);
+
+          struct.push({
+            artifactNode: "",
+            artifactRelPath: path.normalize(
+              path.relative(projectPath, targetFile)
+            )
+          });
+
+          //Recursive call
+          _checkinProjectTreeRec(sourceFile, targetFile);
+        } else {
+          // For FILE
+          const leafFolder = path.join(toPath, file);
+
+          // Create the folder there
+          makeDirSync(leafFolder);
+
+          const filePath = path.join(fromPath, file);
+          const aID = _createArtifactID(filePath);
+
+          //Move the file with artifact name
+          const aAbsPath = path.join(leafFolder, aID);
+          fs.copyFileSync(filePath, aAbsPath);
+
+          // Grab the absolute path from database to the curent artifact
+          const aDirPath = path.parse(leafFolder).dir;
+
+          // Add artifact and its path to manifest
+          struct.push({
+            artifactNode: path.join(file, aID),
+            artifactRelPath: path.normalize(
+              path.relative(projectPath, aDirPath)
+            )
+          });
+        }
+      }
+    })(fromPath, toPath);
+
+    return struct;
+  }
+
+  /* Read file content and return the artifactID */
+  _createArtifactID(fileName) {
+    // Read the file and grab the extension
+    let data = fs.readFileSync(fileName, "utf8");
+    let ext = fileName.substring(fileName.lastIndexOf("."));
+    let weights = [1, 3, 7, 11, 13];
+    const len = data.length;
+    let weight;
+    let sum = 0;
+
+    // Creating the checksum using the ASCII numeric by multiplying character by the weights
+    for (let i = 0; i < len; i++) {
+      weight = i % weights.length;
+      sum += data.charCodeAt(i) * weights[weight];
+    }
+
+    // Cap so the sum doesn't grow too large
+    sum = sum % (Math.pow(2, 31) - 1);
+    let artifactName = `${sum}-L${len}${ext}`;
+    return artifactName;
   }
 }
 
