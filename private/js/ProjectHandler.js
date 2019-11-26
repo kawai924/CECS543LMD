@@ -2,7 +2,6 @@ const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME, COMMANDS } = require("./");
 const path = require("path");
 const fs = require("fs");
 const { makeDirSync, makeQueue, isDir } = require("./Functions");
-
 const { ManifestWriter, ManifestReader } = require("./Manifest");
 const { MasterManWriter, MasterManReader } = require("./Master");
 
