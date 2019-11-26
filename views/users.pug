@@ -12,23 +12,44 @@ block content
               a.btn.btn-outline-danger.small-margin-top.ml-2(href=`/user/${username}`) Back
             else
               a.btn.btn-outline-danger.small-margin-top.ml-2(href=`/`) Back
+
   .row.mt-4
-      .col-lg-12#usersList
+      .col-sm-12#usersList
         .card-columns
-          each userAndRepos in usersAndRepos
-            .card.p-3
-              .card-body
-                  h5.card-title.badge.badge-primary #{userAndRepos.username}
-              .card-text
+          .card.p-3
+            h5.card-title.badge.badge-warning.text-uppercase User with no project 
+            each user in users
+              if user.projects.projects.length > 0
                 ul
-                  each repo in userAndRepos.repos
-                    //- - const [projectName] =Object.keys(project)
-                    li.badge.badge-success #{repo.name}
-                    div
-                      each manifest in repo.manifests
-                        p.badge.badge-info #{manifest.name}
-                          ul
-                            li.text-dark COMMAND: #{manifest.command}
-                            li.text-dark DATETIME: #{manifest.datetime}
-                  //-     ul
-                  //-       li #{project[projectName]}
+                  li.badge.badge-primary #{user.user}
+
+          each user in users
+            if user.projects.projects.length > 0
+              .card.p-3
+                .card-body
+                  h5.card-title.badge.badge-primary #{user.user}
+                .card-text
+                  ul
+                    each proj in user.projects.projects
+                      li.badge.badge-success #{proj.projectName}
+                      ul
+                        each label in proj.labels
+                          - const labelName = Object.keys(label)
+                            li 
+                              span.badge.badge-light #{labelName} &rarr; 
+                              span #{label[labelName]}
+                      div
+                        each manifest in proj.manifests
+                          p.badge.badge-info #{manifest.id}
+                            ul
+                              li
+                                span.badge.badge-light command: 
+                                span #{manifest.command}
+                              li
+                                span.badge.badge-light datetime: 
+                                span #{manifest.datetime}
+                              li 
+                                span.badge.badge-light Check-in file counts: 
+                                span #{manifest.structure.length}
+          
+          

@@ -1,10 +1,4 @@
-const {
-  DB_PATH,
-  MANIFEST_DIR,
-  VSC_REPO_NAME,
-  MASTER_MANIFEST_NAME,
-  COMMANDS
-} = require("./index");
+const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME } = require("./index");
 const path = require("path");
 const fs = require("fs");
 

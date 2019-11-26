@@ -1,10 +1,4 @@
-const {
-  ROOTPATH,
-  DATABASE_NAME,
-  MASTER_MANIFEST_NAME,
-  VSC_REPO_NAME,
-  MANIFEST_DIR
-} = require(".");
+const { MASTER_MANIFEST_NAME, VSC_REPO_NAME, MANIFEST_DIR } = require(".");
 const fs = require("fs");
 const path = require("path");
 
@@ -214,7 +208,6 @@ function buildRepoInfoList(repoList, userPath) {
       repoInfoList.push(repoInfoEach);
     }
   });
-  console.log(JSON.stringify(repoInfoList));
   return repoInfoList;
 }
 

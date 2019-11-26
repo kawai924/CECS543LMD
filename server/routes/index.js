@@ -1,5 +1,4 @@
 const express = require("express");
-// const DBHandler = require("./../../private/js/DBHandler");
 
 const router = express.Router();
 
@@ -10,9 +9,6 @@ router.get("/", function(req, res, next) {
 router.post("/", function(req, res) {
   const username =
     req.body.username === "" ? "johndoe" : req.body.username.toLowerCase();
-
-  // Add user into users.json
-  // DBHandler().addUser(username);
 
   res.redirect("/user/" + username);
 });

@@ -14,6 +14,7 @@ module.exports = function() {
   };
 
   const commandParse = (username, prompt) => {
+    prompt = prompt.trim(); // Remove white space
     const [command, projectName] = prompt.split(" ");
     let projPath, manifestID;
 

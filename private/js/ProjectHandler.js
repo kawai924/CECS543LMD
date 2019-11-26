@@ -2,7 +2,6 @@ const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME, COMMANDS } = require("./");
 const path = require("path");
 const fs = require("fs");
 const { makeDirSync, makeQueue, isDir } = require("./Functions");
-
 const { ManifestWriter, ManifestReader } = require("./Manifest");
 const { MasterManWriter, MasterManReader } = require("./Master");
 
@@ -68,28 +67,28 @@ class ProjectHandler {
     masManWriter.addNewMan(newMan);
   }
 
-  checkout(sUsername, sProject, sID) {
+  checkout(sUsername, sProjectName, sID) {
     // Step 1: Create all neccessary folder
     fs.mkdirSync(this.manDirPath, { recursive: true });
 
     // Step 2: Get handlers
     const tManWriter = new ManifestWriter(this.username, this.projectName);
-    const sManReader = new ManifestReader(sUsername, sProject);
+    const sManReader = new ManifestReader(sUsername, sProjectName);
     const tManReader = new ManifestReader(this.username, this.projectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
 
     // Step 3: Checkout files
     const sMan = sManReader.getMan(sID);
-    const sProjectPath = path.join(DB_PATH, sUsername, sProject);
+    const sProjectPath = path.join(DB_PATH, sUsername, sProjectName);
     const sArtifactList = sMan.structure || [];
 
     sArtifactList.forEach(artifact => {
       this._checkoutArtifact(artifact, sProjectPath);
-      // this._replicateOneArtifact(artifact);
+      this._replicateOneArtifact(artifact, sProjectPath, this.repoPath);
     });
 
     // Step 3: Build and write a manifest
-    const sPath = path.join(DB_PATH, sUsername, sProject);
+    const sPath = path.join(DB_PATH, sUsername, sProjectName);
     const newMan = tManWriter
       .addCommand(COMMANDS.CHECKOUT)
       .addCheckoutFrom(sPath)
@@ -101,8 +100,27 @@ class ProjectHandler {
     tMasManWriter.addNewMan(newMan);
   }
 
-  _replicateOneArtifact(sAritfactPath, tRepoPath) {
-    console.log({ sAritfactPath, tRepoPath });
+  _replicateOneArtifact(sArtifact, sProjectPath, tRepoPath) {
+    //Create dirs
+    const tADirRepoPath = path.join(tRepoPath, sArtifact.artifactRelPath);
+    makeDirSync(tADirRepoPath, { recursive: true });
+
+    if (sArtifact.artifactNode != "") {
+      //Copy artifacts
+      const tAartAbsRepoPath = path.join(tADirRepoPath, sArtifact.artifactNode);
+      const sArtFileName = sArtifact.artifactNode.split(path.sep)[0];
+      const tAartDirRepoPath = path.dirname(tAartAbsRepoPath);
+      makeDirSync(tAartDirRepoPath, { recursive: true });
+
+      const sArtAbsPath = path.join(
+        sProjectPath,
+        VSC_REPO_NAME,
+        sArtifact.artifactRelPath,
+        sArtifact.artifactNode
+      );
+
+      fs.copyFileSync(sArtAbsPath, tAartAbsRepoPath);
+    }
   }
 
   _checkoutArtifact(artifact, sProjectPath) {
@@ -175,9 +193,7 @@ class ProjectHandler {
 
       while (!queue.isEmpty()) {
         const file = queue.dequeue();
-
-        //Ignore DOT FILE (ex: .DS_STORE)
-        if (!/^(?!\.).*$/.test(file)) continue;
+        if (!/^(?!\.).*$/.test(file)) continue; //Ignore DOT FILE (ex: .DS_STORE)
 
         // For Dir file
         if (isDir(projPath, file)) {
