@@ -1,8 +1,12 @@
 /********** IMPORT MODULES **********/
 const express = require("express");
-const { buildRepoInfoList } = require("../../private/js/Functions");
-const { ROOTPATH, DATABASE_NAME } = require("../../private/js/");
-// const DBHandler = require("../../private/js/DBHandler");
+const {
+  View,
+  ViewAll,
+  ViewOneUser,
+  ViewOneUserOneProj
+} = require("../../private/js/View");
+const { ROOTPATH, DATABASE_NAME, DB_PATH } = require("../../private/js/");
 const path = require("path");
 const fs = require("fs");
 const Parser = require("./../../private/js/Parser");
@@ -13,22 +17,18 @@ const router = express.Router();
 router.get("/:username", function(req, res, next) {
   // Grab data from request
   const username = req.params.username;
-  const userPath = path.join(ROOTPATH, DATABASE_NAME, username);
+  const userPath = path.join(DB_PATH, username);
 
   // If it's a new user, create a folder in database
   if (!fs.existsSync(userPath)) {
     fs.mkdirSync(userPath, { recursive: true });
   }
 
-  // Grab all the repo of user from database
-  const repoList = fs.readdirSync(userPath);
-  // Gather information for each repo
-  const repoInfoList = buildRepoInfoList(repoList, userPath);
-
+  const projList = new ViewOneUser(username).execute().projects;
+  console.log({ projList: JSON.stringify(projList) });
   res.render("user", {
     username,
-    repoInfoList
-    // users: DBHandler().getUsers()
+    projList
   });
 });
 

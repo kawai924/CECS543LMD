@@ -92,34 +92,41 @@ block content
     .row
       .col-lg-12
         .data-list.mt-2
-          h5.text-center.mb-4.text-primary #{repoInfoList.length} 
-            if  repoInfoList.length < 2 
+          h5.text-center.mb-4.text-primary #{projList.length} 
+            if  projList.length < 2 
               span REPO:
             else
               span REPOS:
           .card-columns
-            each repo in repoInfoList
+            each proj in projList
               .card.border-info.rounded
                   .card-body
-                      h5.card-title.badge.badge-primary #{repo.name}
+                      h5.card-title.badge.badge-primary #{proj.projectName}
                       .card-text
-                        p 
-                          span.font-weight-bold Labels: 
-                          ul
-                            each label in repo.labels
-                              - const labelName = Object.keys(label)
-                              li #{labelName} &rarr; #{label[labelName]}
+                        if proj.labels.length > 0
+                          p 
+                            span.font-weight-bold Labels:
+                            ul
+                              each label in proj.labels
+                                - const labelName = Object.keys(label)
+                                li
+                                  span.badge.badge-light #{labelName} &rarr; 
+                                  span #{label[labelName]}
                         p 
                           span.font-weight-bold Manifests:
                           ul
-                           each manifest in repo.manifests
+                           each manifest in proj.manifests
                             li
-                              span.badge.badge-success #{manifest.name}
+                              span.badge.badge-success #{manifest.id}
                               ul
-                                each key in Object.keys(manifest)
-                                  if (key !== "id" && key !== "name")
-                                    li
-                                      span.badge.badge-light #{key}
-                                      span  #{manifest[key]}
+                                li
+                                  span.badge.badge-light command
+                                  span  #{manifest.command}
+                                li 
+                                  span.badge.badge-light datetime 
+                                  span #{manifest.datetime.replace(/T/, " ").replace(/\..+/, "")}
+                                li 
+                                  span.badge.badge-light Check-in file counts: 
+                                  span #{manifest.structure.length}
+                                    
 
-  //- script(type="text/javascript" src='/app/js/user.js')
