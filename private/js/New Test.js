@@ -1,18 +1,8 @@
-const {
-  ROOTPATH,
-  VSC_REPO_NAME,
-  MANIFEST_DIR,
-  MASTER_MANIFEST_NAME,
-  DATABASE_NAME,
-  USERS_FILENAME,
-  COMMANDS,
-  DB_PATH
-} = require("./");
+const { ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("./");
 const fsExt = require("fs-extra");
 const path = require("path");
 const { ProjectHandler } = require("./ProjectHandler");
 const { MasterManReader, MasterManWriter } = require("./Master");
-const { ManifestReader, ManifestWriter } = require("./Manifest");
 
 let manifestID;
 const user1 = "alice";

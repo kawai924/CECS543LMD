@@ -1,14 +1,4 @@
-const {
-  COMMANDS,
-  ROOTPATH,
-  VSC_REPO_NAME,
-  MANIFEST_DIR,
-  MASTER_MANIFEST_NAME,
-  DATABASE_NAME,
-  DB_PATH,
-  USERS_FILENAME
-} = require("./");
-const path = require("path");
+const { COMMANDS } = require("./");
 const { ProjectHandler } = require("./ProjectHandler");
 
 module.exports = function() {
@@ -25,37 +15,25 @@ module.exports = function() {
 
   const commandParse = (username, prompt) => {
     const [command, projectName] = prompt.split(" ");
-    const projectPath = path.join(DB_PATH, username, projectName);
     let fromPath, manifestID;
 
     switch (command) {
       case COMMANDS.CREATE:
-        // new RepoHandler(username, projectName, projectPath).create();
         new ProjectHandler(username).forProject(projectName).create();
         break;
 
       case COMMANDS.CHECKIN:
-        [, , fromPath] = splitAndAppend(
-          prompt,
-          " ",
-          getNumberArgs(command) - 1
-        );
+        [, , fromPath] = splitAndAppend(prompt, getNumberArgs(command) - 1);
 
-        // new RepoHandler(username, projectName, projectPath).checkin(fromPath);
         new ProjectHandler(username).forProject(projectName).checkin(fromPath);
         break;
 
       case COMMANDS.CHECKOUT:
         [, , fUsername, fManifestID] = splitAndAppend(
           prompt,
-          " ",
           getNumberArgs(command) - 1
         );
-        // new RepoHandler(username, projectName, projectPath).checkout(
-        //   fUsername,
-        //   projectName,
-        //   fManifestID
-        // );
+
         new ProjectHandler(username)
           .forProject(projectName)
           .checkout(fUsername, projectName, fManifestID);
@@ -63,14 +41,9 @@ module.exports = function() {
       case COMMANDS.LABEL:
         [, , lName, manifestID] = splitAndAppend(
           prompt,
-          " ",
           getNumberArgs(command) - 1
         );
 
-        // new RepoHandler(username, projectName, projectPath).addLabel(
-        //   manifestID,
-        //   lName
-        // );
         new ProjectHandler(username)
           .forProject(projectName)
           .label(manifestID, lName);
@@ -106,7 +79,7 @@ module.exports = function() {
     return str.split("|").length;
   };
 
-  const splitAndAppend = (str, delim, count) => {
+  const splitAndAppend = (str, count, delim = " ") => {
     const arr = str.split(delim);
     return [...arr.splice(0, count), arr.join(delim)];
   };

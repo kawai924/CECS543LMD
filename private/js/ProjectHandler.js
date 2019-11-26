@@ -1,10 +1,4 @@
-const {
-  DB_PATH,
-  MANIFEST_DIR,
-  VSC_REPO_NAME,
-  MASTER_MANIFEST_NAME,
-  COMMANDS
-} = require("./");
+const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME, COMMANDS } = require("./");
 const path = require("path");
 const fs = require("fs");
 const { makeDirSync, makeQueue, isDir } = require("./Functions");
@@ -174,7 +168,7 @@ class ProjectHandler {
 
     let struct = [];
     const projectPath = fromPath;
-    const _createArtifactID = this._createArtifactID;
+    const _createArtifactID = this._createArtifactID; //_createArtifactID is not visible in _checkinProjectTreeRec
 
     (function _checkinProjectTreeRec(fromPath, toPath) {
       const queue = makeQueue();
