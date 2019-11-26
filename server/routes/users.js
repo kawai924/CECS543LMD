@@ -1,13 +1,8 @@
 const express = require("express");
 const { buildRepoInfoList } = require("../../private/js/Functions");
-const {
-  fs,
-  path,
-  ROOTPATH,
-  DATABASE_NAME,
-  VSC_REPO_NAME
-} = require("../../private/js/");
-
+const { ROOTPATH, DATABASE_NAME, VSC_REPO_NAME } = require("../../private/js/");
+const fs = require("fs");
+const path = require("path");
 const router = express.Router();
 
 router.get("/", function(req, res, next) {

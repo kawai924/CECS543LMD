@@ -7,12 +7,12 @@ const {
   MANIFEST_DIR,
   COMMANDS,
   MASTER_MANIFEST_NAME
-} = require("./");
+} = require("..");
 
 const InfoHandler = require("./InfoHandler");
 const ManifestHandler = require("./ManifestHandler");
 const DBHandler = require("./DBHandler");
-const { copyDirTree, makeDirSync } = require("./Functions");
+const { copyDirTree, makeDirSync } = require("../Functions");
 
 module.exports = class RepoHandler {
   constructor(username, repoName, projectPath) {
@@ -29,6 +29,7 @@ module.exports = class RepoHandler {
 
   /* Utility functions
    *******************/
+  //done
   create() {
     // Step 1: Set up manifests folder
     makeDirSync(path.join(this.repo.projectPath, VSC_REPO_NAME, MANIFEST_DIR));
@@ -57,6 +58,7 @@ module.exports = class RepoHandler {
     );
   }
 
+  //done
   addLabel(manifestID, label) {
     // Add label to info.json
     const infoHandler = this.createInfoHandler();

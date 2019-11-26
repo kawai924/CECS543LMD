@@ -1,6 +1,6 @@
-const { path, fsExt, ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("./");
-const RepoHandler = require("./RepoHandler");
-const PathHandler = require("./PathHandler");
+const { ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("..");
+const fsExt = require("fs-extra");
+const path = require("path");
 
 let manifestID;
 const user1 = "alice";

@@ -1,15 +1,5 @@
-const {
-  path,
-  COMMANDS,
-  ROOTPATH,
-  VSC_REPO_NAME,
-  MANIFEST_DIR,
-  MASTER_MANIFEST_NAME,
-  DATABASE_NAME,
-  USERS_FILENAME
-} = require("./");
-const DBHandler = require("./DBHandler");
-const RepoHandler = require("./RepoHandler");
+const { COMMANDS } = require("./");
+const { ProjectHandler } = require("./ProjectHandler");
 
 module.exports = function() {
   let _command_guides = {
@@ -20,57 +10,43 @@ module.exports = function() {
     [COMMANDS.MERGE_OUT]:
       "mergeout | <project name> | <target manifest id> | <source username> | <souce manifest id>",
     [COMMANDS.MERGE_IN]: "<mergein> | <project name>",
-    [COMMANDS.LABEL]: "<label> | <project name> | <label name> | <manifest id>"
+    [COMMANDS.LABEL]: "label | <project name> | <label name> | <manifest id>"
   };
 
-  const commandParse = (prompt, { username }) => {
+  const commandParse = (username, prompt) => {
     const [command, projectName] = prompt.split(" ");
-    const projectPath = path.join(
-      ROOTPATH,
-      DATABASE_NAME,
-      username,
-      projectName
-    );
-    let fromPath, manifestID;
+    let projPath, manifestID;
 
     switch (command) {
       case COMMANDS.CREATE:
-        new RepoHandler(username, projectName, projectPath).create();
+        new ProjectHandler(username).forProject(projectName).create();
         break;
 
       case COMMANDS.CHECKIN:
-        [, , fromPath] = splitAndAppend(
-          prompt,
-          " ",
-          getNumberArgs(command) - 1
-        );
+        [, , projPath] = splitAndAppend(prompt, getNumberArgs(command) - 1);
 
-        new RepoHandler(username, projectName, projectPath).checkin(fromPath);
+        new ProjectHandler(username).forProject(projectName).checkin(projPath);
         break;
 
       case COMMANDS.CHECKOUT:
         [, , fUsername, fManifestID] = splitAndAppend(
           prompt,
-          " ",
           getNumberArgs(command) - 1
         );
-        new RepoHandler(username, projectName, projectPath).checkout(
-          fUsername,
-          projectName,
-          fManifestID
-        );
+
+        new ProjectHandler(username)
+          .forProject(projectName)
+          .checkout(fUsername, projectName, fManifestID);
         break;
       case COMMANDS.LABEL:
         [, , lName, manifestID] = splitAndAppend(
           prompt,
-          " ",
           getNumberArgs(command) - 1
         );
 
-        new RepoHandler(username, projectName, projectPath).addLabel(
-          manifestID,
-          lName
-        );
+        new ProjectHandler(username)
+          .forProject(projectName)
+          .label(manifestID, lName);
         break;
 
       default:
@@ -103,7 +79,7 @@ module.exports = function() {
     return str.split("|").length;
   };
 
-  const splitAndAppend = (str, delim, count) => {
+  const splitAndAppend = (str, count, delim = " ") => {
     const arr = str.split(delim);
     return [...arr.splice(0, count), arr.join(delim)];
   };

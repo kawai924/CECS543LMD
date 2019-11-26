@@ -5,7 +5,7 @@ const {
   MANIFEST_DIR,
   MASTER_MANIFEST_NAME,
   DATABASE_NAME
-} = require("./");
+} = require("..");
 
 /**
  * This function is to encapsulate the path of a particular project.

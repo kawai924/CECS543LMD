@@ -1,4 +1,4 @@
-const { fs, path, VSC_REPO_NAME } = require("./");
+const { fs, path, VSC_REPO_NAME } = require("..");
 const PathHandler = require("./PathHandler");
 
 module.exports = class InfoHandler {
@@ -32,11 +32,13 @@ module.exports = class InfoHandler {
     );
   }
 
+  //done
   addLabel(manifestID, label) {
     this.infoJSON.labels.push({ [label]: manifestID });
     this.write();
   }
 
+  //done
   addManifest(manifestID, manifestPath) {
     this.infoJSON.manifests.push({ manifestID, manifestPath });
     this.infoJSON.head = manifestID;
@@ -44,14 +46,17 @@ module.exports = class InfoHandler {
     this.write();
   }
 
+  //done
   getCurrentHead() {
     return this.getInfoOBject().head;
   }
 
+  //done
   getInfoOBject() {
     return JSON.parse(fs.readFileSync(this.pathHandler.getInfoJSONPath()));
   }
 
+  //done
   write() {
     fs.writeFileSync(
       this.pathHandler.getInfoJSONPath(),

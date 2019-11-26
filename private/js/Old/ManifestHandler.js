@@ -1,5 +1,5 @@
-const { fs, path, MANIFEST_DIR } = require("./");
-const { makeDirSync } = require("./Functions");
+const { fs, path, MANIFEST_DIR } = require("..");
+const { makeDirSync } = require("../Functions");
 
 module.exports = class ManifestHandler {
   constructor(userName, repoName, manifestDirPath, parent = null) {
@@ -15,14 +15,17 @@ module.exports = class ManifestHandler {
   }
 
   /* Setters */
+  // done
   addCommand(command) {
     this.newManifest.command = command;
   }
 
+  //done
   addCheckoutFrom(fromPath) {
     this.newManifest.checkoutFromPath = fromPath;
   }
 
+  //done
   // Add parents to the manifest file
   addParent(...parents) {
     if (parents.length > 2) {
@@ -34,10 +37,12 @@ module.exports = class ManifestHandler {
     });
   }
 
+  //done
   addStructure(struct) {
     this.newManifest.structure = struct;
   }
 
+  //done
   /* Get manifest path from an id. ID can be LABEL or NUMBER */
   getManifestPath(id) {
     let idFromLabel = null;
@@ -51,6 +56,7 @@ module.exports = class ManifestHandler {
     return this.masterManifest.manifest_lists[manifestID.toString()] || false;
   }
 
+  //done
   /* Write manifest into file */
   write(parentID = null) {
     if (parentID !== null) {
@@ -74,9 +80,10 @@ module.exports = class ManifestHandler {
       manifestPath: manifestPath
     };
   }
-
+  //
   /* Helper functions */
   /* Grab master manifest */
+  //done
   getMasterManifest() {
     // Create repo folder under database/[userName]/[repoName]
     makeDirSync(this.paths.writeToPath, { recursive: true });
