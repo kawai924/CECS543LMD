@@ -43,8 +43,8 @@ class ProjectHandler {
     masManWriter.addLabel(manID, label);
   }
 
-  checkin(fromPath) {
-    fromPath = fromPath || this.projectPath;
+  checkin(projPath) {
+    projPath = projPath || this.projectPath;
 
     // Step 2: Get handlers
     const manWriter = new ManifestWriter(this.username, this.projectName);
@@ -52,7 +52,7 @@ class ProjectHandler {
     const masManReader = new MasterManReader(this.username, this.projectName);
 
     // Step 3: Get artifacts
-    const artifactsList = this._checkinProjectTree(fromPath, this.repoPath);
+    const artifactsList = this._checkinProjectTree(projPath, this.repoPath);
 
     // Step 5: Get head
     const head = masManReader.getHead();
@@ -83,9 +83,10 @@ class ProjectHandler {
     const sProjectPath = path.join(DB_PATH, sUsername, sProject);
     const sArtifactList = sMan.structure || [];
 
-    sArtifactList.forEach(artifact =>
-      this._checkoutArtifact(artifact, sProjectPath)
-    );
+    sArtifactList.forEach(artifact => {
+      this._checkoutArtifact(artifact, sProjectPath);
+      // this._replicateOneArtifact(artifact);
+    });
 
     // Step 3: Build and write a manifest
     const sPath = path.join(DB_PATH, sUsername, sProject);
@@ -98,6 +99,10 @@ class ProjectHandler {
 
     // Step 4: Add new manifest to master manifest
     tMasManWriter.addNewMan(newMan);
+  }
+
+  _replicateOneArtifact(sAritfactPath, tRepoPath) {
+    console.log({ sAritfactPath, tRepoPath });
   }
 
   _checkoutArtifact(artifact, sProjectPath) {
@@ -116,6 +121,7 @@ class ProjectHandler {
     // Get full file path from source
     const fileSource = path.join(
       sProjectPath,
+      VSC_REPO_NAME,
       artifact.artifactRelPath,
       artifact.artifactNode
     );
@@ -163,17 +169,17 @@ class ProjectHandler {
   }
 
   /* This function reads each file from source folder, create artifact id and copy to target folder */
-  _checkinProjectTree(fromPath, toPath) {
-    // console.log("(CF) fromPath=" + fromPath + "\n(CF) toPath=" + toPath);
+  _checkinProjectTree(projPath, toPath) {
+    // console.log("(CF) projPath=" + projPath + "\n(CF) toPath=" + toPath);
 
     let struct = [];
-    const projectPath = fromPath;
+    const repoPath = path.join(projPath, VSC_REPO_NAME);
     const _createArtifactID = this._createArtifactID; //_createArtifactID is not visible in _checkinProjectTreeRec
 
-    (function _checkinProjectTreeRec(fromPath, toPath) {
+    (function _checkinProjectTreeRec(projPath, toPath) {
       const queue = makeQueue();
 
-      const allFiles = fs.readdirSync(fromPath);
+      const allFiles = fs.readdirSync(projPath);
       for (let file of allFiles) {
         queue.enqueue(file);
       }
@@ -185,8 +191,8 @@ class ProjectHandler {
         if (!/^(?!\.).*$/.test(file)) continue;
 
         // For Dir file
-        if (isDir(fromPath, file)) {
-          const sourceFile = path.join(fromPath, file);
+        if (isDir(projPath, file)) {
+          const sourceFile = path.join(projPath, file);
           const targetFile = path.join(toPath, file);
 
           // Create dir at target
@@ -194,9 +200,7 @@ class ProjectHandler {
 
           struct.push({
             artifactNode: "",
-            artifactRelPath: path.normalize(
-              path.relative(projectPath, targetFile)
-            )
+            artifactRelPath: path.normalize(path.relative(repoPath, targetFile))
           });
 
           //Recursive call
@@ -208,7 +212,7 @@ class ProjectHandler {
           // Create the folder there
           makeDirSync(leafFolder);
 
-          const filePath = path.join(fromPath, file);
+          const filePath = path.join(projPath, file);
           const aID = _createArtifactID(filePath);
 
           //Move the file with artifact name
@@ -221,13 +225,11 @@ class ProjectHandler {
           // Add artifact and its path to manifest
           struct.push({
             artifactNode: path.join(file, aID),
-            artifactRelPath: path.normalize(
-              path.relative(projectPath, aDirPath)
-            )
+            artifactRelPath: path.normalize(path.relative(repoPath, aDirPath))
           });
         }
       }
-    })(fromPath, toPath);
+    })(projPath, toPath);
 
     return struct;
   }

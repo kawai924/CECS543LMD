@@ -15,7 +15,7 @@ module.exports = function() {
 
   const commandParse = (username, prompt) => {
     const [command, projectName] = prompt.split(" ");
-    let fromPath, manifestID;
+    let projPath, manifestID;
 
     switch (command) {
       case COMMANDS.CREATE:
@@ -23,9 +23,9 @@ module.exports = function() {
         break;
 
       case COMMANDS.CHECKIN:
-        [, , fromPath] = splitAndAppend(prompt, getNumberArgs(command) - 1);
+        [, , projPath] = splitAndAppend(prompt, getNumberArgs(command) - 1);
 
-        new ProjectHandler(username).forProject(projectName).checkin(fromPath);
+        new ProjectHandler(username).forProject(projectName).checkin(projPath);
         break;
 
       case COMMANDS.CHECKOUT:
