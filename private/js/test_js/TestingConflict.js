@@ -1,66 +1,32 @@
 function numberOfConflict(mania, manib) {
 
-  //mania = source manifest file;
-  var maniadata = require(mania);
   ssmallfilelist = [];
   sfolderlist = [];
-  for( let prop in maniadata ){
-    if(prop == 'structure'){
-      //console.log( maniadata[prop] );
-      var structure = maniadata[prop];
-      for (let x in structure ){
-       //console.log(structure[x]);
-        var file = structure[x];
-        for (let y in file ){
-          //console.log(y, file[y]);
-          if(y == 'artifactNode'){
-            //var shortvalue = value.replace(gdir, "");
-            ssmallfilelist.push(file[y]);
-            var tar = file[y].lastIndexOf("/");
-            var file = file[y].substring(0, tar);
-            sfolderlist.push(file);
-
-          }
-          //console.log(file.artifactAbsPath);
-          if(y == 'artifactAbsPath'){
-            var sdir = file[y];
-          }
-        }
-      }
-    }
+  for( let prop in mania.structure ){
+      var structure = mania.structure[prop];
+      filename = structure.artifactNode;
+      ssmallfilelist.push(filename);
+      var tar = filename.lastIndexOf("/");
+      var file = filename.substring(0, tar);
+      sfolderlist.push(file);
   }
-  //manib = target manifest file;
-  var manibdata = require(manib);
+  console.log(ssmallfilelist, sfolderlist);
+  
+  //manib = target manifest json object;
   tsmallfilelist = [];
   tfolderlist = [];
-
-
-  for( let prop in manibdata ){
-    if(prop == 'structure'){
-      //console.log( maniadata[prop] );
-      var structure = manibdata[prop];
-      for (let x in structure ){
-        //console.log(structure[x]);
-        var file = structure[x];
-        for (let y in file ){
-          if(y == 'artifactNode'){
-            //console.log(file[y]);
-            //var shortvalue = value.replace(gdir, "");
-            tsmallfilelist.push(file[y]);
-            var tar = file[y].lastIndexOf("/");
-            var file = file[y].substring(0, tar);
-            tfolderlist.push(file);
-
-          }
-          if(y == "artifactAbsPath"){
-            var tdir = file[y];
-            //console.log(tdir);
-          }
-        }
-      }
-    }
+  for( let prop in manib.structure ){
+    var structure = manib.structure[prop];
+    //console.log(structure.artifactNode, structure.artifactAbsPath);
+    filename = structure.artifactNode;
+    tsmallfilelist.push(filename);
+    
+    var tar = filename.lastIndexOf("/");
+    var file = filename.substring(0, tar);
+    tfolderlist.push(file);
+    
   }
-  //console.log(ssmallfilelist, sfolderlist, tsmallfilelist, tfolderlist);
+  console.log(tsmallfilelist, tfolderlist);
 
   var conflict = 0;
   
@@ -71,40 +37,44 @@ function numberOfConflict(mania, manib) {
     if (
       tsmallfilelist[tkey] == ssmallfilelist[key]
     ) {
-      //var data2 = ssmallfilelist[key] + tsmallfilelist[tkey];
       data.push(
         {
           source: ssmallfilelist[key],
           target: tsmallfilelist[tkey]
         }
       );
-      // if (conflict == 0) {
-      // } else {
-      //   data2 = data2 + "," + ssmallfilelist[key] + tsmallfilelist[tkey];
-      //   data = data + "," +
-      //   {
-      //     starget: ssmallfilelist[key],
-      //     ttarget: tsmallfilelist[tkey]
-      //   };
-      // }
+      
       conflict++;
     }
   }
-  var json = [
+  var json = 
     {
       // source : sdir,
       // target: tdir, 
       keyconflict: conflict,
       keyconflictfile: data
-    }
-  ];
+    };
   //console.log(data);
   console.log(json);
-  // var obj = JSON.parse(json);
-  // console.log (JSON.stringify(obj));
 
-  //return json;
+  // return json;
 }
 
-numberOfConflict("/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_3.json", 
-"/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_3.json");
+
+
+const mani = {
+  "user": "dennis2",
+  "repo": "py2",
+  "structure": [
+    {
+      "artifactNode": "multithread.py/414120-L7.py",
+      "artifactAbsPath": "py2/"
+    },
+    { "artifactNode": "compare.py/671902-L1215.py", "artifactAbsPath": "py2/" }
+  ],
+  "command": "checkin",
+  "id": 3,
+  "datetime": "2019-11-07T23:08:56.408Z"
+};
+
+numberOfConflict(mani,mani);
