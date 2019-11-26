@@ -100,6 +100,8 @@ class ProjectHandler {
     tMasManWriter.addNewMan(newMan);
   }
 
+  /** Private functions
+   * ********************/
   _replicateOneArtifact(sArtifact, sProjectPath, tRepoPath) {
     //Create dirs
     const tADirRepoPath = path.join(tRepoPath, sArtifact.artifactRelPath);

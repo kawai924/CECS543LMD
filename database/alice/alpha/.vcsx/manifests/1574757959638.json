@@ -1,1 +1,11 @@
-{"user":"alice","project":"alpha","structure":[{"artifactNode":"data.txt/7590-L11.txt","artifactRelPath":"."}],"parent":[1574757959633],"command":"checkin","datetime":"2019-11-26T08:45:59.638Z","id":1574757959638}
+{
+  "user": "alice",
+  "project": "alpha",
+  "structure": [
+    { "artifactNode": "data.txt/7590-L11.txt", "artifactRelPath": "." }
+  ],
+  "parent": [1574757959633],
+  "command": "checkin",
+  "datetime": "2019-11-26T08:45:59.638Z",
+  "id": 1574757959638
+}
