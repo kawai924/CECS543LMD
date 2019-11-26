@@ -119,7 +119,7 @@ function bob3CheckIn() {
 
 function reset() {
   fsExt.removeSync(path.join(DB_PATH, user1));
-  fsExt.removeSync(path.join(DB_PATH, user1));
+  fsExt.removeSync(path.join(DB_PATH, user2));
   fsExt.removeSync(path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME));
 }
 
