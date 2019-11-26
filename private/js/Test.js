@@ -45,6 +45,24 @@ bob3CheckIn();
 // Alice check in
 alice3CheckIn();
 
+
+// Create object to pass to getParentList
+// Or we can just pass in the repoHandlers
+alicePathObject = {
+  path: alicePathHandler.getProjectPath(),
+  manifestID: repoHandler1.getHeadManifestID()
+};
+bobPathObject = {
+  path: bobPathHandler.getProjectPath(),
+  manifestID: repoHandler2.getHeadManifestID()
+};
+// Parent list testing
+let bobParentList = repoHandler1.getParentList( bobPathObject );
+let aliceParentList = repoHandler2.getParentList(alicePathObject);
+console.log(bobParentList, aliceParentList);
+
+console.log(repoHandler1.commonAncestor(bobParentList, aliceParentList));
+
 /****** Helper functions
  * *********************************/
 function alice4CheckIn() {

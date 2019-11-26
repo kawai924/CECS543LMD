@@ -236,6 +236,59 @@ module.exports = class RepoHandler {
     }
   }
 
+  getParentList(targetPathObj) {
+    // Using PathObj now but will change to use this.path
+    
+    let manifestID = targetPathObj.manifestID;
+    let projectPath = targetPathObj.path; // Starting project path
+
+    
+    let manifestData, infoData, curParent, parentPath;
+    let targetPath = path.join(projectPath, VSC_REPO_NAME, MANIFEST_DIR);
+    let targetParentList = [manifestID];
+    manifestData = JSON.parse(
+      fs.readFileSync(path.join(targetPath ,manifestID.toString() + '.json'))
+    );
+    curParent = manifestData.parent[0];
+    while (curParent != null) {
+      targetParentList.push(curParent);
+      infoData = JSON.parse(
+        fs.readFileSync(path.join(projectPath, VSC_REPO_NAME, MASTER_MANIFEST_NAME))
+      );
+      if (manifestData.command === COMMANDS.CHECKOUT) {
+        projectPath = manifestData.checkoutFromPath;
+        parentPath = path.join(projectPath, VSC_REPO_NAME, MANIFEST_DIR, curParent.toString() +  '.json');
+      } else {
+        parentPath = infoData.manifests.filter( (man) => man.manifestID == curParent)[0].manifestPath || null;
+      }
+      if (parentPath != null) {
+        manifestData = JSON.parse(
+          fs.readFileSync(path.join(parentPath))
+        );
+        
+        if (manifestData.parent === null) {
+          curParent = null;
+        } else {
+          curParent = manifestData.parent[0];
+        }
+         // Need to add 2 parent functionality        
+      } else {
+        curParent = null;
+      }
+    }
+    return targetParentList;
+  }
+
+  // private function to be called in getParentsList
+  commonAncestor(targetList, sourceList) {
+    for (let i = 0; i < targetList.length; i ++) {
+      if (sourceList.includes(targetList[i])) {
+        return targetList[i];
+      }
+    }
+    return false; // Should never happen?
+  } 
+
   escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
   }
