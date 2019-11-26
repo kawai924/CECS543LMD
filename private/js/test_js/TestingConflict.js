@@ -9,17 +9,21 @@ function numberOfConflict(mania, manib) {
       //console.log( maniadata[prop] );
       var structure = maniadata[prop];
       for (let x in structure ){
-        //console.log(structure[x]);
+       //console.log(structure[x]);
         var file = structure[x];
         for (let y in file ){
+          //console.log(y, file[y]);
           if(y == 'artifactNode'){
-            //console.log(file[y]);
             //var shortvalue = value.replace(gdir, "");
             ssmallfilelist.push(file[y]);
             var tar = file[y].lastIndexOf("/");
             var file = file[y].substring(0, tar);
             sfolderlist.push(file);
 
+          }
+          //console.log(file.artifactAbsPath);
+          if(y == 'artifactAbsPath'){
+            var sdir = file[y];
           }
         }
       }
@@ -47,6 +51,10 @@ function numberOfConflict(mania, manib) {
             var file = file[y].substring(0, tar);
             tfolderlist.push(file);
 
+          }
+          if(y == "artifactAbsPath"){
+            var tdir = file[y];
+            //console.log(tdir);
           }
         }
       }
@@ -84,11 +92,13 @@ function numberOfConflict(mania, manib) {
   }
   var json = [
     {
+      // source : sdir,
+      // target: tdir, 
       keyconflict: conflict,
       keyconflictfile: data
     }
   ];
-  console.log(data);
+  //console.log(data);
   console.log(json);
   // var obj = JSON.parse(json);
   // console.log (JSON.stringify(obj));
