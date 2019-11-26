@@ -1,8 +1,8 @@
 const { View, ViewAll, ViewOneUserOneProj } = require("../View");
 
-const nSingleView = new ViewOneUserOneProj("alice", "ProjectX");
-result = JSON.stringify(nSingleView.execute());
-JSON.parse(result);
+// const nSingleView = new ViewOneUserOneProj("alice", "ProjectX");
+// result = JSON.stringify(nSingleView.execute());
+// JSON.parse(result);
 // console.log(JSON.stringify(nSingleView.execute()));
 
 // const nViewAll = new ViewAll();
@@ -19,3 +19,5 @@ JSON.parse(result);
 //         ]
 //     }
 // ]
+
+const oSingleUser = new ViewOneUser("alice");

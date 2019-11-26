@@ -1,4 +1,4 @@
-const { ROOTPATH, DATABASE_NAME, USERS_FILENAME } = require("./");
+const { ROOTPATH, DATABASE_NAME, USERS_FILENAME, DB_PATH } = require("./");
 const fsExt = require("fs-extra");
 const path = require("path");
 const { ProjectHandler } = require("./ProjectHandler");
@@ -6,15 +6,17 @@ const { MasterManReader, MasterManWriter } = require("./Master");
 
 let manifestID;
 const user1 = "alice";
-const proj1 = "ProjectX"; // Grab from project folder.
-const aPH = new ProjectHandler(user1).forProject(proj1);
+const aProj1 = "alpha"; // Grab from project folder.
+const aProj2 = "beta"; // Grab from project folder.
+const aPH = new ProjectHandler(user1).forProject(aProj1);
+const aPH2 = new ProjectHandler(user1).forProject(aProj2);
 const aProPath = aPH.projectPath;
-const aMasManReader = new MasterManReader(user1, proj1);
-const aMasManWriter = new MasterManWriter(user1, proj1);
+const aMasManReader = new MasterManReader(user1, aProj1);
+const aMasManWriter = new MasterManWriter(user1, aProj1);
 
 const user2 = "bob";
-const proj2 = "ProjectX";
-const bPH = new ProjectHandler(user2).forProject(proj2);
+const bProj1 = aProj1;
+const bPH = new ProjectHandler(user2).forProject(bProj1);
 const bProPath = bPH.projectPath;
 
 reset();
@@ -26,11 +28,13 @@ alice4CheckIn();
 
 // Bob check out
 manifestID = aMasManReader.getHead();
-bPH.checkout(user1, proj1, manifestID);
+bPH.checkout(user1, aProj1, manifestID);
 bob3CheckIn();
 
 // Alice check in
 alice3CheckIn();
+// Alice make new project
+aliceProject2();
 
 /****** Helper functions
  * *********************************/
@@ -86,6 +90,12 @@ function alice3CheckIn() {
   aPH.checkin();
 }
 
+function aliceProject2() {
+  aPH2.create();
+  aPH2.checkin();
+  aPH2.checkin();
+}
+
 function bob3CheckIn() {
   fsExt.mkdirpSync(path.join(bProPath, "bob_folder"));
   fsExt.writeFileSync(
@@ -108,8 +118,8 @@ function bob3CheckIn() {
 }
 
 function reset() {
-  fsExt.removeSync(path.join(aProPath));
-  fsExt.removeSync(path.join(bProPath));
+  fsExt.removeSync(path.join(DB_PATH, user1));
+  fsExt.removeSync(path.join(DB_PATH, user1));
   fsExt.removeSync(path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME));
 }
 

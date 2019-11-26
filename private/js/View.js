@@ -32,6 +32,19 @@ class ViewOneUserOneProj {
   }
 }
 
+class ViewOneUser {
+  constructor(username) {
+    this.username = username;
+  }
+
+  execute() {
+    const userPath = path.join(DB_PATH, this.username);
+    const projects = fs.readdirSync(userPath);
+
+    console.log(projects);
+  }
+}
+
 class ViewAll {
   execute() {
     const dbPath = DB_PATH;
@@ -57,5 +70,6 @@ class ViewAll {
 module.exports = {
   View,
   ViewAll,
-  ViewOneUserOneProj
+  ViewOneUserOneProj,
+  ViewOneUser
 };
