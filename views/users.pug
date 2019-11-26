@@ -31,7 +31,6 @@ block content
                 .card-text
                   ul
                     each proj in user.projects.projects
-                      //- - const [projectName] =Object.keys(project)
                       li.badge.badge-success #{proj.projectName}
                       ul
                         each label in proj.labels
@@ -52,7 +51,5 @@ block content
                               li 
                                 span.badge.badge-light Check-in file counts: 
                                 span #{manifest.structure.length}
-                    //-     ul
-                    //-       li #{project[projectName]}
           
           

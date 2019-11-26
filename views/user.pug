@@ -12,9 +12,9 @@ block content
             a.btn.btn-outline-danger.small-margin-top.ml-2(href='/') Log Out
     
     .row.justify-content-center.text-center.mb-4
-      .col-sm-6.text-center
+      .col-sm-8.text-center
         h2.text-info.font Command Line Guide
-      .col-sm-6
+      .col-sm-4
         h2.text-info.font Note
         
 
@@ -49,10 +49,17 @@ block content
           
       .col-sm-4.border.border-info.p-4
         ul.text-secondary
-          li Assume this [USERNAME] issues these commands
-          li Target = this [USERNAME]
-          li Source = other [USERNAME]
-          li | = a space between element
+          li Assume 
+            span.text-danger #{username.toUpperCase()} 
+            span issues these 
+            span.text-danger commands
+          li Target = 
+            span.text-danger #{username.toUpperCase()}
+          li Source = 
+            span.text-danger other [USERNAME]
+          li 
+            span.text-danger.font-weight-bold | 
+            span #{"="} a space between element
 
 
     .row.text-center.justify-content-center
@@ -61,8 +68,8 @@ block content
           .input-group.mb-3
             .input-group-prepend
               span.input-group-text.text-info#command-line-prepend Command-line
-            textarea.form-control(type="text", aria-label="Your command here..." placeholder="Command line" name="commandInput")
-            button#command-button.btn.btn-outline-primary.small-margin-top(type='submit') Submit     
+            textarea.form-control(type="text", aria-label="Your command here..." name="commandInput")
+          button#command-button.btn.btn-outline-primary.small-margin-top(type='submit') Submit     
 
     //- .row.justify-content-center.text-center.mt-5
     //-   .col-sm-9

@@ -19,5 +19,5 @@ app.use("/", index);
 app.use("/user", user);
 app.use("/users", users);
 
-// Server entry point
+// Entry point
 app.listen(PORT, () => console.log("Listening..."));
