@@ -1,7 +1,7 @@
 const mockFS = require("mock-fs");
 const fs = require("fs");
 const assert = require("chai").assert;
-const { numberOfConflict } = require("../private/js/Functions");
+const { numberOfConflict, test } = require("../private/js/Functions");
 const { ProjectHandler } = require("../private/js/ProjectHandler");
 
 describe("Merge", function() {
@@ -37,7 +37,7 @@ describe("Merge", function() {
         "target"
       );
 
-      assert.equal(fs.readdirSync("target"), [
+      assert.deepEqual(fs.readdirSync("target"), [
         "data_mr.txt",
         "data_mg.txt",
         "data_mt.txt"
@@ -91,11 +91,15 @@ describe("Merge", function() {
       assert.equal(numberOfConflict(man1, man1).length, man1.structure.length);
     });
 
-    it("should result in 1 conflict between two manifests", function() {
+    it("should result in right number of conflict between two manifests", function() {
       assert.equal(numberOfConflict(man1, man2).length, 1);
     });
 
-    it("should return expected format. Assuming 1st param = source, 2nd param = target", function() {
+    it("should return an array", function() {
+      assert.typeOf(numberOfConflict(man1, man2), "array");
+    });
+
+    it("should return correct answer", function() {
       const result = [
         {
           source: {
@@ -108,7 +112,7 @@ describe("Merge", function() {
           }
         }
       ];
-      assert.equal(numberOfConflict(man1, man2), result);
+      assert.deepEqual(numberOfConflict(man1, man2), result);
     });
   });
 });
