@@ -10,13 +10,13 @@ block content
             p.lead A lightweight, web-based, intuitive VCS.
             a.btn.btn-outline-primary.small-margin-top.ml-2(href='/users') All Users
 
-    .row.text-center.justify-content-center.border-bottom.border-dark
+    .row.text-center.justify-content-center
       .col-lg-6
         form(method='POST')
-          input#username.form-control.user-input.small-margin-bottom(type='text' name='username' placeholder='Username')
+          p.text-secondary New username is automatically created
+          input.text-center#username.form-control.user-input.small-margin-bottom(type='text' name='username' placeholder='Username here' required)
           input#create-repo-button.btn.btn-outline-primary.small-margin-top.mt-4(type='submit')
-        p.mt-3.border.border-secondary If leave blank, username = 
-          span.font-weight-bold johndoe
 
     
+  
 

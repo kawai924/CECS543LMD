@@ -17,6 +17,7 @@ router.get("/:username", function(req, res, next) {
   if (!fs.existsSync(userPath)) {
     fs.mkdirSync(userPath, { recursive: true });
   }
+
   const projList = new ViewOneUser(username).execute().projects;
 
   res.render("user", {
@@ -28,9 +29,14 @@ router.get("/:username", function(req, res, next) {
 router.post("/:username", function(req, res, next) {
   const { commandInput } = req.body;
   const username = req.params.username;
-  Parser().commandParse(username, commandInput);
+  const projList = new ViewOneUser(username).execute().projects;
 
-  res.redirect("/user/" + username);
+  try {
+    Parser().commandParse(username, commandInput);
+    res.redirect("/user/" + username);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

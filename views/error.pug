@@ -1,0 +1,11 @@
+extends layout.pug
+
+block css
+	link(rel='stylesheet' type='text/css' href='/app/css/error.css')
+
+block content
+	#main.d-flex.justify-content-center.align-items-center
+		h1.mr-3.pr-3.align-top.border-right.inline-block.align-content-center 404
+		.inline-block.align-middle
+			h2#desc.font-weight-normal.lead The page you requested was not found.
+			p.text-danger #{err.message}

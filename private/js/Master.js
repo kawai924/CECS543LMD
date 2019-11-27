@@ -14,8 +14,10 @@ class MasterManReader {
   getMasMan() {
     const masManFilePath = path.join(this.rPath, MASTER_MANIFEST_NAME);
     if (!fs.existsSync(masManFilePath)) {
-      throw new Error("Invalid master manifest file path");
+      // throw new Error("Invalid master manifest file path");
+      return {};
     }
+
     return JSON.parse(fs.readFileSync(masManFilePath));
   }
 

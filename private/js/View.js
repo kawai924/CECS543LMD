@@ -15,12 +15,18 @@ class ViewOneUserOneProj {
     const manReader = new ManifestReader(this.username, this.projectName);
     const masMan = masManReader.getMasMan();
 
-    return {
-      ...masMan,
-      manifests: masMan.manifests.map(man =>
-        manReader._getManByID(man.manifestID)
-      )
-    };
+    if (masMan.manifests) {
+      return {
+        ...masMan,
+        manifests: masMan.manifests.map(man =>
+          manReader._getManByID(man.manifestID)
+        )
+      };
+    } else {
+      throw new Error(
+        `Error at project ${this.projectName} from ${this.username}. Please delete the project manually to continue.`
+      );
+    }
   }
 }
 

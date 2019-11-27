@@ -100,6 +100,10 @@ class ProjectHandler {
     tMasManWriter.addNewMan(newMan);
   }
 
+  remove() {
+    fs.rmdirSync(this.projectPath, { recursive: true });
+  }
+
   /** Private functions
    * ********************/
   _replicateOneArtifact(sArtifact, sProjectPath, tRepoPath) {

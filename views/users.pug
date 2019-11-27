@@ -13,13 +13,23 @@ block content
             else
               a.btn.btn-outline-danger.small-margin-top.ml-2(href=`/`) Back
 
-  .row.mt-4
+  .row.mb-2.mx-4.text-center
+    .col-4
+    .col
+      ul
+        li.mx-4.badge.badge-info User
+        li.mx-4.badge.badge-success Project 
+        li.mx-4.badge.badge-primary Manifest 
+    .col-4
+ 
+
+  .row.mt-4.mx-4
       .col-sm-12#usersList
         .card-columns
           .card.p-3
             h5.card-title.badge.badge-warning.text-uppercase User with no project 
             each user in users
-              if user.projects.projects.length > 0
+              if user.projects.projects.length === 0
                 ul
                   li.badge.badge-primary #{user.user}
 
@@ -47,7 +57,7 @@ block content
                                 span #{manifest.command}
                               li
                                 span.badge.badge-light datetime: 
-                                span #{manifest.datetime}
+                                span #{manifest.datetime.replace(/T/, " ").replace(/\..+/, "")}
                               li 
                                 span.badge.badge-light Check-in file counts: 
                                 span #{manifest.structure.length}

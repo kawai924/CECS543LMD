@@ -18,6 +18,10 @@ app.set("view engine", "pug");
 app.use("/", index);
 app.use("/user", user);
 app.use("/users", users);
+app.use(function(err, req, res, next) {
+  console.log(err);
+  res.render("error", { err });
+});
 
 // Entry point
 app.listen(PORT, () => console.log("Listening..."));

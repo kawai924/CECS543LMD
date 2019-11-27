@@ -1,5 +1,7 @@
-const { COMMANDS } = require("./");
+const { COMMANDS, DB_PATH } = require("./");
 const { ProjectHandler } = require("./ProjectHandler");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = function() {
   let _command_guides = {
@@ -10,7 +12,8 @@ module.exports = function() {
     [COMMANDS.MERGE_OUT]:
       "mergeout | <project name> | <target manifest id> | <source username> | <souce manifest id>",
     [COMMANDS.MERGE_IN]: "<mergein> | <project name>",
-    [COMMANDS.LABEL]: "label | <project name> | <label name> | <manifest id>"
+    [COMMANDS.LABEL]: "label | <project name> | <label name> | <manifest id>",
+    [COMMANDS.REMOVE]: "remove | <project name>"
   };
 
   const commandParse = (username, prompt) => {
@@ -24,7 +27,8 @@ module.exports = function() {
         break;
 
       case COMMANDS.CHECKIN:
-        [, , projPath] = splitAndAppend(prompt, getNumberArgs(command) - 1);
+        _checkIfProjPresent(username, projectName);
+        [, , projPath] = splitAndAppend(prompt, getDefaultNumArgs(command) - 1);
 
         new ProjectHandler(username).forProject(projectName).checkin(projPath);
         break;
@@ -32,17 +36,19 @@ module.exports = function() {
       case COMMANDS.CHECKOUT:
         [, , fUsername, fManifestID] = splitAndAppend(
           prompt,
-          getNumberArgs(command) - 1
+          getDefaultNumArgs(command) - 1
         );
-
+        _checkIfProjPresent(fUsername, projectName);
         new ProjectHandler(username)
           .forProject(projectName)
           .checkout(fUsername, projectName, fManifestID);
         break;
+
       case COMMANDS.LABEL:
+        _checkIfProjPresent(username, projectName);
         [, , lName, manifestID] = splitAndAppend(
           prompt,
-          getNumberArgs(command) - 1
+          getDefaultNumArgs(command) - 1
         );
 
         new ProjectHandler(username)
@@ -50,39 +56,47 @@ module.exports = function() {
           .label(manifestID, lName);
         break;
 
+      case COMMANDS.REMOVE:
+        _checkIfProjPresent(username, projectName);
+        new ProjectHandler(username).forProject(projectName).remove();
+        break;
+
       default:
-        throw new Error("Unable to parse command");
+        throw new Error("Wrong command");
     }
   };
 
   /** Helper functions
    * *****************/
-  const getNumberArgs = command => {
+  const getDefaultNumArgs = command => {
     switch (command) {
       case COMMANDS.CREATE:
-        return getArgsCount(_command_guides[COMMANDS.CREATE]);
+        return _command_guides[COMMANDS.CREATE].split("|").length;
       case COMMANDS.CHECKIN:
-        return getArgsCount(_command_guides[COMMANDS.CHECKIN]);
+        return _command_guides[COMMANDS.CHECKIN].split("|").length;
       case COMMANDS.CHECKOUT:
-        return getArgsCount(_command_guides[COMMANDS.CHECKOUT]);
+        return _command_guides[COMMANDS.CHECKOUT].split("|").length;
       case COMMANDS.MERGE_OUT:
-        return getArgsCount(_command_guides[COMMANDS.MERGE_OUT]);
+        return _command_guides[COMMANDS.MERGE_OUT].split("|").length;
       case COMMANDS.MERGE_IN:
-        return getArgsCount(_command_guides[COMMANDS.MERGE_IN]);
+        return _command_guides[COMMANDS.MERGE_IN].split("|").length;
       case COMMANDS.LABEL:
-        return getArgsCount(_command_guides[COMMANDS.LABEL]);
+        return _command_guides[COMMANDS.LABEL].split("|").length;
       default:
-        throw new Error("Can't get args count of the command");
+        throw new Error("Wrong command");
     }
-  };
-
-  const getArgsCount = str => {
-    return str.split("|").length;
   };
 
   const splitAndAppend = (str, count, delim = " ") => {
     const arr = str.split(delim);
     return [...arr.splice(0, count), arr.join(delim)];
+  };
+
+  const _checkIfProjPresent = (username, projectName) => {
+    const projPath = path.join(DB_PATH, username, projectName);
+    if (!fs.existsSync(projPath)) {
+      throw new Error("Project doesn't exist");
+    }
   };
 
   return {
