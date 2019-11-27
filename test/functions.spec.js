@@ -1,7 +1,6 @@
 const mockFS = require("mock-fs");
-const { isDir, copyDirTree, makeQueue } = require("../private/js/Functions");
+const { isDir, makeQueue } = require("../private/js/Functions");
 const assert = require("chai").assert;
-const fs = require("fs");
 
 describe("Functions", function() {
   describe("Queue", function() {
@@ -27,6 +26,10 @@ describe("Functions", function() {
         },
         target: {}
       });
+    });
+
+    afterEach(() => {
+      mockFS.restore();
     });
 
     describe("#isDir()", function() {

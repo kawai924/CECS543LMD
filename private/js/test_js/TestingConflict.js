@@ -47,7 +47,7 @@ function numberOfConflict(mania, manib) {
       conflict++;
     }
   }
-  console.log(data);
+  // console.log(data);
   var json = {
     conflict: conflict,
     conflictFiles: data
@@ -55,7 +55,8 @@ function numberOfConflict(mania, manib) {
   //console.log(data);
   //console.log(json);
 
-  return json;
+  // return json;
+  return data;
 }
 
 const mani = {

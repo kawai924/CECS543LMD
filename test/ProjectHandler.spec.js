@@ -1,21 +1,22 @@
 const mockFS = require("mock-fs");
+const fs = require("fs");
 const assert = require("chai").assert;
 const { numberOfConflict } = require("../private/js/Functions");
-const fs = require("fs");
 const { ProjectHandler } = require("../private/js/ProjectHandler");
 
-describe("RepoHandler", function() {
+describe("Merge", function() {
   describe("#_mergeOutMoveFiles()", function() {
     beforeEach(() => {
       mockFS({
         "source/data.txt/": { "S111-S00.txt": "" },
-        target: { "data.txt": "" },
-        "grandma/data.txt": { "G111-G00.txt": "" }
+        "grandma/data.txt": { "G111-G00.txt": "" },
+        target: { "data.txt": "" }
       });
 
       projHandler = new ProjectHandler("johndoe", "sample");
     });
-    this.afterEach(() => {
+
+    afterEach(() => {
       mockFS.restore();
     });
 
@@ -29,7 +30,7 @@ describe("RepoHandler", function() {
       assert.equal(fs.readdirSync("target").length, 3);
     });
 
-    it("target folder should 3 filenames with _mt, _mr, _mg.", function() {
+    it("target folder should have 3 filenames with _mt, _mr, _mg.", function() {
       projHandler._mergeOutMoveFiles(
         "source/data.txt/S111-S00.txt",
         "grandma/data.txt/G111-G00.txt",
@@ -46,12 +47,12 @@ describe("RepoHandler", function() {
 
   describe("#conflictArtifacts()", function() {
     beforeEach(() => {
-      manifest1 = {
+      man1 = {
         user: "Alice",
         repo: "ProjectX",
         structure: [
-          { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: ".vcsx" },
-          { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: ".vcsx" },
+          { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
+          { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "" },
           {
             artifactNode: "document.txt/9999-A00.txt",
             artifactRelPath: ".vcsx"
@@ -67,17 +68,17 @@ describe("RepoHandler", function() {
         id: 1574636514344
       };
 
-      manifest2 = {
-        user: "Alice",
+      man2 = {
+        user: "Bob",
         repo: "ProjectX",
         structure: [
-          { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: ".vcsx" },
+          { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
           {
             artifactNode: "string.txt/9999-A00.txt",
             artifactRelPath: ".vcsx"
           },
-          { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: ".vcsx" },
-          { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: ".vcsx" }
+          { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "" },
+          { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: "" }
         ],
         parent: [1574636514339],
         command: "check-in",
@@ -87,21 +88,18 @@ describe("RepoHandler", function() {
     });
 
     it("same manifest should result in conflict equal to number of element", function() {
-      assert.equal(
-        numberOfConflict(manifest1, manifest1).length,
-        manifest1.structure.length
-      );
+      assert.equal(numberOfConflict(man1, man1).length, man1.structure.length);
     });
 
     it("should result in 1 conflict between two manifests", function() {
-      assert.equal(numberOfConflict(manifest1, manifest2).length, 1);
+      assert.equal(numberOfConflict(man1, man2).length, 1);
     });
 
     it("should return expected format. Assuming 1st param = source, 2nd param = target", function() {
       const result = [
         {
           source: {
-            artifactNode: "string.txt/9999-A00.txt",
+            artifactNode: "string.txt/6464-A22.txt",
             artifactRelPath: ".vcsx"
           },
           target: {
@@ -110,7 +108,7 @@ describe("RepoHandler", function() {
           }
         }
       ];
-      assert.equal(numberOfConflict(manifest1, manifest2), result);
+      assert.equal(numberOfConflict(man1, man2), result);
     });
   });
 });

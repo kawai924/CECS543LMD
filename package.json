@@ -5,9 +5,8 @@
   "main": "server/app.js",
   "scripts": {
     "start": "node ./server/app.js",
-    "test": "nodemon ./server/app.js",
-    "mocha": "mocha || true",
-    "Test.js": "node private/js/Test.js"
+    "test": "mocha || true",
+    "nodemon": "nodemon ./server/app.js"
   },
   "repository": {
     "type": "git",
