@@ -68,36 +68,42 @@ class ProjectHandler {
   }
 
   checkout(sUsername, sProjectName, sID) {
-    // Step 1: Create all neccessary folder
-    fs.mkdirSync(this.manDirPath, { recursive: true });
-
-    // Step 2: Get handlers
+    // Step 1: Initialize all handlers
     const tManWriter = new ManifestWriter(this.username, this.projectName);
     const sManReader = new ManifestReader(sUsername, sProjectName);
     const tManReader = new ManifestReader(this.username, this.projectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
 
-    // Step 3: Checkout files
-    const sMan = sManReader.getMan(sID);
-    const sProjectPath = path.join(DB_PATH, sUsername, sProjectName);
-    const sArtifactList = sMan.structure || [];
+    try {
+      // Step 2: Attempt to get manifest
+      const sMan = sManReader.getMan(sID);
 
-    sArtifactList.forEach(artifact => {
-      this._checkoutArtifact(artifact, sProjectPath);
-      this._replicateOneArtifact(artifact, sProjectPath, this.repoPath);
-    });
+      // Step 3: Create all neccessary folder
+      fs.mkdirSync(this.manDirPath, { recursive: true });
 
-    // Step 3: Build and write a manifest
-    const sPath = path.join(DB_PATH, sUsername, sProjectName);
-    const newMan = tManWriter
-      .addCommand(COMMANDS.CHECKOUT)
-      .addCheckoutFrom(sPath)
-      .addParent(sID)
-      .addStructure(sMan.structure)
-      .write();
+      // Step 4: Checkout files
+      const sProjectPath = path.join(DB_PATH, sUsername, sProjectName);
+      const sArtifactList = sMan.structure || [];
 
-    // Step 4: Add new manifest to master manifest
-    tMasManWriter.addNewMan(newMan);
+      sArtifactList.forEach(artifact => {
+        this._checkoutArtifact(artifact, sProjectPath);
+        this._replicateOneArtifact(artifact, sProjectPath, this.repoPath);
+      });
+
+      // Step 5: Build and write a manifest
+      const sPath = path.join(DB_PATH, sUsername, sProjectName);
+      const newMan = tManWriter
+        .addCommand(COMMANDS.CHECKOUT)
+        .addCheckoutFrom(sPath)
+        .addParent(sID)
+        .addStructure(sMan.structure)
+        .write();
+
+      // Step 5: Add new manifest to master manifest
+      tMasManWriter.addNewMan(newMan);
+    } catch (e) {
+      throw new Error(e.message);
+    }
   }
 
   remove() {
