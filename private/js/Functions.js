@@ -81,7 +81,7 @@ function numberOfConflict(mania, manib) {
   for (const [key, value] of Object.entries(sfolderlist)) {
     var tkey = tfolderlist.indexOf(value);
 
-    if (tsmallfilelist[tkey] == ssmallfilelist[key]) {
+    if (tsmallfilelist[tkey] != ssmallfilelist[key]  && key in ssmallfilelist && tkey in tsmallfilelist) {
       //console.log(sfilelist[key], tfilelist[tkey]);
       data.push({
         source: sfilelist[key],
