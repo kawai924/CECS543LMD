@@ -1,7 +1,7 @@
 /********** IMPORT MODULES **********/
 const express = require("express");
 const { ViewOneUser } = require("../../private/js/View");
-const { DB_PATH } = require("../../private/js/");
+const { DB_PATH, DEFAULT_USERNAME } = require("../../private/js/");
 const path = require("path");
 const fs = require("fs");
 const Parser = require("./../../private/js/Parser");
@@ -24,6 +24,10 @@ router.get("/:username", function(req, res, next) {
     username,
     projList
   });
+});
+
+router.get("/", function(req, res) {
+  res.redirect("/user/" + DEFAULT_USERNAME);
 });
 
 router.post("/:username", function(req, res, next) {

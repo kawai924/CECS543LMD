@@ -6,6 +6,7 @@ const MANIFEST_DIR = "manifests";
 const MASTER_MANIFEST_NAME = "master-manifest.json";
 const DATABASE_NAME = "database";
 const USERS_FILENAME = "users.json";
+const DEFAULT_USERNAME = "johndoe";
 
 const DB_PATH = path.join(ROOTPATH, DATABASE_NAME);
 
@@ -27,5 +28,6 @@ module.exports = {
   DATABASE_NAME,
   USERS_FILENAME,
   COMMANDS,
-  DB_PATH
+  DB_PATH,
+  DEFAULT_USERNAME
 };

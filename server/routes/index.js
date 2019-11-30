@@ -1,4 +1,5 @@
 const express = require("express");
+const { DEFAULT_USERNAME } = require("../../private/js");
 
 const router = express.Router();
 
@@ -7,9 +8,7 @@ router.get("/", function(req, res, next) {
 });
 
 router.post("/", function(req, res) {
-  const username =
-    req.body.username === "" ? "johndoe" : req.body.username.toLowerCase();
-
+  const username = req.body.username.toLowerCase();
   res.redirect("/user/" + username);
 });
 

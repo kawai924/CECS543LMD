@@ -51,7 +51,7 @@ describe("Merge", function() {
         repo: "ProjectX",
         structure: [
           { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
-          { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "" },
+          { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "./foo" },
           {
             artifactNode: "document.txt/9999-A00.txt",
             artifactRelPath: ""
@@ -74,7 +74,7 @@ describe("Merge", function() {
           { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
           {
             artifactNode: "string.txt/9999-A00.txt",
-            artifactRelPath: ""
+            artifactRelPath: "./foo"
           },
           { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "" },
           { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: "" }
@@ -103,11 +103,11 @@ describe("Merge", function() {
         {
           source: {
             artifactNode: "string.txt/6464-A22.txt",
-            artifactRelPath: ""
+            artifactRelPath: "./foo"
           },
           target: {
             artifactNode: "string.txt/9999-A00.txt",
-            artifactRelPath: ""
+            artifactRelPath: "./foo"
           }
         }
       ];
