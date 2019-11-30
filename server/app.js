@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
+const logger = require("morgan");
+
 const PORT = 3000;
 
 const app = express();
@@ -10,9 +12,10 @@ const user = require("./routes/user");
 const users = require("./routes/users");
 
 // Set up middlewares
+app.set("view engine", "pug");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "..", "public"))); // Serve static files
-app.set("view engine", "pug");
+app.use(logger("dev"));
 
 // Routings
 app.use("/", index);
