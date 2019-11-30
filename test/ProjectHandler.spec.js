@@ -1,7 +1,6 @@
 const mockFS = require("mock-fs");
 const fs = require("fs");
 const assert = require("chai").assert;
-const { numberOfConflict, test } = require("../private/js/Functions");
 const { ProjectHandler } = require("../private/js/ProjectHandler");
 
 describe("Merge", function() {
@@ -55,11 +54,11 @@ describe("Merge", function() {
           { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "" },
           {
             artifactNode: "document.txt/9999-A00.txt",
-            artifactRelPath: ".vcsx"
+            artifactRelPath: ""
           },
           {
             artifactNode: "pdf.txt/7424-B12.txt",
-            artifactRelPath: ".vcsx"
+            artifactRelPath: ""
           }
         ],
         parent: [1574636514339],
@@ -75,7 +74,7 @@ describe("Merge", function() {
           { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
           {
             artifactNode: "string.txt/9999-A00.txt",
-            artifactRelPath: ".vcsx"
+            artifactRelPath: ""
           },
           { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "" },
           { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: "" }
@@ -87,16 +86,16 @@ describe("Merge", function() {
       };
     });
 
-    it("same manifest should result in conflict equal to number of element", function() {
-      assert.equal(numberOfConflict(man1, man1).length, man1.structure.length);
+    it("same manifest should result in 0 conflict", function() {
+      assert.equal(projHandler._gatherConflicts(man1, man1).length, 0);
     });
 
     it("should result in right number of conflict between two manifests", function() {
-      assert.equal(numberOfConflict(man1, man2).length, 1);
+      assert.equal(projHandler._gatherConflicts(man1, man2).length, 1);
     });
 
     it("should return an array", function() {
-      assert.typeOf(numberOfConflict(man1, man2), "array");
+      assert.typeOf(projHandler._gatherConflicts(man1, man2), "array");
     });
 
     it("should return correct answer", function() {
@@ -104,15 +103,15 @@ describe("Merge", function() {
         {
           source: {
             artifactNode: "string.txt/6464-A22.txt",
-            artifactRelPath: ".vcsx"
+            artifactRelPath: ""
           },
           target: {
             artifactNode: "string.txt/9999-A00.txt",
-            artifactRelPath: ".vcsx"
+            artifactRelPath: ""
           }
         }
       ];
-      assert.deepEqual(numberOfConflict(man1, man2), result);
+      assert.deepEqual(projHandler._gatherConflicts(man1, man2), result);
     });
   });
 });

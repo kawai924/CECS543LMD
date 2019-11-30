@@ -272,6 +272,57 @@ class ProjectHandler {
     let artifactName = `${sum}-L${len}${ext}`;
     return artifactName;
   }
+
+  _gatherConflicts(mania, manib) {
+    const ssmallfilelist = [];
+    const sfilelist = [];
+    const sfolderlist = [];
+    let filename;
+
+    for (let prop in mania.structure) {
+      let structure = mania.structure[prop];
+      sfilelist.push(mania.structure[prop]);
+      filename = structure.artifactNode;
+      ssmallfilelist.push(filename);
+      let tar = filename.lastIndexOf("/");
+      let file = filename.substring(0, tar);
+      sfolderlist.push(file);
+    }
+
+    const tsmallfilelist = [];
+    const tfilelist = [];
+    const tfolderlist = [];
+    for (let prop in manib.structure) {
+      let structure = manib.structure[prop];
+      tfilelist.push(manib.structure[prop]);
+      filename = structure.artifactNode;
+      tsmallfilelist.push(filename);
+
+      let tar = filename.lastIndexOf("/");
+      let file = filename.substring(0, tar);
+      tfolderlist.push(file);
+    }
+
+    let conflict = 0;
+    let data = [];
+    for (const [key, value] of Object.entries(sfolderlist)) {
+      let tkey = tfolderlist.indexOf(value);
+
+      if (
+        tsmallfilelist[tkey] != ssmallfilelist[key] &&
+        key in ssmallfilelist &&
+        tkey in tsmallfilelist
+      ) {
+        data.push({
+          source: sfilelist[key],
+          target: tfilelist[tkey]
+        });
+
+        conflict++;
+      }
+    }
+    return data;
+  }
 }
 
 module.exports = {

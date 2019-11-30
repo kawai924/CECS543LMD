@@ -38,8 +38,11 @@ function numberOfConflict(mania, manib) {
     var tkey = tfolderlist.indexOf(value);
 
     //if (tsmallfilelist[tkey] == ssmallfilelist[key]) {
-    if (tsmallfilelist[tkey] != ssmallfilelist[key]  && key in ssmallfilelist && tkey in tsmallfilelist) {
-
+    if (
+      tsmallfilelist[tkey] != ssmallfilelist[key] &&
+      key in ssmallfilelist &&
+      tkey in tsmallfilelist
+    ) {
       //console.log(sfilelist[key], tfilelist[tkey]);
       data.push({
         source: sfilelist[key],
@@ -80,15 +83,15 @@ const manifest1 = {
   user: "Alice",
   repo: "ProjectX",
   structure: [
-    { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: ".vcsx" },
-    { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: ".vcsx" },
+    { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
+    { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "" },
     {
       artifactNode: "document.txt/9999-A00.txt",
-      artifactRelPath: ".vcsx"
+      artifactRelPath: ""
     },
     {
       artifactNode: "pdf.txt/7424-B12.txt",
-      artifactRelPath: ".vcsx"
+      artifactRelPath: ""
     }
   ],
   parent: [1574636514339],
@@ -101,13 +104,13 @@ const manifest2 = {
   user: "Alice",
   repo: "ProjectX",
   structure: [
-    { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: ".vcsx" },
+    { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
     {
       artifactNode: "string.txt/9999-A00.txt",
-      artifactRelPath: ".vcsx"
+      artifactRelPath: ""
     },
-    { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: ".vcsx" },
-    { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: ".vcsx" }
+    { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "" },
+    { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: "" }
   ],
   parent: [1574636514339],
   command: "check-in",
