@@ -2,12 +2,18 @@ function numberOfConflict(mania, manib) {
   ssmallfilelist = [];
   sfilelist = [];
   sfolderlist = [];
+  const sinfolder = [];
+
   for (let prop in mania.structure) {
     var structure = mania.structure[prop];
     //console.log(mania.structure[prop]);
     sfilelist.push(mania.structure[prop]);
     filename = structure.artifactNode;
     ssmallfilelist.push(filename);
+    console.log(structure);
+    foldername = structure.artifactRelPath;
+    sinfolder.push(foldername) ;
+
     var tar = filename.lastIndexOf("/");
     var file = filename.substring(0, tar);
     sfolderlist.push(file);
@@ -18,12 +24,16 @@ function numberOfConflict(mania, manib) {
   tsmallfilelist = [];
   tfilelist = [];
   tfolderlist = [];
+  const tinfolder = [];
+
   for (let prop in manib.structure) {
     var structure = manib.structure[prop];
     tfilelist.push(manib.structure[prop]);
     //console.log(structure.artifactNode, structure.artifactAbsPath);
     filename = structure.artifactNode;
     tsmallfilelist.push(filename);
+    foldername = structure.artifactRelPath;
+    tinfolder.push(foldername) ;
 
     var tar = filename.lastIndexOf("/");
     var file = filename.substring(0, tar);
@@ -40,10 +50,13 @@ function numberOfConflict(mania, manib) {
     //if (tsmallfilelist[tkey] == ssmallfilelist[key]) {
     if (
       tsmallfilelist[tkey] != ssmallfilelist[key] &&
+      tinfolder[tkey] == sinfolder[key] &&
+
       key in ssmallfilelist &&
       tkey in tsmallfilelist
     ) {
       //console.log(sfilelist[key], tfilelist[tkey]);
+      console.log(sinfolder);
       data.push({
         source: sfilelist[key],
         target: tfilelist[tkey]
@@ -84,7 +97,7 @@ const manifest1 = {
   repo: "ProjectX",
   structure: [
     { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
-    { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "" },
+    { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "py1" },
     {
       artifactNode: "document.txt/9999-A00.txt",
       artifactRelPath: ""
@@ -107,7 +120,7 @@ const manifest2 = {
     { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
     {
       artifactNode: "string.txt/9999-A00.txt",
-      artifactRelPath: ""
+      artifactRelPath: "py2"
     },
     { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "" },
     { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: "" }

@@ -339,6 +339,7 @@ class ProjectHandler {
     const ssmallfilelist = [];
     const sfilelist = [];
     const sfolderlist = [];
+    const sinfolder = [];
     let filename;
 
     for (let prop in mania.structure) {
@@ -346,6 +347,8 @@ class ProjectHandler {
       sfilelist.push(mania.structure[prop]);
       filename = structure.artifactNode;
       ssmallfilelist.push(filename);
+      sinfolder.push(structure.artifactRelPath) ;
+
       let tar = filename.lastIndexOf("/");
       let file = filename.substring(0, tar);
       sfolderlist.push(file);
@@ -354,11 +357,14 @@ class ProjectHandler {
     const tsmallfilelist = [];
     const tfilelist = [];
     const tfolderlist = [];
+    const tinfolder = [];
+
     for (let prop in manib.structure) {
       let structure = manib.structure[prop];
       tfilelist.push(manib.structure[prop]);
       filename = structure.artifactNode;
       tsmallfilelist.push(filename);
+      tinfolder.push(structure.artifactRelPath) ;
 
       let tar = filename.lastIndexOf("/");
       let file = filename.substring(0, tar);
@@ -372,6 +378,7 @@ class ProjectHandler {
 
       if (
         tsmallfilelist[tkey] != ssmallfilelist[key] &&
+        tinfolder[tkey] == sinfolder[key] &&
         key in ssmallfilelist &&
         tkey in tsmallfilelist
       ) {
