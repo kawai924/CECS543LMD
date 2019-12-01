@@ -53,8 +53,8 @@ describe("Merge", function() {
           { artifactNode: "data.txt/7590-L11.txt", artifactRelPath: "" },
           { artifactNode: "string.txt/6464-A22.txt", artifactRelPath: "./foo" },
           {
-            artifactNode: "document.txt/9999-A00.txt",
-            artifactRelPath: ""
+            artifactNode: "json.txt/1234-B11.txt",
+            artifactRelPath: "/foo"
           },
           {
             artifactNode: "pdf.txt/7424-B12.txt",
@@ -76,8 +76,8 @@ describe("Merge", function() {
             artifactNode: "string.txt/9999-A00.txt",
             artifactRelPath: "./foo"
           },
-          { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "" },
-          { artifactNode: "html.txt/3333-A55.txt", artifactRelPath: "" }
+          { artifactNode: "json.txt/9999-A00.txt", artifactRelPath: "/bar" },
+          { artifactNode: "html.txt/7424-B12.txt", artifactRelPath: "" }
         ],
         parent: [1574636514339],
         command: "check-in",

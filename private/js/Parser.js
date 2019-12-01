@@ -4,6 +4,9 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = function() {
+  /**
+   * Layout of particular command
+   */
   let _command_guides = {
     [COMMANDS.CREATE]: "create | <project name>",
     [COMMANDS.CHECKIN]: "checkin | <project name> | <(optional) from path>",
@@ -16,6 +19,13 @@ module.exports = function() {
     [COMMANDS.REMOVE]: "remove | <project name>"
   };
 
+  /**
+   * Turn user's command into VSC system's actions.
+   * @param {String} username user's username
+   * @throws {Error} if the command is not in COMMANDS constant.
+   * @param {String} prompt command prompt from form
+   * @returns void
+   */
   const commandParse = (username, prompt) => {
     prompt = prompt.trim(); // Remove white space
     const [command, projectName] = prompt.split(" ");
@@ -28,15 +38,18 @@ module.exports = function() {
 
       case COMMANDS.CHECKIN:
         _checkIfProjPresent(username, projectName);
-        [, , projPath] = splitAndAppend(prompt, getDefaultNumArgs(command) - 1);
+        [, , projPath] = _splitAndAppend(
+          prompt,
+          _getDefaultNumArgs(command) - 1
+        );
 
         new ProjectHandler(username).forProject(projectName).checkin(projPath);
         break;
 
       case COMMANDS.CHECKOUT:
-        [, , fUsername, fManifestID] = splitAndAppend(
+        [, , fUsername, fManifestID] = _splitAndAppend(
           prompt,
-          getDefaultNumArgs(command) - 1
+          _getDefaultNumArgs(command) - 1
         );
         _checkIfProjPresent(fUsername, projectName);
         new ProjectHandler(username)
@@ -46,9 +59,9 @@ module.exports = function() {
 
       case COMMANDS.LABEL:
         _checkIfProjPresent(username, projectName);
-        [, , lName, manifestID] = splitAndAppend(
+        [, , lName, manifestID] = _splitAndAppend(
           prompt,
-          getDefaultNumArgs(command) - 1
+          _getDefaultNumArgs(command) - 1
         );
 
         new ProjectHandler(username)
@@ -68,7 +81,13 @@ module.exports = function() {
 
   /** Helper functions
    * *****************/
-  const getDefaultNumArgs = command => {
+  /**
+   * Use _command_guides template to return number of arguments required.
+   * @param {String} command
+   * @throws {Error} if the command is not in COMMANDS constant.
+   * @returns {Number} Number of required arguments for the command
+   */
+  const _getDefaultNumArgs = command => {
     switch (command) {
       case COMMANDS.CREATE:
         return _command_guides[COMMANDS.CREATE].split("|").length;
@@ -87,11 +106,26 @@ module.exports = function() {
     }
   };
 
-  const splitAndAppend = (str, count, delim = " ") => {
+  /**
+   * Split given string and
+   * return array with number of elements equal to the given count value
+   * @param {String} str A particular string
+   * @param {Number} count Number of elements will be return from string
+   * @param {String} delim Delimiter to split the string
+   * @returns {Array} Array of string with length = count
+   */
+  const _splitAndAppend = (str, count, delim = " ") => {
     const arr = str.split(delim);
     return [...arr.splice(0, count), arr.join(delim)];
   };
 
+  /**
+   * Check if project of the user is in the database folder
+   * @param {String} username
+   * @param {String} projectName
+   * @throws {Error} if project's directory doesn't exist
+   * @returns {Boolean} true if project is present
+   */
   const _checkIfProjPresent = (username, projectName) => {
     const projPath = path.join(DB_PATH, username, projectName);
     if (!fs.existsSync(projPath)) {

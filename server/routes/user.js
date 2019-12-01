@@ -13,13 +13,12 @@ router.get("/:username", function(req, res, next) {
   const username = req.params.username;
   const userPath = path.join(DB_PATH, username);
 
-  // If it's a new user, create a folder in database
+  // If it's a new user, create a user's project tree in database
   if (!fs.existsSync(userPath)) {
     fs.mkdirSync(userPath, { recursive: true });
   }
 
   const projList = new ViewOneUser(username).execute().projects;
-
   res.render("user", {
     username,
     projList

@@ -4,12 +4,20 @@ const { ManifestReader } = require("./Manifest");
 const path = require("path");
 const fs = require("fs");
 
+/**
+ * Getting information of a user of a project
+ */
 class ViewOneUserOneProj {
   constructor(username, projectName) {
     this.username = username;
     this.projectName = projectName;
   }
 
+  /**
+   * Read master manifest and manifest to get informations about the project
+   * @returns {JSON} information about the project.
+   * @throws {Error} if manifest or master manifest cannot be found.
+   */
   execute() {
     const masManReader = new MasterManReader(this.username, this.projectName);
     const manReader = new ManifestReader(this.username, this.projectName);
@@ -30,11 +38,19 @@ class ViewOneUserOneProj {
   }
 }
 
+/**
+ * Getting information of all projects of a user
+ */
 class ViewOneUser {
   constructor(username) {
     this.username = username;
   }
 
+  /**
+   * Read master manifest and manifest to get informations about all projects of a user
+   * @returns {JSON} information about all projects of a user
+   * @throws {Error} if manifest or master manifest cannot be found.
+   */
   execute() {
     const userPath = path.join(DB_PATH, this.username);
     const projects = fs.readdirSync(userPath);
@@ -51,9 +67,17 @@ class ViewOneUser {
   }
 }
 
+/**
+ * Getting information of all users
+ */
 class ViewAll {
   constructor() {}
 
+  /**
+   * Read master manifest and manifest to get informations about all projects of all users
+   * @returns {JSON} information about all projects of all users
+   * @throws {Error} if manifest or master manifest cannot be found.
+   */
   execute() {
     const dbPath = DB_PATH;
     const users = fs

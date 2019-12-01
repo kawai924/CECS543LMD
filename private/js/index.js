@@ -1,5 +1,11 @@
+/**
+ * Store all constants
+ */
 const path = require("path");
 
+/**
+ * Path constants
+ */
 const ROOTPATH = path.join(__dirname, "../..");
 const VSC_REPO_NAME = ".vcsx";
 const MANIFEST_DIR = "manifests";
@@ -7,9 +13,11 @@ const MASTER_MANIFEST_NAME = "master-manifest.json";
 const DATABASE_NAME = "database";
 const USERS_FILENAME = "users.json";
 const DEFAULT_USERNAME = "johndoe";
-
 const DB_PATH = path.join(ROOTPATH, DATABASE_NAME);
 
+/**
+ * Commands available
+ */
 const COMMANDS = {
   CREATE: "create",
   CHECKIN: "checkin",

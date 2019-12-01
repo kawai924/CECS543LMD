@@ -5,11 +5,19 @@ const { makeDirSync, makeQueue, isDir } = require("./Functions");
 const { ManifestWriter, ManifestReader } = require("./Manifest");
 const { MasterManWriter, MasterManReader } = require("./Master");
 
+/**
+ * Handling all actions for a project
+ */
 class ProjectHandler {
   constructor(username) {
     this.username = username;
   }
 
+  /**
+   * Add project name to the this instance
+   * @param {String} projectName
+   * @returns this instance
+   */
   forProject(projectName) {
     this.projectName = projectName;
     this.projectPath = path.join(DB_PATH, this.username, projectName);
@@ -18,6 +26,10 @@ class ProjectHandler {
     return this;
   }
 
+  /**
+   * Create action
+   * @returns void
+   */
   create() {
     // Step 1: Create all neccessary folder
     fs.mkdirSync(path.join(this.repoPath, MANIFEST_DIR), { recursive: true });
@@ -37,11 +49,22 @@ class ProjectHandler {
     masManWriter.addNewMan(newMan);
   }
 
+  /**
+   * Label a manifest
+   * @param {Number} manID manifest's ID
+   * @param {String} label
+   * @returns void
+   */
   label(manID, label) {
     const masManWriter = new MasterManWriter(this.username, this.projectName);
     masManWriter.addLabel(manID, label);
   }
 
+  /**
+   * Check-in action
+   * @param {String} projPath the path to the project
+   * @returns void
+   */
   checkin(projPath) {
     projPath = projPath || this.projectPath;
 
@@ -67,6 +90,14 @@ class ProjectHandler {
     masManWriter.addNewMan(newMan);
   }
 
+  /**
+   * Check-out action
+   * @param {String} sUsername from username
+   * @param {String} sProjectName from project name
+   * @param {Number} sID from manifest ID or label
+   * @throws Error if master manifest doesn't exist
+   * @returns void
+   */
   checkout(sUsername, sProjectName, sID) {
     // Step 1: Initialize all handlers
     const tManWriter = new ManifestWriter(this.username, this.projectName);
@@ -106,12 +137,23 @@ class ProjectHandler {
     }
   }
 
+  /**
+   * Remove a project of a user
+   * @returns void
+   */
   remove() {
     fs.rmdirSync(this.projectPath, { recursive: true });
   }
 
   /** Private functions
    * ********************/
+
+  /**
+   * Replicate one artifact file from source repo to target repo
+   * @param {String} sArtifact source's artifact
+   * @param {String} sProjectPath source's project path
+   * @param {String} tRepoPath target's repo path
+   */
   _replicateOneArtifact(sArtifact, sProjectPath, tRepoPath) {
     //Create dirs
     const tADirRepoPath = path.join(tRepoPath, sArtifact.artifactRelPath);
@@ -135,6 +177,12 @@ class ProjectHandler {
     }
   }
 
+  /**
+   * During checkout, copy artifact from source's repo to current project tree
+   * @param {JSON} artifact artifact object {artifactNode, artifactRelPath}
+   * @param {String} sProjectPath source's project path
+   * @returns void
+   */
   _checkoutArtifact(artifact, sProjectPath) {
     if (artifact.artifactNode == "") {
       return;
@@ -154,10 +202,12 @@ class ProjectHandler {
     fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
   }
 
-  // Duplicates two files into a given target directory
-  // rPath = absolute path of repo path
-  // gPath = absolute path of grandma path
-  // targetPath = absolute path of intended target directory
+  /**
+   * During merge out, move file from source's repo path and grandma's repo path to target project directory
+   * @param {String} rPath source's repo path
+   * @param {String} gPath grandma's repo path
+   * @param {String} targetPath intendedtarget's project tree directory
+   */
   _mergeOutMoveFiles(rPath, gPath, targetPath) {
     let rPathDest = path.join(targetPath, path.basename(rPath));
     let gPathDest = path.join(targetPath, path.basename(gPath));
@@ -167,13 +217,11 @@ class ProjectHandler {
     // Duplicate rPath to targetPath
     fs.copyFile(rPath, rPathDest, err => {
       if (err) throw err;
-      // console.log(path.basename(rPath), " copied to ", rPathDest);
     });
 
     // Duplicate gPath to targetPath
     fs.copyFile(gPath, gPathDest, err => {
       if (err) throw err;
-      // console.log(path.basename(gPath), " copied to ", gPathDest);
     });
 
     // Append _mr or _mg to the duplicated filenames
@@ -187,17 +235,21 @@ class ProjectHandler {
     );
   }
 
-  /* This function reads each file from source folder, create artifact id and copy to target folder */
+  /**
+   * For each file in project path, compute artifact ID, change filename to artifact ID and move it to the provided repo path
+   * @param {*} projPath source project path that the files are evaluated.
+   * @param {*} toPath the repo path where the artifact's parent directory and itself will be stored.
+   * @returns void
+   */
   _checkinProjectTree(projPath, toPath) {
-    // console.log("(CF) projPath=" + projPath + "\n(CF) toPath=" + toPath);
-
     let struct = [];
     const repoPath = path.join(projPath, VSC_REPO_NAME);
     const _createArtifactID = this._createArtifactID; //_createArtifactID is not visible in _checkinProjectTreeRec
 
     (function _checkinProjectTreeRec(projPath, toPath) {
-      const queue = makeQueue();
+      const queue = makeQueue(); // create a new queue to store pending files/dirs
 
+      // Add all files/dirs from project path to queue
       const allFiles = fs.readdirSync(projPath);
       for (let file of allFiles) {
         queue.enqueue(file);
@@ -207,7 +259,7 @@ class ProjectHandler {
         const file = queue.dequeue();
         if (!/^(?!\.).*$/.test(file)) continue; //Ignore DOT FILE (ex: .DS_STORE)
 
-        // For Dir file
+        // For Dir
         if (isDir(projPath, file)) {
           const sourceFile = path.join(projPath, file);
           const targetFile = path.join(toPath, file);
@@ -223,14 +275,14 @@ class ProjectHandler {
           //Recursive call
           _checkinProjectTreeRec(sourceFile, targetFile);
         } else {
-          // For FILE
+          // For file
           const leafFolder = path.join(toPath, file);
 
           // Create the folder there
           makeDirSync(leafFolder);
 
           const filePath = path.join(projPath, file);
-          const aID = _createArtifactID(filePath);
+          const aID = _createArtifactID(filePath); // compute artifact ID
 
           //Move the file with artifact name
           const aAbsPath = path.join(leafFolder, aID);
@@ -251,11 +303,15 @@ class ProjectHandler {
     return struct;
   }
 
-  /* Read file content and return the artifactID */
-  _createArtifactID(fileName) {
+  /**
+   * Compute artifact ID from file's content
+   * @param {String} filePath full path to file
+   * @returns {Number} artifact ID of the file
+   */
+  _createArtifactID(filePath) {
     // Read the file and grab the extension
-    let data = fs.readFileSync(fileName, "utf8");
-    let ext = fileName.substring(fileName.lastIndexOf("."));
+    let data = fs.readFileSync(filePath, "utf8");
+    let ext = filePath.substring(filePath.lastIndexOf("."));
     let weights = [1, 3, 7, 11, 13];
     const len = data.length;
     let weight;
@@ -273,6 +329,12 @@ class ProjectHandler {
     return artifactName;
   }
 
+  /**
+   * Find conflicts between two manifests. A conflict occurs when same file name with extension but different artifact ID at the same directory.
+   * @param {JSON} mania first manifest JSON
+   * @param {JSON} manib second manifest JSON
+   * @returns {Array} an array of objects with the format {source : {artifactNode, artifactRelPath}, target: {artifactNode, artifactRelPath}}
+   */
   _gatherConflicts(mania, manib) {
     const ssmallfilelist = [];
     const sfilelist = [];

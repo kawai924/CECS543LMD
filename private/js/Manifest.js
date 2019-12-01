@@ -4,6 +4,9 @@ const fs = require("fs");
 
 const { MasterManReader } = require("./Master");
 
+/**
+ * Handle reading manifest file
+ */
 class ManifestReader {
   constructor(username, projectName) {
     this.username = username;
@@ -11,6 +14,11 @@ class ManifestReader {
     this.repoPath = path.join(DB_PATH, username, projectName);
   }
 
+  /**
+   * Get a manifest from disk
+   * @param {Number | String} identification Either label or manifest ID
+   * @returns {JSON} parsed JSON of a manifest
+   */
   getMan(identification) {
     if (isNaN(identification)) {
       return this._getManByLabel(identification);
@@ -18,7 +26,12 @@ class ManifestReader {
     return this._getManByID(identification);
   }
 
-  // Fix after change the labels' structure
+  /**
+   * Get a manifest from disk by manifest ID
+   * @param {Number} id manifest's ID
+   * @throws {Error} if manifest cannot be found by manifest ID
+   * @returns {JSON} parsed JSON of manifest if present. Else, throw error
+   */
   _getManByID(id) {
     const masMan = new MasterManReader(
       this.username,
@@ -39,7 +52,12 @@ class ManifestReader {
     return this._getManByPath(output.manifestPath);
   }
 
-  // Fix after change the labels' structure
+  /**
+   * Get a manifest from disk by manifest's label
+   * @param {String} inputLabel manifest's label
+   * @throws {Error} if manifest cannot be found by label
+   * @returns {JSON} parsed JSON of manifest if present. Else, throw error
+   */
   _getManByLabel(inputLabel) {
     const masMan = new MasterManReader(
       this.username,
@@ -66,6 +84,9 @@ class ManifestReader {
   }
 }
 
+/**
+ * Handle writing a manifest
+ */
 class ManifestWriter {
   constructor(username, projectName) {
     this.username = username;
@@ -75,18 +96,31 @@ class ManifestWriter {
     this.manDirPath = path.join(this.rPath, MANIFEST_DIR);
   }
 
-  /* Setters */
+  /**
+   * Add command to manifest builder
+   * @param {String} command
+   * @returns this instance
+   */
   addCommand(command) {
     this.command = command || "";
     return this;
   }
 
+  /**
+   * Add source path to the manifest builder
+   * @param {String} fromPath source path
+   * @returns this instance
+   */
   addCheckoutFrom(fromPath) {
     this.fromPath = fromPath || "";
     return this;
   }
 
-  // Add parents to the manifest file
+  /**
+   * Add parents to the manifest builder
+   * @param  {...String} parents
+   * @returns this instance
+   */
   addParent(...parents) {
     this.parent = this.parent || [];
     parents.forEach(parent => {
@@ -96,11 +130,21 @@ class ManifestWriter {
     return this;
   }
 
+  /**
+   * Add structure to manifest builder
+   * @param {String[]} struct an array of all artifacts object {artifactID, artifactRelPath}
+   * @returns this instance
+   */
   addStructure(struct) {
     this.structure = struct || [];
     return this;
   }
 
+  /**
+   * Write manifest to disk
+   * @param {String} toPath target path on the disk
+   * @returns void
+   */
   write(toPath) {
     toPath = toPath || this.manDirPath;
     const datetime = new Date();

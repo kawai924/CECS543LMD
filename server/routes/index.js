@@ -12,12 +12,12 @@ router.post("/", function(req, res) {
   res.redirect("/user/" + username);
 });
 
-router.get("/test", function(req, res, next) {
-  var json = numberOfConflict(
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_3.json",
-    "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_1.json"
-  );
-  console.log(json);
-});
+// router.get("/test", function(req, res, next) {
+//   var json = numberOfConflict(
+//     "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_3.json",
+//     "/Users/dennislo/Desktop/git/school/CECS543LMD/database/dennis2/py2/manifests/manifest_1.json"
+//   );
+//   console.log(json);
+// });
 
 module.exports = router;
