@@ -3,6 +3,7 @@ const fs = require("fs");
 const assert = require("chai").assert;
 const expect = require("chai").expect;
 const { ProjectHandler } = require("../private/js/ProjectHandler");
+const { VSC_REPO_NAME, MANIFEST_DIR } = require("../private/js/index");
 
 describe("ProjectHandler", function() {
   describe("Merging", function() {
@@ -126,6 +127,53 @@ describe("ProjectHandler", function() {
             }
           }
         ]);
+      });
+    });
+
+    describe("#manPath()", function() {
+      beforeEach(() => {
+        mockFS({
+          alice: {
+            alpha: {
+              VSC_REPO_NAME: {
+                MANIFEST_DIR: {
+                  "1.json": "",
+                  "2.json": "{parent: [1]}",
+                  "3.json": "{parent: [2]}",
+                  "4.json": "{parent: [3]}",
+                  "6.json": "{parent: [4]}",
+                  "7.json": "{parent: [6]}",
+                  "10.json": "{parent: [7]}",
+                  "12.json": "{parent: [10]}"
+                }
+              }
+            }
+          },
+          bob: {
+            alpha: {
+              VSC_REPO_NAME: {
+                MANIFEST_DIR: {
+                  "5.json": `{parent: [4], fromPath: "alice/alpha"}`,
+                  "8.json": "{parent: [5]}",
+                  "11.json": "{parent: [8]}",
+                  "13.json": "{parent: [11]}",
+                  "14.json": "{parent: [13]}",
+                  "15.json": "{parent: [14]}",
+                  "16.json": "{parent: [15]}",
+                  "17.json": "{parent: [16]}"
+                }
+              }
+            }
+          }
+        });
+      });
+
+      afterEach(() => {
+        mockFS.restore();
+      });
+
+      it("should return an array", function() {
+        assert.typeOf(manPath(), "array");
       });
     });
   });

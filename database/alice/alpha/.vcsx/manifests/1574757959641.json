@@ -1,1 +1,13 @@
-{"user":"alice","project":"alpha","structure":[{"artifactNode":"","artifactRelPath":"foo"},{"artifactNode":"test1.txt/6825-L13.txt","artifactRelPath":"foo"},{"artifactNode":"data.txt/7590-L11.txt","artifactRelPath":"."}],"parent":[1574757959638],"command":"checkin","datetime":"2019-11-26T08:45:59.641Z","id":1574757959641}
+{
+  "user": "alice",
+  "project": "alpha",
+  "structure": [
+    { "artifactNode": "", "artifactRelPath": "foo" },
+    { "artifactNode": "test1.txt/6825-L13.txt", "artifactRelPath": "foo" },
+    { "artifactNode": "data.txt/7590-L11.txt", "artifactRelPath": "." }
+  ],
+  "parent": [1574757959638],
+  "command": "checkin",
+  "datetime": "2019-11-26T08:45:59.641Z",
+  "id": 1574757959641
+}
