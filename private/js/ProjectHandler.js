@@ -206,13 +206,27 @@ class ProjectHandler {
    * During merge out, move file from source's repo path and grandma's repo path to target project directory
    * @param {String} rPath source's repo path
    * @param {String} gPath grandma's repo path
-   * @param {String} targetPath intendedtarget's project tree directory
+   * @param {String} tPath target's repo path
    */
-  _mergeOutMoveFiles(rPath, gPath, targetPath) {
-    let rPathDest = path.join(targetPath, path.basename(rPath));
-    let gPathDest = path.join(targetPath, path.basename(gPath));
+  _mergeOutMoveFiles(rPath, gPath, tPath) {
+
+    // Parent directory of tPath
+    let targetDirectory = path.dirname(tPath);
+
+    // Set filenames to variables
+    let rPathName = path.basename(path.dirname(rPath));
+    let gPathName = path.basename(path.dirname(gPath));
+    let tPathName = path.basename(path.dirname(tPath));
+
+    // Set the destination absolute path
+    let rPathDest = path.join(targetDirectory, path.basename(rPath));
+    let gPathDest = path.join(targetDirectory, path.basename(gPath));
+    let tPathDest = path.join(targetDirectory, path.basename(tPath));
+
+    // Save file extensions for later
     let extensionR = path.extname(rPath);
     let extensionG = path.extname(gPath);
+    let extensionT = path.extname(tPath);
 
     // Duplicate rPath to targetPath
     fs.copyFile(rPath, rPathDest, err => {
@@ -224,15 +238,24 @@ class ProjectHandler {
       if (err) throw err;
     });
 
-    // Append _mr or _mg to the duplicated filenames
+    // Duplicate tPath within the same directory
+    fs.copyFile(tPath, tPathDest + "copy", err => {
+      if (err) throw err;
+    });
+
+    // Append _mr or _mg or _mt to the duplicated filenames
     fs.renameSync(
       rPathDest,
-      path.join(rPathDest.replace(/\.[^/.]+$/, "") + "_mr" + extensionR)
+      path.join(targetDirectory, rPathName.replace(/\.[^/.]+$/, "") + "_mr" + extensionR)
     );
     fs.renameSync(
       gPathDest,
-      path.join(gPathDest.replace(/\.[^/.]+$/, "") + "_mg" + extensionG)
+      path.join(targetDirectory, gPathName.replace(/\.[^/.]+$/, "") + "_mg" + extensionG)
     );
+    fs.renameSync(
+      tPathDest + "copy",
+      path.join(targetDirectory, tPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT)
+    )
   }
 
   /**
