@@ -28,7 +28,8 @@ describe("ProjectHandler", function() {
           "target/data.txt"
         );
 
-        assert.equal(fs.readdirSync("target").length, 3);
+        // assert.equal(fs.readdirSync("target").length, 3);
+        expect(fs.readdirSync("target").length).to.be.equal(3);
       });
 
       it("target folder should have 3 filenames with _mt, _mr, _mg.", function() {
@@ -97,19 +98,23 @@ describe("ProjectHandler", function() {
       });
 
       it("same manifest should result in 0 conflict", function() {
-        assert.equal(projHandler._gatherConflicts(man1, man1).length, 0);
+        // assert.equal(projHandler._gatherConflicts(man1, man1).length, 0);
+        expect(projHandler._gatherConflicts(man1, man1).length).to.be.equal(0);
       });
 
       it("should result in right number of conflict between two manifests", function() {
-        assert.equal(projHandler._gatherConflicts(man1, man2).length, 1);
+        // assert.equal(projHandler._gatherConflicts(man1, man2).length, 1);
+        expect(projHandler._gatherConflicts(man1, man2).length).to.be.equal(1);
       });
 
       it("should return an array", function() {
-        assert.typeOf(projHandler._gatherConflicts(man1, man2), "array");
+        // assert.typeOf(projHandler._gatherConflicts(man1, man2), "array");
+        expect(projHandler._gatherConflicts(man1, man2)).to.be.an("array");
       });
 
       it("should return correct answer", function() {
-        const result = [
+        // assert.deepEqual(projHandler._gatherConflicts(man1, man2), result);
+        expect(projHandler._gatherConflicts(man1, man2)).to.be.deep.equal([
           {
             source: {
               artifactNode: "string.txt/6464-A22.txt",
@@ -120,8 +125,7 @@ describe("ProjectHandler", function() {
               artifactRelPath: "./foo"
             }
           }
-        ];
-        assert.deepEqual(projHandler._gatherConflicts(man1, man2), result);
+        ]);
       });
     });
   });
