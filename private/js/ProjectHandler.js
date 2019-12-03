@@ -254,7 +254,7 @@ class ProjectHandler {
     );
     fs.renameSync(
       tPathDest,
-      path.join(targetDirectory, tPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT)
+      path.join(targetDirectory, rPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT)
     )
   }
 
