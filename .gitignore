@@ -4,10 +4,7 @@ node_modules/
 .vscode/
 
 database/*
-!database/alice
-!database/bob
 !database/.gitkeep 
-!database/johndoe/
 
 testing/*
 !testing/.gitkeep 
