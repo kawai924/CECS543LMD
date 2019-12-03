@@ -239,7 +239,7 @@ class ProjectHandler {
     });
 
     // Duplicate tPath within the same directory
-    fs.copyFile(tPath, tPathDest + "copy", err => {
+    fs.copyFile(tPath, tPathDest, err => {
       if (err) throw err;
     });
 
@@ -253,7 +253,7 @@ class ProjectHandler {
       path.join(targetDirectory, gPathName.replace(/\.[^/.]+$/, "") + "_mg" + extensionG)
     );
     fs.renameSync(
-      tPathDest + "copy",
+      tPathDest,
       path.join(targetDirectory, tPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT)
     )
   }
