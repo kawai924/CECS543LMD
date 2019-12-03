@@ -1,6 +1,7 @@
 const mockFS = require("mock-fs");
 const fs = require("fs");
 const assert = require("chai").assert;
+const expect = require("chai").expect;
 const { ProjectHandler } = require("../private/js/ProjectHandler");
 
 describe("ProjectHandler", function() {
@@ -24,7 +25,7 @@ describe("ProjectHandler", function() {
         projHandler._mergeOutMoveFiles(
           "source/data.txt/S111-S00.txt",
           "grandma/data.txt/G111-G00.txt",
-          "target"
+          "target/data.txt"
         );
 
         assert.equal(fs.readdirSync("target").length, 3);
@@ -34,10 +35,15 @@ describe("ProjectHandler", function() {
         projHandler._mergeOutMoveFiles(
           "source/data.txt/S111-S00.txt",
           "grandma/data.txt/G111-G00.txt",
-          "target"
+          "target/data.txt"
         );
 
-        assert.deepEqual(fs.readdirSync("target"), [
+        // assert.deepEqual(fs.readdirSync("target"), [
+        //   "data_mr.txt",
+        //   "data_mg.txt",
+        //   "data_mt.txt"
+        // ]);
+        expect(fs.readdirSync("target")).to.have.members([
           "data_mr.txt",
           "data_mg.txt",
           "data_mt.txt"
