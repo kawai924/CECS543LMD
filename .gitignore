@@ -3,7 +3,7 @@ node_modules/
 .idea/
 .vscode/
 
-database/
+database/*
 !database/.gitkeep
 
 testing/*
