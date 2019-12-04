@@ -46,7 +46,6 @@ class ProjectHandler {
       .write();
 
     // Step 4: Add new manifest to master manifest
-    masManWriter.writeFreshMasMan();
     masManWriter.addNewMan(newMan);
   }
 
@@ -77,7 +76,7 @@ class ProjectHandler {
     // Step 3: Get artifacts
     const artifactsList = this._checkinProjectTree(projPath, this.repoPath);
 
-    // Step 5: Get head
+    // Step 5: Get HEAD manifest ID
     const head = masManReader.getHead();
 
     // Step 4: Write manifest
@@ -106,38 +105,34 @@ class ProjectHandler {
     const tManReader = new ManifestReader(this.username, this.projectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
 
-    try {
-      // Step 2: Attempt to get manifest
-      const sMan = sManReader.getMan(sID);
+    // Step 2: Attempt to get manifest
+    const sMan = sManReader.getMan(sID);
 
-      // Step 3: Create all neccessary folder
-      fs.mkdirSync(this.manDirPath, { recursive: true });
+    // Step 3: Create all neccessary folder
+    fs.mkdirSync(this.manDirPath, { recursive: true });
 
-      // Step 4: Checkout files
-      const sProjectPath = path.join(DB_PATH, sUsername, sProjectName);
-      const sArtifactList = sMan.structure || [];
+    // Step 4: Checkout files
+    const sProjectPath = path.join(DB_PATH, sUsername, sProjectName);
+    const sArtifactList = sMan.structure || [];
 
-      sArtifactList.forEach(artifact => {
-        this._checkoutArtifact(artifact, sProjectPath);
-        this._replicateOneArtifact(artifact, sProjectPath, this.repoPath);
-      });
+    sArtifactList.forEach(artifact => {
+      this._checkoutArtifact(artifact, sProjectPath);
+      this._replicateOneArtifact(artifact, sProjectPath, this.repoPath);
+    });
 
-      // Step 5: Build and write a manifest
-      const newMan = tManWriter
-        .addCommand(COMMANDS.CHECKOUT)
-        // .addCheckoutFrom(sProjectPath)
-        .addParent({
-          parentID: sID,
-          parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
-        })
-        .addStructure(sMan.structure)
-        .write();
+    // Step 5: Build and write a manifest
+    const newMan = tManWriter
+      .addCommand(COMMANDS.CHECKOUT)
+      // .addCheckoutFrom(sProjectPath)
+      .addParent({
+        parentID: sID,
+        parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
+      })
+      .addStructure(sMan.structure)
+      .write();
 
-      // Step 5: Add new manifest to master manifest
-      tMasManWriter.addNewMan(newMan);
-    } catch (e) {
-      throw new Error(e.message);
-    }
+    // Step 5: Add new manifest to master manifest
+    tMasManWriter.addNewMan(newMan);
   }
 
   /**
@@ -162,9 +157,7 @@ class ProjectHandler {
     makeDirSync(tADirRepoPath, { recursive: true });
 
     if (sArtifact.artifactNode != "") {
-      //Copy artifacts
       const tAartAbsRepoPath = path.join(tADirRepoPath, sArtifact.artifactNode);
-      const sArtFileName = sArtifact.artifactNode.split(path.sep)[0];
       const tAartDirRepoPath = path.dirname(tAartAbsRepoPath);
       makeDirSync(tAartDirRepoPath, { recursive: true });
 

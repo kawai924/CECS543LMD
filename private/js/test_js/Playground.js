@@ -1,11 +1,7 @@
-{ 
-  "username": "alice", 
-  "projectName": "ProjectX", 
-  "head": 1574737703079, 
-  "labels": [
-    { "label_1": 1574737703048 }, 
-    { "label_2": 1574737703054 }, 
-    { "label_3": 1574737703070 }
-  ], 
-  "manifests": []
-}
+const fs = require("fs");
+
+const result = fs.readFileSync(
+  "/Users/chinhnguyen/Dropbox/School/CSULB/Master/Fall 2019/543/Project 1/Project/CECS543LMD/database/bob/alpha/.vcsx/master-manifest.jso"
+);
+
+console.log({ result });
