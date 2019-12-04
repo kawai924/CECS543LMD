@@ -41,6 +41,7 @@ class ProjectHandler {
     // Step 3: Build and write a manifest
     const newMan = manWriter
       .addCommand(COMMANDS.CREATE)
+      .addParent()
       .addStructure()
       .write();
 
