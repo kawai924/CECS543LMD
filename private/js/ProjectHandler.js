@@ -31,7 +31,7 @@ class ProjectHandler {
    * @returns void
    */
   create() {
-    // Step 1: Create all neccessary folder
+    // Step 1: Create all neccessary folder at the target repo
     fs.mkdirSync(path.join(this.repoPath, MANIFEST_DIR), { recursive: true });
 
     // Step 2: Get handlers
@@ -117,7 +117,11 @@ class ProjectHandler {
 
     sArtifactList.forEach(artifact => {
       this._checkoutArtifact(artifact, sProjectPath);
-      this._replicateOneArtifact(artifact, sProjectPath, this.repoPath);
+      this._replicateArtifactBetweenRepos(
+        artifact,
+        sProjectPath,
+        this.repoPath
+      );
     });
 
     // Step 5: Build and write a manifest
@@ -144,14 +148,14 @@ class ProjectHandler {
   }
 
   /** Private functions
-   * ********************/
+   ****************************/
   /**
    * Replicate one artifact file from source repo to target repo
    * @param {String} sArtifact source's artifact
    * @param {String} sProjectPath source's project path
    * @param {String} tRepoPath target's repo path
    */
-  _replicateOneArtifact(sArtifact, sProjectPath, tRepoPath) {
+  _replicateArtifactBetweenRepos(sArtifact, sProjectPath, tRepoPath) {
     //Create dirs
     const tADirRepoPath = path.join(tRepoPath, sArtifact.artifactRelPath);
     makeDirSync(tADirRepoPath, { recursive: true });
@@ -203,7 +207,7 @@ class ProjectHandler {
    * @param {String} gPath grandma's repo path
    * @param {String} tPath target's repo path
    */
-  _mergeOutMoveFiles(rPath, gPath, tPath) {
+  _mergeOutMoveFile(rPath, gPath, tPath) {
     // Parent directory of tPath
     let targetDirectory = path.dirname(tPath);
 
