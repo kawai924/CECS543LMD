@@ -11,7 +11,7 @@ class ManifestReader {
   constructor(username, projectName) {
     this.username = username;
     this.projectName = projectName;
-    this.repoPath = path.join(DB_PATH, username, projectName);
+    this.repoPath = path.join(DB_PATH, username, projectName, VSC_REPO_NAME);
   }
 
   /**
@@ -118,7 +118,7 @@ class ManifestWriter {
 
   /**
    * Add parents to the manifest builder
-   * @param  {...String} parents
+   * @param  {...Object} parents : object = {parentID, parentPath}
    * @returns this instance
    */
   addParent(...parents) {

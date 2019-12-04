@@ -82,7 +82,7 @@ class ProjectHandler {
     // Step 4: Write manifest
     const newMan = manWriter
       .addCommand(COMMANDS.CHECKIN)
-      .addParent(head)
+      .addParent({ parentID: head, parentPath: this.manDirPath })
       .addStructure(artifactsList)
       .write();
 
@@ -122,11 +122,13 @@ class ProjectHandler {
       });
 
       // Step 5: Build and write a manifest
-      const sPath = path.join(DB_PATH, sUsername, sProjectName);
       const newMan = tManWriter
         .addCommand(COMMANDS.CHECKOUT)
-        .addCheckoutFrom(sPath)
-        .addParent(sID)
+        // .addCheckoutFrom(sProjectPath)
+        .addParent({
+          parentID: sID,
+          parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
+        })
         .addStructure(sMan.structure)
         .write();
 
@@ -147,7 +149,6 @@ class ProjectHandler {
 
   /** Private functions
    * ********************/
-
   /**
    * Replicate one artifact file from source repo to target repo
    * @param {String} sArtifact source's artifact
@@ -209,7 +210,6 @@ class ProjectHandler {
    * @param {String} tPath target's repo path
    */
   _mergeOutMoveFiles(rPath, gPath, tPath) {
-
     // Parent directory of tPath
     let targetDirectory = path.dirname(tPath);
 
@@ -246,16 +246,25 @@ class ProjectHandler {
     // Append _mr or _mg or _mt to the duplicated filenames
     fs.renameSync(
       rPathDest,
-      path.join(targetDirectory, rPathName.replace(/\.[^/.]+$/, "") + "_mr" + extensionR)
+      path.join(
+        targetDirectory,
+        rPathName.replace(/\.[^/.]+$/, "") + "_mr" + extensionR
+      )
     );
     fs.renameSync(
       gPathDest,
-      path.join(targetDirectory, gPathName.replace(/\.[^/.]+$/, "") + "_mg" + extensionG)
+      path.join(
+        targetDirectory,
+        gPathName.replace(/\.[^/.]+$/, "") + "_mg" + extensionG
+      )
     );
     fs.renameSync(
       tPathDest,
-      path.join(targetDirectory, rPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT)
-    )
+      path.join(
+        targetDirectory,
+        rPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT
+      )
+    );
   }
 
   /**
@@ -370,7 +379,7 @@ class ProjectHandler {
       sfilelist.push(mania.structure[prop]);
       filename = structure.artifactNode;
       ssmallfilelist.push(filename);
-      sinfolder.push(structure.artifactRelPath) ;
+      sinfolder.push(structure.artifactRelPath);
 
       let tar = filename.lastIndexOf("/");
       let file = filename.substring(0, tar);
@@ -387,7 +396,7 @@ class ProjectHandler {
       tfilelist.push(manib.structure[prop]);
       filename = structure.artifactNode;
       tsmallfilelist.push(filename);
-      tinfolder.push(structure.artifactRelPath) ;
+      tinfolder.push(structure.artifactRelPath);
 
       let tar = filename.lastIndexOf("/");
       let file = filename.substring(0, tar);
