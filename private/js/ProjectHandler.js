@@ -102,7 +102,6 @@ class ProjectHandler {
     // Step 1: Initialize all handlers
     const tManWriter = new ManifestWriter(this.username, this.projectName);
     const sManReader = new ManifestReader(sUsername, sProjectName);
-    const tManReader = new ManifestReader(this.username, this.projectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
 
     // Step 2: Attempt to get manifest
@@ -117,11 +116,7 @@ class ProjectHandler {
 
     sArtifactList.forEach(artifact => {
       this._checkoutArtifact(artifact, sProjectPath);
-      this._replicateArtifactBetweenRepos(
-        artifact,
-        sProjectPath,
-        this.repoPath
-      );
+      this._copyArtifactOver(artifact, sProjectPath, this.repoPath);
     });
 
     // Step 5: Build and write a manifest
@@ -232,7 +227,7 @@ class ProjectHandler {
    * @param {String} sProjectPath source's project path
    * @param {String} tRepoPath target's repo path
    */
-  _replicateArtifactBetweenRepos(sArtifact, sProjectPath, tRepoPath) {
+  _copyArtifactOver(sArtifact, sProjectPath, tRepoPath) {
     //Create dirs
     const tADirRepoPath = path.join(tRepoPath, sArtifact.artifactRelPath);
     makeDirSync(tADirRepoPath, { recursive: true });
@@ -254,28 +249,29 @@ class ProjectHandler {
   }
 
   /**
-   * During checkout, copy artifact from source's repo to current project tree
+   * During checkout, turn artifact from source's repo to a file in target project tree
    * @param {JSON} artifact artifact object {artifactNode, artifactRelPath}
    * @param {String} sProjectPath source's project path
    * @returns void
    */
   _checkoutArtifact(artifact, sProjectPath) {
-    if (artifact.artifactNode == "") {
-      return;
-    }
     const newDestPath = path.join(this.projectPath, artifact.artifactRelPath);
     fs.mkdirSync(newDestPath, { recursive: true }); // Recursively make folders in the destination
 
-    // Get full file path from source
-    const fileSource = path.join(
-      sProjectPath,
-      VSC_REPO_NAME,
-      artifact.artifactRelPath,
-      artifact.artifactNode
-    );
-    const fileName = artifact.artifactNode.split(path.sep)[0];
+    if (artifact.artifactNode == "") {
+      return;
+    } else {
+      // Get full file path from source
+      const fileSource = path.join(
+        sProjectPath,
+        VSC_REPO_NAME,
+        artifact.artifactRelPath,
+        artifact.artifactNode
+      );
+      const fileName = artifact.artifactNode.split(path.sep)[0];
 
-    fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
+      fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
+    }
   }
 
   /**
