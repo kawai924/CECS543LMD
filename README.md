@@ -12,7 +12,8 @@ Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
 
 # Project Demo
 
-- Live version: Follow the guide below.
+- Live version: 
+  - Follow GUIDE.
 - Manual by terminal:
   - Follow step 1 and 2 of guide
   - Use:
