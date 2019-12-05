@@ -124,7 +124,6 @@ class ProjectHandler {
 
     sArtifactList.forEach(artifact => {
       this._checkoutArtifact(artifact, sProjectPath);
-      // this._copyArtifactOver(artifact, sProjectPath, this.repoPath);
     });
 
     const artifactsList = this._checkinProjectTree(
@@ -135,7 +134,6 @@ class ProjectHandler {
     // Step 5: Build and write a manifest
     const newMan = tManWriter
       .addCommand(COMMANDS.CHECKOUT)
-      // .addCheckoutFrom(sProjectPath)
       .addParent({
         parentID: sID,
         parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
@@ -241,6 +239,12 @@ class ProjectHandler {
     fs.rmdirSync(this.projectPath, { recursive: true });
   }
 
+  /**
+   * Merge Out action
+   * @param {String} sUsername souce username
+   * @param {Number | String} sID source manifest ID or label
+   * @param {Number | String} tID target manifest ID or label
+   */
   mergeOut(sUsername, sID, tID) {
     const tManifestWriter = new ManifestWriter(this.username, this.projectName);
     const tManifestReader = new ManifestReader(this.username, this.projectName);
@@ -291,6 +295,9 @@ class ProjectHandler {
     tMasManWriter.addNewMan(newMan);
   }
 
+  /**
+   * Merge in
+   */
   mergeIn() {
     const manReader = new ManifestReader(this.username, this.projectName);
     const manWriter = new ManifestWriter(this.username, this.projectName);
@@ -326,6 +333,11 @@ class ProjectHandler {
 
   /** Private functions
    ****************************/
+  /**
+   * Check if user has fix all conflicts after merge out
+   * @param {Array} fileList list of all path to conflicts file [{source, target, ancestor}]
+   * @returns {Boolean} true if there is still file with _mt OR _mg OR _mr. False otherwise
+   */
   _hasUserFixedMergeOut(fileList) {
     fileList = fileList || [];
 
@@ -344,6 +356,13 @@ class ProjectHandler {
     return true;
   }
 
+  /**
+   * Carry out mergeout operation
+   * @param {String} sUsername
+   * @param {Number | String} sManifestID Souce's manifest ID or label
+   * @param {Number | String} tManifestID Target's manifest ID or label
+   * @returns {Array} an array of all conflicted files
+   */
   _mergeOutOperation(sUsername, sManifestID, tManifestID) {
     const sourceProjectPath = path.join(DB_PATH, sUsername, this.projectName);
 
@@ -422,6 +441,12 @@ class ProjectHandler {
     return movedFileList;
   }
 
+  /**
+   * Get ancestor list of a particular manifest
+   * @param {String} projectPath the absolute path of a project
+   * @param {Number} manifestID manifest ID
+   * @returns {Array} return an array of ancestry manifest ID
+   */
   _getParentList(projectPath, manifestID) {
     // Using PathObj now but will change to use this.path
     let paths = []; // Array that will hold all paths
@@ -489,6 +514,12 @@ class ProjectHandler {
     return paths;
   }
 
+  /**
+   * Find the most recent common ancestor ID betwween two arrays
+   * @param {Array} targetArr An array of array of ancestry manifest ID of target
+   * @param {Array} sourceArr An array of array of ancestry manifest ID of souce
+   * @returns {Number} the most common ancestor manifest ID
+   */
   _commonAncestor(targetArr, sourceArr) {
     let result = [];
     targetArr.forEach(pathArr => {
@@ -499,6 +530,12 @@ class ProjectHandler {
     return Math.max(...result);
   }
 
+  /**
+   * Find the most recent common ancestor ID between two manifests
+   * @param {Number} targetList an array of target ancestry manifest ID
+   * @param {Number} sourceList an array of source ancestry manifest ID
+   * @return {Number} most recent common ancestor manifest ID
+   */
   _commonAncestorBetweenTwoList(targetList, sourceList) {
     for (let i = 0; i < targetList.length; i++) {
       if (sourceList.includes(targetList[i])) {
@@ -513,6 +550,7 @@ class ProjectHandler {
    * @param {String} sArtifact source's artifact
    * @param {String} sProjectPath source's project path
    * @param {String} tRepoPath target's repo path
+   * @return void
    */
   _copyArtifactOver(sArtifact, sProjectPath, tRepoPath) {
     //Create dirs

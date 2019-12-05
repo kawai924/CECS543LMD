@@ -34,6 +34,12 @@ class ManifestReader {
     return this._getManByID(identification);
   }
 
+  /**
+   * Get particular artifact matching filename and relativePath
+   * @param {String} fileName the filename of artifact
+   * @param {String} relativePath the relative path of the artifact
+   * @param {String | Number} identification the manifest ID or label of a manifest
+   */
   getArtifact(fileName, relativePath, identification) {
     const manifest = this.getMan(identification);
     const artifactList = manifest.structure;
@@ -41,12 +47,6 @@ class ManifestReader {
     for (let i = 0; i < artifactList.length; i++) {
       const artifact = artifactList[i];
       const fileNameFromArtifact = artifact.artifactNode.split(path.sep)[0];
-      // console.log({
-      //   fileNameFromArtifact,
-      //   fileName,
-      //   artifactPath: artifact.artifactRelPath,
-      //   relativePath
-      // });
       if (
         fileNameFromArtifact === fileName &&
         artifact.artifactRelPath === relativePath
