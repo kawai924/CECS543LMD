@@ -124,8 +124,13 @@ class ProjectHandler {
 
     sArtifactList.forEach(artifact => {
       this._checkoutArtifact(artifact, sProjectPath);
-      this._copyArtifactOver(artifact, sProjectPath, this.repoPath);
+      // this._copyArtifactOver(artifact, sProjectPath, this.repoPath);
     });
+
+    const artifactsList = this._checkinProjectTree(
+      this.projectPath,
+      this.repoPath
+    );
 
     // Step 5: Build and write a manifest
     const newMan = tManWriter
@@ -135,7 +140,7 @@ class ProjectHandler {
         parentID: sID,
         parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
       })
-      .addStructure(sMan.structure)
+      .addStructure(artifactsList)
       .write();
 
     // Step 5: Add new manifest to master manifest
@@ -232,20 +237,50 @@ class ProjectHandler {
     fs.rmdirSync(this.projectPath, { recursive: true });
   }
 
-  mergeOut(sUsername, sManifestID, tManifestID) {
-    const movedFileList = this._mergeOutOperation(
-      sUsername,
-      sManifestID,
-      tManifestID
-    );
-
+  mergeOut(sUsername, sID, tID) {
     const tManifestWriter = new ManifestWriter(this.username, this.projectName);
+    const tManifestReader = new ManifestReader(this.username, this.projectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
     const tMasManReader = new MasterManReader(this.username, this.projectName);
 
+    const sMasManReader = new MasterManReader(sUsername, this.projectName);
+    const sManReader = new ManifestReader(sUsername, this.projectName);
+
+    const tManifest = tManifestReader.getMan(tID);
+    const sManifest = sManReader.getMan(sID);
+
+    const movedFileList = this._mergeOutOperation(
+      sUsername,
+      sManifest.id,
+      tManifest.id
+    );
+
+    const parentList = [
+      {
+        parentID: sID,
+        parentPath: path.join(
+          DB_PATH,
+          sUsername,
+          this.projectName,
+          VSC_REPO_NAME,
+          MANIFEST_DIR
+        )
+      },
+      {
+        parentID: tID,
+        parentPath: path.join(
+          DB_PATH,
+          this.username,
+          this.projectName,
+          VSC_REPO_NAME,
+          MANIFEST_DIR
+        )
+      }
+    ];
+
     const newMan = tManifestWriter
       .addCommand(COMMANDS.MERGE_OUT)
-      .addParent(tMasManReader.getHead())
+      .addParent(...parentList)
       .addStructure(movedFileList)
       .write();
 
@@ -384,9 +419,6 @@ class ProjectHandler {
   }
 
   _getParentList(projectPath, manifestID) {
-    // console.log("_getParentList\n");
-    // console.log(`projectPath: ${projectPath}`);
-    // console.log(`manifestID: ${manifestID}`);
     // Using PathObj now but will change to use this.path
     let paths = []; // Array that will hold all paths
     let queue = new makeQueue();
@@ -428,8 +460,9 @@ class ProjectHandler {
           curParent = null;
           break;
         }
+
         switch (manifestData.command) {
-          case COMMANDS.MERGE_IN: // 2 Parents
+          case COMMANDS.MERGE_OUT: // 2 Parents
             parentPath = manifestData.parent[0].parentPath;
             curParent = manifestData.parent[0].parentID;
 
@@ -531,26 +564,10 @@ class ProjectHandler {
   _mergeOutMoveFile(rPath, gPath, tPath) {
     // Parent directory of tPath
     let targetDirectory = path.dirname(tPath);
-
     // Set filenames to variables
     const fileName = path.basename(tPath);
-
-    // Set the destination absolute path
-    let rPathDest = path.join(targetDirectory, path.basename(rPath));
-    let gPathDest = path.join(targetDirectory, path.basename(gPath));
-
     // Save file extensions for later
     const extension = path.extname(tPath);
-
-    // Duplicate rPath to targetPath
-    fs.copyFile(rPath, rPathDest, err => {
-      if (err) throw err;
-    });
-
-    // Duplicate gPath to targetPath
-    fs.copyFile(gPath, gPathDest, err => {
-      if (err) throw err;
-    });
 
     // Append _mr or _mg or _mt to the duplicated filenames
     const rFilePath = path.join(
@@ -566,8 +583,11 @@ class ProjectHandler {
       fileName.replace(/\.[^/.]+$/, "") + "_mt" + extension
     );
 
-    fs.renameSync(rPathDest, rFilePath);
-    fs.renameSync(gPathDest, gFilePath);
+    // Move file from source repo to target project tree
+    fs.copyFileSync(rPath, rFilePath);
+    // // Move file from ancestor repo to target project tree
+    fs.copyFileSync(gPath, gFilePath);
+    // Add  _mt filename of file at target folder tree
     fs.renameSync(tPath, tFilePath);
 
     return {
