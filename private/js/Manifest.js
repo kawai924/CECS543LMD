@@ -14,6 +14,14 @@ class ManifestReader {
     this.repoPath = path.join(DB_PATH, username, projectName, VSC_REPO_NAME);
   }
 
+  forUsername(username) {
+    this.username = username;
+  }
+
+  forProjectName(projectName) {
+    this.projectName = projectName;
+  }
+
   /**
    * Get a manifest from disk
    * @param {Number | String} identification Either label or manifest ID
@@ -24,6 +32,32 @@ class ManifestReader {
       return this._getManByLabel(identification);
     }
     return this._getManByID(identification);
+  }
+
+  getArtifact(fileName, relativePath, identification) {
+    const manifest = this.getMan(identification);
+    const artifactList = manifest.structure;
+
+    for (let i = 0; i < artifactList.length; i++) {
+      const artifact = artifactList[i];
+      const fileNameFromArtifact = artifact.artifactNode.split(path.sep)[0];
+      // console.log({
+      //   fileNameFromArtifact,
+      //   fileName,
+      //   artifactPath: artifact.artifactRelPath,
+      //   relativePath
+      // });
+      if (
+        fileNameFromArtifact === fileName &&
+        artifact.artifactRelPath === relativePath
+      ) {
+        return artifact;
+      }
+    }
+
+    throw new Error(
+      "Cannot find artifact with given file name and relative path!"
+    );
   }
 
   /**

@@ -50,6 +50,14 @@ class ProjectHandler {
   }
 
   /**
+   * Remove a project of a user
+   * @returns void
+   */
+  remove() {
+    fs.rmdirSync(this.projectPath, { recursive: true });
+  }
+
+  /**
    * Label a manifest
    * @param {Number} manID manifest's ID
    * @param {String} label
@@ -62,10 +70,10 @@ class ProjectHandler {
 
   /**
    * Check-in action
-   * @param {String} projPath the path to the project
+   * @param {String=} projPath the path to the project
    * @returns void
    */
-  checkin(projPath) {
+  checkin(projPath = this.projectPath) {
     projPath = projPath || this.projectPath;
 
     // Step 2: Get handlers
@@ -224,8 +232,224 @@ class ProjectHandler {
     fs.rmdirSync(this.projectPath, { recursive: true });
   }
 
+  mergeOut(sUsername, sManifestID, tManifestID) {
+    const movedFileList = this._mergeOutOperation(
+      sUsername,
+      sManifestID,
+      tManifestID
+    );
+
+    const tManifestWriter = new ManifestWriter(this.username, this.projectName);
+    const tMasManWriter = new MasterManWriter(this.username, this.projectName);
+    const tMasManReader = new MasterManReader(this.username, this.projectName);
+
+    const newMan = tManifestWriter
+      .addCommand(COMMANDS.MERGE_OUT)
+      .addParent(tMasManReader.getHead())
+      .addStructure(movedFileList)
+      .write();
+
+    tMasManWriter.addNewMan(newMan);
+  }
+
+  mergeIn() {
+    const manReader = new ManifestReader(this.username, this.projectName);
+    const manWriter = new ManifestWriter(this.username, this.projectName);
+    const masManReader = new MasterManReader(this.username, this.projectName);
+    const masManWriter = new MasterManWriter(this.username, this.projectName);
+
+    const headID = masManReader.getHead();
+    const manifest = manReader.getMan(headID);
+
+    // Check if the head manifest is a mergeout
+    if (manifest.command !== COMMANDS.MERGE_OUT)
+      throw new Error("Previous manifest was not a merge out");
+
+    const artifactsList = this._checkinProjectTree(
+      this.projectPath,
+      this.repoPath
+    );
+    const head = masManReader.getHead();
+
+    // Step 4: Write manifest
+    const newMan = manWriter
+      .addCommand(COMMANDS.MERGE_IN)
+      .addParent({ parentID: head, parentPath: this.manDirPath })
+      .addStructure(artifactsList)
+      .write();
+
+    // Step 5: Update master manifest
+    masManWriter.addNewMan(newMan);
+  }
+
   /** Private functions
    ****************************/
+  _mergeOutOperation(sUsername, sManifestID, tManifestID) {
+    const sourceProjectPath = path.join(DB_PATH, sUsername, this.projectName);
+
+    const sManifestPathList = this._getParentList(
+      sourceProjectPath,
+      sManifestID
+    );
+    const tManifestPathList = this._getParentList(
+      this.projectPath,
+      tManifestID
+    );
+
+    const gManifestID = this._commonAncestor(
+      sManifestPathList,
+      tManifestPathList
+    );
+
+    // Get readers for souce user and target user
+    const sManifestReader = new ManifestReader(sUsername, this.projectName);
+    const gManifestReader = new ManifestReader(sUsername, this.projectName);
+    const tManifestReader = new ManifestReader(this.username, this.projectName);
+
+    // Get all manifests
+    const sManifest = sManifestReader.getMan(sManifestID);
+    const tManifest = tManifestReader.getMan(tManifestID);
+
+    const conflictList = this._gatherConflicts(sManifest, tManifest);
+    // console.log({ conflictList: JSON.stringify(conflictList) });
+    // Include artifact from ancestor manifest
+    conflictList.map(conflict => {
+      const fileName = conflict.source.artifactNode.split(path.sep)[0];
+      const filePath = conflict.source.artifactRelPath;
+      const gArtifact = gManifestReader.getArtifact(
+        fileName,
+        filePath,
+        gManifestID
+      );
+
+      return (conflict.ancestor = gArtifact);
+    });
+
+    const movedFileList = [];
+    conflictList.forEach(conflict => {
+      const sourceInfo = conflict.source;
+      const ancestorInfo = conflict.ancestor;
+      const targetInfo = conflict.target;
+      const filename = sourceInfo.artifactNode.split(path.sep)[0];
+
+      const sourceArtifactPath = path.join(
+        sourceProjectPath,
+        VSC_REPO_NAME,
+        sourceInfo.artifactRelPath,
+        sourceInfo.artifactNode
+      );
+      const ancestorArtifactPath = path.join(
+        sourceProjectPath,
+        VSC_REPO_NAME,
+        ancestorInfo.artifactRelPath,
+        ancestorInfo.artifactNode
+      );
+      const targetFilePath = path.join(
+        this.projectPath,
+        targetInfo.artifactRelPath,
+        filename
+      );
+
+      const movedFile = this._mergeOutMoveFile(
+        sourceArtifactPath,
+        ancestorArtifactPath,
+        targetFilePath
+      );
+
+      movedFileList.push(movedFile);
+    });
+
+    return movedFileList;
+  }
+
+  _getParentList(projectPath, manifestID) {
+    // console.log("_getParentList\n");
+    // console.log(`projectPath: ${projectPath}`);
+    // console.log(`manifestID: ${manifestID}`);
+    // Using PathObj now but will change to use this.path
+    let paths = []; // Array that will hold all paths
+    let queue = new makeQueue();
+    queue.enqueue({
+      manifestID: manifestID,
+      startingArr: [],
+      startingPath: projectPath
+    });
+
+    while (!queue.isEmpty()) {
+      let pathObj = queue.dequeue();
+      manifestID = pathObj.manifestID;
+      projectPath = pathObj.startingPath;
+
+      let targetPath = projectPath.split(VSC_REPO_NAME)[0];
+      // console.log(targetPath);
+      targetPath = path.join(targetPath, VSC_REPO_NAME, MANIFEST_DIR);
+      let targetParentList = pathObj.startingArr.concat(manifestID);
+
+      // Read First Manifest file
+      let manifestData = JSON.parse(
+        fs.readFileSync(path.join(targetPath, manifestID.toString() + ".json"))
+      );
+      // Grab first Parent
+      let curParent = manifestData.parent[0].parentID;
+      let parentPath = manifestData.parent[0].parentPath;
+
+      // While a parent exists
+      while (curParent != null) {
+        targetParentList.push(curParent);
+        manifestData = JSON.parse(
+          fs.readFileSync(path.join(parentPath, curParent.toString() + ".json"))
+        );
+
+        if (
+          !manifestData.hasOwnProperty("parent") ||
+          manifestData.parent.length === 0
+        ) {
+          curParent = null;
+          break;
+        }
+        switch (manifestData.command) {
+          case COMMANDS.MERGE_IN: // 2 Parents
+            parentPath = manifestData.parent[0].parentPath;
+            curParent = manifestData.parent[0].parentID;
+
+            let mergePath = manifestData.parent[1].parentPath;
+            let mergeParent = manifestData.parent[1].parentID;
+            queue.enqueue({
+              manifestID: mergeParent,
+              startingArr: targetParentList.slice(),
+              startingPath: mergePath
+            });
+            break;
+          default:
+            // Regular commit/checkin
+            parentPath = manifestData.parent[0].parentPath;
+            curParent = manifestData.parent[0].parentID;
+        }
+      }
+      paths.push(targetParentList);
+    }
+    return paths;
+  }
+
+  _commonAncestor(targetArr, sourceArr) {
+    let result = [];
+    targetArr.forEach(pathArr => {
+      sourceArr.forEach(sourceArr => {
+        result.push(this._commonAncestorBetweenTwoList(pathArr, sourceArr));
+      });
+    });
+    return Math.max(...result);
+  }
+
+  _commonAncestorBetweenTwoList(targetList, sourceList) {
+    for (let i = 0; i < targetList.length; i++) {
+      if (sourceList.includes(targetList[i])) {
+        return targetList[i];
+      }
+    }
+    throw new Error("Unable to find common ancestor");
+  }
+
   /**
    * Replicate one artifact file from source repo to target repo
    * @param {String} sArtifact source's artifact
@@ -278,28 +502,24 @@ class ProjectHandler {
   /**
    * During merge out, move file from source's repo path and grandma's repo path to target project directory
    *    of target file
-   * @param {String} rPath source's repo path
-   * @param {String} gPath grandma's repo path
-   * @param {String} tPath Absolute target file path
+   * @param {String} rPath source's absolute artifact path
+   * @param {String} gPath grandma's absolute artifact path
+   * @param {String} tPath target's file in project tree
+   * @returns void
    */
   _mergeOutMoveFile(rPath, gPath, tPath) {
     // Parent directory of tPath
     let targetDirectory = path.dirname(tPath);
 
     // Set filenames to variables
-    let rPathName = path.basename(path.dirname(rPath));
-    let gPathName = path.basename(path.dirname(gPath));
-    let tPathName = path.basename(path.dirname(tPath));
+    const fileName = path.basename(tPath);
 
     // Set the destination absolute path
     let rPathDest = path.join(targetDirectory, path.basename(rPath));
     let gPathDest = path.join(targetDirectory, path.basename(gPath));
-    let tPathDest = path.join(targetDirectory, path.basename(tPath));
 
     // Save file extensions for later
-    let extensionR = path.extname(rPath);
-    let extensionG = path.extname(gPath);
-    let extensionT = path.extname(tPath);
+    const extension = path.extname(tPath);
 
     // Duplicate rPath to targetPath
     fs.copyFile(rPath, rPathDest, err => {
@@ -311,33 +531,29 @@ class ProjectHandler {
       if (err) throw err;
     });
 
-    // Duplicate tPath within the same directory
-    fs.copyFile(tPath, tPathDest, err => {
-      if (err) throw err;
-    });
-
     // Append _mr or _mg or _mt to the duplicated filenames
-    fs.renameSync(
-      rPathDest,
-      path.join(
-        targetDirectory,
-        rPathName.replace(/\.[^/.]+$/, "") + "_mr" + extensionR
-      )
+    const rFilePath = path.join(
+      targetDirectory,
+      fileName.replace(/\.[^/.]+$/, "") + "_mr" + extension
     );
-    fs.renameSync(
-      gPathDest,
-      path.join(
-        targetDirectory,
-        gPathName.replace(/\.[^/.]+$/, "") + "_mg" + extensionG
-      )
+    const gFilePath = path.join(
+      targetDirectory,
+      fileName.replace(/\.[^/.]+$/, "") + "_mg" + extension
     );
-    fs.renameSync(
-      tPathDest,
-      path.join(
-        targetDirectory,
-        rPathName.replace(/\.[^/.]+$/, "") + "_mt" + extensionT
-      )
+    const tFilePath = path.join(
+      targetDirectory,
+      fileName.replace(/\.[^/.]+$/, "") + "_mt" + extension
     );
+
+    fs.renameSync(rPathDest, rFilePath);
+    fs.renameSync(gPathDest, gFilePath);
+    fs.renameSync(tPath, tFilePath);
+
+    return {
+      fromSource: rFilePath,
+      fromAncesor: gFilePath,
+      fromTarget: tFilePath
+    };
   }
 
   /**
