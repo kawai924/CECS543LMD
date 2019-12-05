@@ -18,6 +18,8 @@ const user2 = "bob";
 const bProj1 = aProj1;
 const bPH = new ProjectHandler(user2).forProject(bProj1);
 const bProPath = bPH.projectPath;
+const bMasManReader = new MasterManReader(user2, bProj1);
+const bMasManWriter = new MasterManWriter(user2, bProj1);
 
 reset();
 
@@ -99,6 +101,10 @@ function alice3CheckIn() {
     "Don't read me"
   );
   aPH.checkin();
+
+  // 4th label
+  manifestID = aMasManReader.getHead();
+  aMasManWriter.addLabel(manifestID, "recent");
 }
 
 function aliceProject2() {
@@ -129,6 +135,10 @@ function bob3CheckIn() {
     "Bob overwrites file..."
   );
   bPH.checkin();
+
+  // 1st Label
+  manifestID = bMasManReader.getHead();
+  bMasManWriter.addLabel(manifestID, "recent");
 }
 
 /**
