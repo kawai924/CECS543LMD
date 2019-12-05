@@ -29,7 +29,8 @@ module.exports = function() {
   const commandParse = (username, prompt) => {
     prompt = prompt.trim(); // Remove white space
     const [command, projectName] = prompt.split(" ");
-    let projPath, manifestID;
+    let projPath, tManifestID, sUsername, sManifestID;
+    console.log({ command });
 
     switch (command) {
       case COMMANDS.CREATE:
@@ -59,19 +60,37 @@ module.exports = function() {
 
       case COMMANDS.LABEL:
         _checkIfProjPresent(username, projectName);
-        [, , lName, manifestID] = _splitAndAppend(
+        [, , lName, tManifestID] = _splitAndAppend(
           prompt,
           _getDefaultNumArgs(command) - 1
         );
 
         new ProjectHandler(username)
           .forProject(projectName)
-          .label(manifestID, lName);
+          .label(tManifestID, lName);
         break;
 
       case COMMANDS.REMOVE:
         _checkIfProjPresent(username, projectName);
         new ProjectHandler(username).forProject(projectName).remove();
+        break;
+
+      case COMMANDS.MERGE_OUT:
+        _checkIfProjPresent(username, projectName);
+        [, , tManifestID, sUsername, sManifestID] = _splitAndAppend(
+          prompt,
+          _getDefaultNumArgs(command) - 1
+        );
+
+        new ProjectHandler(username)
+          .forProject(projectName)
+          .mergeOut(sUsername, sManifestID, tManifestID);
+        break;
+
+      case COMMANDS.MERGE_IN:
+        _checkIfProjPresent(username, projectName);
+
+        new ProjectHandler(username).forProject(projectName).mergeIn();
         break;
 
       default:
@@ -101,8 +120,10 @@ module.exports = function() {
         return _command_guides[COMMANDS.MERGE_IN].split("|").length;
       case COMMANDS.LABEL:
         return _command_guides[COMMANDS.LABEL].split("|").length;
+      case COMMANDS.MERGE_OUT:
+        return _command_guides[COMMANDS.LABEL].split("|").length;
       default:
-        throw new Error("Wrong command");
+        throw new Error(`Can't get number of arguments of ${command}`);
     }
   };
 

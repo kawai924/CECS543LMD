@@ -264,6 +264,9 @@ class ProjectHandler {
     // Check if the head manifest is a mergeout
     if (manifest.command !== COMMANDS.MERGE_OUT)
       throw new Error("Previous manifest was not a merge out");
+    if (!this._hasUserFixedMergeOut(manifest.structure)) {
+      throw new Error("Please fix all conflict files before merge in");
+    }
 
     const artifactsList = this._checkinProjectTree(
       this.projectPath,
@@ -284,6 +287,24 @@ class ProjectHandler {
 
   /** Private functions
    ****************************/
+  _hasUserFixedMergeOut(fileList) {
+    fileList = fileList || [];
+
+    for (let i = 0; i < fileList.length; i++) {
+      const list = fileList[i];
+      const filePaths = Object.values(list);
+
+      for (let j = 0; j < filePaths.length; j++) {
+        const file = filePaths[j];
+        if (fs.existsSync(file)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   _mergeOutOperation(sUsername, sManifestID, tManifestID) {
     const sourceProjectPath = path.join(DB_PATH, sUsername, this.projectName);
 
