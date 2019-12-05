@@ -141,6 +141,10 @@ class ProjectHandler {
         parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
       })
       .addStructure(artifactsList)
+      .addCheckoutFrom({
+        username: sUsername,
+        ID: sID
+      })
       .write();
 
     // Step 5: Add new manifest to master manifest
