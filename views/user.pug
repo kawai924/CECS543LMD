@@ -149,5 +149,17 @@ block content
                                 li 
                                   span.badge.badge-light Check-in file counts: 
                                   span #{manifest.structure.length}
+                                li 
+                                  span.badge.badge-light Parent:
+                                  ul
+                                    //- li #{JSON.stringify(manifest.command)}
+                                    if manifest.command === "checkout" || manifest.command === "mergeout"
+                                      each parent in manifest.parent
+                                        li 
+                                          span.badge.badge-light parentID
+                                          span #{parent.parentID}
+                                        li 
+                                          span.badge.badge-light parentPath
+                                          span #{parent.parentPath.split("\\" | "/")}
                                     
 
