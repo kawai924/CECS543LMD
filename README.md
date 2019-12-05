@@ -29,11 +29,10 @@ Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
 - [NPM](https://www.npmjs.com/get-npm). Version 6+ is recommended.
 - [PUG](https://pugjs.org/). Version 6+ is recommended.
 
-2. Install dependencies using [npm install](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+2. Install all dependencies using [npm install](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```bash
 $ npm install
-$ npm install pug
 ```
 
 3. On terminal, start server by:
@@ -42,7 +41,15 @@ $ npm install pug
 $ npm start
 ```
 
-4. On web broswer, go to URL: [http://localhost:3000/](http://localhost:3000/)
+4. Run stimulation:
+
+```bash
+$ npm run simulation
+
+Press 1 to run all
+```
+
+5. On web broswer, go to URL: [http://localhost:3000/](http://localhost:3000/)
 
 ## Structure
 
