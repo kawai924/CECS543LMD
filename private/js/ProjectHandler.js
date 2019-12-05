@@ -280,9 +280,11 @@ class ProjectHandler {
 
   /**
    * During merge out, move file from source's repo path and grandma's repo path to target project directory
+   *    of target file
    * @param {String} rPath source's repo path
    * @param {String} gPath grandma's repo path
    * @param {String} tPath target's repo path
+   * @returns void
    */
   _mergeOutMoveFile(rPath, gPath, tPath) {
     // Parent directory of tPath
