@@ -31,21 +31,21 @@ class ProjectHandler {
    * @returns void
    */
   create() {
-    // Step 1: Create all neccessary folder at the target repo
+    // Create all neccessary folder at the target repo
     fs.mkdirSync(path.join(this.repoPath, MANIFEST_DIR), { recursive: true });
 
-    // Step 2: Get handlers
+    // Get handlers
     const manWriter = new ManifestWriter(this.username, this.projectName);
     const masManWriter = new MasterManWriter(this.username, this.projectName);
 
-    // Step 3: Build and write a manifest
+    // Build and write a manifest
     const newMan = manWriter
       .addCommand(COMMANDS.CREATE)
       .addParent()
       .addStructure()
       .write();
 
-    // Step 4: Add new manifest to master manifest
+    // Add new manifest to master manifest
     masManWriter.addNewMan(newMan);
   }
 
@@ -76,25 +76,25 @@ class ProjectHandler {
   checkin(projPath = this.projectPath) {
     projPath = projPath || this.projectPath;
 
-    // Step 2: Get handlers
+    // Get handlers
     const manWriter = new ManifestWriter(this.username, this.projectName);
     const masManWriter = new MasterManWriter(this.username, this.projectName);
     const masManReader = new MasterManReader(this.username, this.projectName);
 
-    // Step 3: Get artifacts
+    // Get artifacts
     const artifactsList = this._checkinProjectTree(projPath, this.repoPath);
 
-    // Step 5: Get HEAD manifest ID
+    // Get HEAD manifest ID
     const head = masManReader.getHead();
 
-    // Step 4: Write manifest
+    // Write manifest
     const newMan = manWriter
       .addCommand(COMMANDS.CHECKIN)
       .addParent({ parentID: head, parentPath: this.manDirPath })
       .addStructure(artifactsList)
       .write();
 
-    // Step 5: Update master manifest
+    // Update master manifest
     masManWriter.addNewMan(newMan);
   }
 
@@ -107,18 +107,18 @@ class ProjectHandler {
    * @returns void
    */
   checkout(sUsername, sProjectName, sID) {
-    // Step 1: Initialize all handlers
+    // Initialize all handlers
     const tManWriter = new ManifestWriter(this.username, this.projectName);
     const sManReader = new ManifestReader(sUsername, sProjectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
 
-    // Step 2: Attempt to get manifest
+    // Attempt to get manifest
     const sMan = sManReader.getMan(sID);
 
-    // Step 3: Create all neccessary folder
+    // Create all neccessary folder
     fs.mkdirSync(this.manDirPath, { recursive: true });
 
-    // Step 4: Checkout files
+    // Checkout files
     const sProjectPath = path.join(DB_PATH, sUsername, sProjectName);
     const sArtifactList = sMan.structure || [];
 
@@ -131,7 +131,7 @@ class ProjectHandler {
       this.repoPath
     );
 
-    // Step 5: Build and write a manifest
+    // Build and write a manifest
     const newMan = tManWriter
       .addCommand(COMMANDS.CHECKOUT)
       .addParent({
@@ -141,7 +141,7 @@ class ProjectHandler {
       .addStructure(artifactsList)
       .write();
 
-    // Step 5: Add new manifest to master manifest
+    // Add new manifest to master manifest
     tMasManWriter.addNewMan(newMan);
   }
 
@@ -160,17 +160,17 @@ class ProjectHandler {
    * @param {Number | String} tID target manifest ID or label
    */
   mergeOut(sUsername, sID, tID) {
+    // Get all handlers
     const tManifestWriter = new ManifestWriter(this.username, this.projectName);
     const tManifestReader = new ManifestReader(this.username, this.projectName);
     const tMasManWriter = new MasterManWriter(this.username, this.projectName);
-    const tMasManReader = new MasterManReader(this.username, this.projectName);
-
-    const sMasManReader = new MasterManReader(sUsername, this.projectName);
     const sManReader = new ManifestReader(sUsername, this.projectName);
 
+    // Get manifests using identifications
     const tManifest = tManifestReader.getMan(tID);
     const sManifest = sManReader.getMan(sID);
 
+    // Get conflicted file list
     const movedFileList = this._mergeOutOperation(
       sUsername,
       sManifest.id,
@@ -200,12 +200,14 @@ class ProjectHandler {
       }
     ];
 
+    // Write new manifest
     const newMan = tManifestWriter
       .addCommand(COMMANDS.MERGE_OUT)
       .addParent(...parentList)
       .addStructure(movedFileList)
       .write();
 
+    // Add manifest to master manifest
     tMasManWriter.addNewMan(newMan);
   }
 
@@ -213,6 +215,7 @@ class ProjectHandler {
    * Merge in action
    */
   mergeIn() {
+    // Get all handlers
     const manReader = new ManifestReader(this.username, this.projectName);
     const manWriter = new ManifestWriter(this.username, this.projectName);
     const masManReader = new MasterManReader(this.username, this.projectName);
@@ -224,6 +227,8 @@ class ProjectHandler {
     // Check if the head manifest is a mergeout
     if (manifest.command !== COMMANDS.MERGE_OUT)
       throw new Error("Previous manifest was not a merge out");
+
+    // Check if conflicted files have been fixed
     if (!this._hasUserFixedMergeOut(manifest.structure)) {
       throw new Error("Please fix all conflict files before merge in");
     }
@@ -234,18 +239,19 @@ class ProjectHandler {
     );
     const head = masManReader.getHead();
 
-    // Step 4: Write manifest
+    // Write manifest
     const newMan = manWriter
       .addCommand(COMMANDS.MERGE_IN)
       .addParent({ parentID: head, parentPath: this.manDirPath })
       .addStructure(artifactsList)
       .write();
 
-    // Step 5: Update master manifest
+    // Update master manifest
     masManWriter.addNewMan(newMan);
   }
 
   /***************************** Private functions ****************************/
+
   /***************************** MERGE OUT*****************************/
   /**
    * Check if user has fix all conflicts after merge out
