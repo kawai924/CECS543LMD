@@ -6,13 +6,20 @@ VCS Project for CECS 543 Sec 07 11646
 
 Create a repository for the given project source tree (including all its files and their folder paths) within the project.
 
-# Project Demo
-
-- Please click here to see our demo: [Part 2](https://youtu.be/TblI6wRh0XQ)
-
 # Authors
 
 Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
+
+# Project Demo
+
+- Live version: Follow the guide below.
+- Manual by terminal:
+  - Follow step 1 and 2 of guide
+  - Use:
+  ```bash
+  $ npm run simulation
+  ```
+  - At each step, manually inspect the file in database or at the terminal log
 
 # Guide
 
@@ -43,13 +50,15 @@ $ npm start
 |- database (store repos from users)
 |- private (helper JS functions)
 |- public (static files)
-|-server (store server related files)
+|- server (store server related files)
 	|- routes (store routers)
    	|- app.js (server entry point)
 	|- constants.js (stores all constants)
+|- tests (store spec files)
+|- views (store all template files)
 ```
 
-## Stand Up Report
+## Stand Up Reports
 
 Part 1: [LINK](https://1drv.ms/w/s!AgJrpqI0jWm8gZpljgq3uOegIrgdbQ)
 
