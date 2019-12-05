@@ -145,88 +145,6 @@ class ProjectHandler {
     tMasManWriter.addNewMan(newMan);
   }
 
-  getParentList(projectPath, manifestID) {
-    // Using PathObj now but will change to use this.path
-    let paths = []; // Array that will hold all paths
-    let queue = new makeQueue();
-    queue.enqueue({
-      manifestID: manifestID,
-      startingArr: [],
-      startingPath: projectPath
-    });
-
-    while (!queue.isEmpty()) {
-      let pathObj = queue.dequeue();
-      manifestID = pathObj.manifestID;
-      projectPath = pathObj.startingPath;
-
-      let targetPath = projectPath.split(VSC_REPO_NAME)[0];
-      // console.log(targetPath);
-      targetPath = path.join(targetPath, VSC_REPO_NAME, MANIFEST_DIR);
-      let targetParentList = pathObj.startingArr.concat(manifestID);
-
-      // Read First Manifest file
-      let manifestData = JSON.parse(
-        fs.readFileSync(path.join(targetPath, manifestID.toString() + ".json"))
-      );
-      // Grab first Parent
-      let curParent = manifestData.parent[0].parentID;
-      let parentPath = manifestData.parent[0].parentPath;
-
-      // While a parent exists
-      while (curParent != null) {
-        targetParentList.push(curParent);
-        manifestData = JSON.parse(
-          fs.readFileSync(path.join(parentPath, curParent.toString() + ".json"))
-        );
-
-        if (!manifestData.hasOwnProperty("parent")) {
-          curParent = null;
-          break;
-        }
-        switch (manifestData.command) {
-          case COMMANDS.MERGE_IN: // 2 Parents
-            parentPath = manifestData.parent[0].parentPath;
-            curParent = manifestData.parent[0].parentID;
-
-            let mergePath = manifestData.parent[1].parentPath;
-            let mergeParent = manifestData.parent[1].parentID;
-            queue.enqueue({
-              manifestID: mergeParent,
-              startingArr: targetParentList.slice(),
-              startingPath: mergePath
-            });
-            break;
-          default:
-            // Regular commit/checkin
-            parentPath = manifestData.parent[0].parentPath;
-            curParent = manifestData.parent[0].parentID;
-        }
-      }
-      paths.push(targetParentList);
-    }
-    return paths;
-  }
-
-  commonAncestor(targetArr, sourceArr) {
-    let result = [];
-    targetArr.forEach(pathArr => {
-      sourceArr.forEach(sourceArr => {
-        result.push(this._commonAncestor(pathArr, sourceArr));
-      });
-    });
-    return Math.max(...result);
-  }
-
-  _commonAncestor(targetList, sourceList) {
-    for (let i = 0; i < targetList.length; i++) {
-      if (sourceList.includes(targetList[i])) {
-        return targetList[i];
-      }
-    }
-    throw new Error("Unable to find common ancestor");
-  }
-
   /**
    * Remove a project of a user
    * @returns void
@@ -292,7 +210,7 @@ class ProjectHandler {
   }
 
   /**
-   * Merge in
+   * Merge in action
    */
   mergeIn() {
     const manReader = new ManifestReader(this.username, this.projectName);
@@ -327,8 +245,8 @@ class ProjectHandler {
     masManWriter.addNewMan(newMan);
   }
 
-  /** Private functions
-   ****************************/
+  /***************************** Private functions ****************************/
+  /***************************** MERGE OUT*****************************/
   /**
    * Check if user has fix all conflicts after merge out
    * @param {Array} fileList list of all path to conflicts file [{source, target, ancestor}]
@@ -542,55 +460,68 @@ class ProjectHandler {
   }
 
   /**
-   * Replicate one artifact file from source repo to target repo
-   * @param {String} sArtifact source's artifact
-   * @param {String} sProjectPath source's project path
-   * @param {String} tRepoPath target's repo path
-   * @return void
+   * Find conflicts between two manifests. A conflict occurs when same file name with extension but different artifact ID at the same directory.
+   * @param {JSON} mania first manifest JSON
+   * @param {JSON} manib second manifest JSON
+   * @returns {Array} an array of objects with the format {source : {artifactNode, artifactRelPath}, target: {artifactNode, artifactRelPath}}
    */
-  _copyArtifactOver(sArtifact, sProjectPath, tRepoPath) {
-    //Create dirs
-    const tADirRepoPath = path.join(tRepoPath, sArtifact.artifactRelPath);
-    makeDirSync(tADirRepoPath, { recursive: true });
+  _gatherConflicts(mania, manib) {
+    const ssmallfilelist = [];
+    const sfilelist = [];
+    const sfolderlist = [];
+    const sinfolder = [];
+    let filename;
 
-    if (sArtifact.artifactNode != "") {
-      const tAartAbsRepoPath = path.join(tADirRepoPath, sArtifact.artifactNode);
-      const tAartDirRepoPath = path.dirname(tAartAbsRepoPath);
-      makeDirSync(tAartDirRepoPath, { recursive: true });
+    for (let prop in mania.structure) {
+      let structure = mania.structure[prop];
+      sfilelist.push(mania.structure[prop]);
+      filename = structure.artifactNode;
+      ssmallfilelist.push(filename);
+      sinfolder.push(structure.artifactRelPath);
 
-      const sArtAbsPath = path.join(
-        sProjectPath,
-        VSC_REPO_NAME,
-        sArtifact.artifactRelPath,
-        sArtifact.artifactNode
-      );
-
-      fs.copyFileSync(sArtAbsPath, tAartAbsRepoPath);
+      let tar = filename.lastIndexOf("/");
+      let file = filename.substring(0, tar);
+      sfolderlist.push(file);
     }
-  }
 
-  /**
-   * During checkout, turn artifact from source's repo to a file in target project tree
-   * @param {JSON} artifact artifact object {artifactNode, artifactRelPath}
-   * @param {String} sProjectPath source's project path
-   * @returns void
-   */
-  _checkoutArtifact(artifact, sProjectPath) {
-    const dirPath = path.join(this.projectPath, artifact.artifactRelPath);
-    fs.mkdirSync(dirPath, { recursive: true }); // Recursively make directories at the destination
+    const tsmallfilelist = [];
+    const tfilelist = [];
+    const tfolderlist = [];
+    const tinfolder = [];
 
-    if (artifact.artifactNode !== "") {
-      const fullFilePathFromSource = path.join(
-        sProjectPath,
-        VSC_REPO_NAME,
-        artifact.artifactRelPath,
-        artifact.artifactNode
-      );
-      const fileName = artifact.artifactNode.split(path.sep)[0];
-      fs.copyFileSync(fullFilePathFromSource, path.join(dirPath, fileName));
+    for (let prop in manib.structure) {
+      let structure = manib.structure[prop];
+      tfilelist.push(manib.structure[prop]);
+      filename = structure.artifactNode;
+      tsmallfilelist.push(filename);
+      tinfolder.push(structure.artifactRelPath);
+
+      let tar = filename.lastIndexOf("/");
+      let file = filename.substring(0, tar);
+      tfolderlist.push(file);
     }
-  }
 
+    let conflict = 0;
+    let data = [];
+    for (const [key, value] of Object.entries(sfolderlist)) {
+      let tkey = tfolderlist.indexOf(value);
+
+      if (
+        tsmallfilelist[tkey] != ssmallfilelist[key] &&
+        tinfolder[tkey] == sinfolder[key] &&
+        key in ssmallfilelist &&
+        tkey in tsmallfilelist
+      ) {
+        data.push({
+          source: sfilelist[key],
+          target: tfilelist[tkey]
+        });
+
+        conflict++;
+      }
+    }
+    return data;
+  }
   /**
    * During merge out, move file from source's repo path and grandma's repo path to target project directory
    *    of target file
@@ -634,7 +565,30 @@ class ProjectHandler {
       fromTarget: tFilePath
     };
   }
+  /***************************** CHECKOUT *****************************/
+  /**
+   * During checkout, turn artifact from source's repo to a file in target project tree
+   * @param {JSON} artifact artifact object {artifactNode, artifactRelPath}
+   * @param {String} sProjectPath source's project path
+   * @returns void
+   */
+  _checkoutArtifact(artifact, sProjectPath) {
+    const dirPath = path.join(this.projectPath, artifact.artifactRelPath);
+    fs.mkdirSync(dirPath, { recursive: true }); // Recursively make directories at the destination
 
+    if (artifact.artifactNode !== "") {
+      const fullFilePathFromSource = path.join(
+        sProjectPath,
+        VSC_REPO_NAME,
+        artifact.artifactRelPath,
+        artifact.artifactNode
+      );
+      const fileName = artifact.artifactNode.split(path.sep)[0];
+      fs.copyFileSync(fullFilePathFromSource, path.join(dirPath, fileName));
+    }
+  }
+
+  /***************************** CHECKIN *****************************/
   /**
    * For each file in project path, compute artifact ID, change filename to artifact ID and move it to the provided repo path
    * @param {*} projPath source project path that the files are evaluated.
@@ -727,70 +681,6 @@ class ProjectHandler {
     sum = sum % (Math.pow(2, 31) - 1);
     let artifactName = `${sum}-L${len}${ext}`;
     return artifactName;
-  }
-
-  /**
-   * Find conflicts between two manifests. A conflict occurs when same file name with extension but different artifact ID at the same directory.
-   * @param {JSON} mania first manifest JSON
-   * @param {JSON} manib second manifest JSON
-   * @returns {Array} an array of objects with the format {source : {artifactNode, artifactRelPath}, target: {artifactNode, artifactRelPath}}
-   */
-  _gatherConflicts(mania, manib) {
-    const ssmallfilelist = [];
-    const sfilelist = [];
-    const sfolderlist = [];
-    const sinfolder = [];
-    let filename;
-
-    for (let prop in mania.structure) {
-      let structure = mania.structure[prop];
-      sfilelist.push(mania.structure[prop]);
-      filename = structure.artifactNode;
-      ssmallfilelist.push(filename);
-      sinfolder.push(structure.artifactRelPath);
-
-      let tar = filename.lastIndexOf("/");
-      let file = filename.substring(0, tar);
-      sfolderlist.push(file);
-    }
-
-    const tsmallfilelist = [];
-    const tfilelist = [];
-    const tfolderlist = [];
-    const tinfolder = [];
-
-    for (let prop in manib.structure) {
-      let structure = manib.structure[prop];
-      tfilelist.push(manib.structure[prop]);
-      filename = structure.artifactNode;
-      tsmallfilelist.push(filename);
-      tinfolder.push(structure.artifactRelPath);
-
-      let tar = filename.lastIndexOf("/");
-      let file = filename.substring(0, tar);
-      tfolderlist.push(file);
-    }
-
-    let conflict = 0;
-    let data = [];
-    for (const [key, value] of Object.entries(sfolderlist)) {
-      let tkey = tfolderlist.indexOf(value);
-
-      if (
-        tsmallfilelist[tkey] != ssmallfilelist[key] &&
-        tinfolder[tkey] == sinfolder[key] &&
-        key in ssmallfilelist &&
-        tkey in tsmallfilelist
-      ) {
-        data.push({
-          source: sfilelist[key],
-          target: tfilelist[tkey]
-        });
-
-        conflict++;
-      }
-    }
-    return data;
   }
 }
 
