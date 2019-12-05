@@ -134,19 +134,21 @@ class ProjectHandler {
     tMasManWriter.addNewMan(newMan);
   }
 
-
-
   getParentList(projectPath, manifestID) {
     // Using PathObj now but will change to use this.path
     let paths = []; // Array that will hold all paths
     let queue = new makeQueue();
-    queue.enqueue( {manifestID: manifestID, startingArr: [], startingPath: projectPath} );
-    
-    while(!queue.isEmpty()) {
+    queue.enqueue({
+      manifestID: manifestID,
+      startingArr: [],
+      startingPath: projectPath
+    });
+
+    while (!queue.isEmpty()) {
       let pathObj = queue.dequeue();
       manifestID = pathObj.manifestID;
       projectPath = pathObj.startingPath;
-      
+
       let targetPath = projectPath.split(VSC_REPO_NAME)[0];
       // console.log(targetPath);
       targetPath = path.join(targetPath, VSC_REPO_NAME, MANIFEST_DIR);
@@ -154,7 +156,7 @@ class ProjectHandler {
 
       // Read First Manifest file
       let manifestData = JSON.parse(
-        fs.readFileSync(path.join(targetPath ,manifestID.toString() + '.json'))
+        fs.readFileSync(path.join(targetPath, manifestID.toString() + ".json"))
       );
       // Grab first Parent
       let curParent = manifestData.parent[0].parentID;
@@ -164,24 +166,28 @@ class ProjectHandler {
       while (curParent != null) {
         targetParentList.push(curParent);
         manifestData = JSON.parse(
-          fs.readFileSync(path.join(parentPath, curParent.toString() +  '.json'))
+          fs.readFileSync(path.join(parentPath, curParent.toString() + ".json"))
         );
-        
 
         if (!manifestData.hasOwnProperty("parent")) {
           curParent = null;
           break;
         }
-        switch(manifestData.command) {
+        switch (manifestData.command) {
           case COMMANDS.MERGE_IN: // 2 Parents
             parentPath = manifestData.parent[0].parentPath;
             curParent = manifestData.parent[0].parentID;
 
             let mergePath = manifestData.parent[1].parentPath;
             let mergeParent = manifestData.parent[1].parentID;
-            queue.enqueue({manifestID: mergeParent, startingArr: targetParentList.slice(), startingPath: mergePath})
+            queue.enqueue({
+              manifestID: mergeParent,
+              startingArr: targetParentList.slice(),
+              startingPath: mergePath
+            });
             break;
-          default: // Regular commit/checkin
+          default:
+            // Regular commit/checkin
             parentPath = manifestData.parent[0].parentPath;
             curParent = manifestData.parent[0].parentID;
         }
@@ -191,25 +197,24 @@ class ProjectHandler {
     return paths;
   }
 
-
   commonAncestor(targetArr, sourceArr) {
     let result = [];
-    targetArr.forEach( (pathArr) => {
-      sourceArr.forEach( (sourceArr) => {
+    targetArr.forEach(pathArr => {
+      sourceArr.forEach(sourceArr => {
         result.push(this._commonAncestor(pathArr, sourceArr));
-      } )
+      });
     });
     return Math.max(...result);
   }
 
   _commonAncestor(targetList, sourceList) {
-    for (let i = 0; i < targetList.length; i ++) {
+    for (let i = 0; i < targetList.length; i++) {
       if (sourceList.includes(targetList[i])) {
         return targetList[i];
       }
     }
     throw new Error("Unable to find common ancestor");
-  } 
+  }
 
   /**
    * Remove a project of a user
@@ -255,22 +260,18 @@ class ProjectHandler {
    * @returns void
    */
   _checkoutArtifact(artifact, sProjectPath) {
-    const newDestPath = path.join(this.projectPath, artifact.artifactRelPath);
-    fs.mkdirSync(newDestPath, { recursive: true }); // Recursively make folders in the destination
+    const dirPath = path.join(this.projectPath, artifact.artifactRelPath);
+    fs.mkdirSync(dirPath, { recursive: true }); // Recursively make directories at the destination
 
-    if (artifact.artifactNode == "") {
-      return;
-    } else {
-      // Get full file path from source
-      const fileSource = path.join(
+    if (artifact.artifactNode !== "") {
+      const fullFilePathFromSource = path.join(
         sProjectPath,
         VSC_REPO_NAME,
         artifact.artifactRelPath,
         artifact.artifactNode
       );
       const fileName = artifact.artifactNode.split(path.sep)[0];
-
-      fs.copyFileSync(fileSource, path.join(newDestPath, fileName));
+      fs.copyFileSync(fullFilePathFromSource, path.join(dirPath, fileName));
     }
   }
 
@@ -279,8 +280,7 @@ class ProjectHandler {
    *    of target file
    * @param {String} rPath source's repo path
    * @param {String} gPath grandma's repo path
-   * @param {String} tPath target's repo path
-   * @returns void
+   * @param {String} tPath Absolute target file path
    */
   _mergeOutMoveFile(rPath, gPath, tPath) {
     // Parent directory of tPath

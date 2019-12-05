@@ -7,7 +7,7 @@ const { VSC_REPO_NAME, MANIFEST_DIR } = require("../private/js/index");
 
 describe("ProjectHandler", function() {
   describe("Merging", function() {
-    describe("#_mergeOutMoveFiles()", function() {
+    describe("#_mergeOutMoveFile()", function() {
       beforeEach(() => {
         mockFS({
           "source/data.txt/": { "S111-S00.txt": "" },
@@ -23,7 +23,7 @@ describe("ProjectHandler", function() {
       });
 
       it("target folder should have 3 files.", function() {
-        projHandler._mergeOutMoveFiles(
+        projHandler._mergeOutMoveFile(
           "source/data.txt/S111-S00.txt",
           "grandma/data.txt/G111-G00.txt",
           "target/data.txt"
@@ -34,7 +34,7 @@ describe("ProjectHandler", function() {
       });
 
       it("target folder should have 3 filenames with _mt, _mr, _mg.", function() {
-        projHandler._mergeOutMoveFiles(
+        projHandler._mergeOutMoveFile(
           "source/data.txt/S111-S00.txt",
           "grandma/data.txt/G111-G00.txt",
           "target/data.txt"
