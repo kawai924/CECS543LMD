@@ -135,14 +135,10 @@ class ProjectHandler {
     const newMan = tManWriter
       .addCommand(COMMANDS.CHECKOUT)
       .addParent({
-        parentID: sID,
+        parentID: sMan.id,
         parentPath: path.join(sManReader.repoPath, MANIFEST_DIR)
       })
       .addStructure(artifactsList)
-      .addCheckoutFrom({
-        username: sUsername,
-        ID: sID
-      })
       .write();
 
     // Step 5: Add new manifest to master manifest
@@ -265,7 +261,7 @@ class ProjectHandler {
 
     const parentList = [
       {
-        parentID: sID,
+        parentID: sManifest.id,
         parentPath: path.join(
           DB_PATH,
           sUsername,
@@ -275,7 +271,7 @@ class ProjectHandler {
         )
       },
       {
-        parentID: tID,
+        parentID: tManifest.id,
         parentPath: path.join(
           DB_PATH,
           this.username,

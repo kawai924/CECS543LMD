@@ -7,7 +7,7 @@
     "start": "node ./server/app.js",
     "test": "mocha || true",
     "nodemon": "nodemon ./server/app.js",
-    "buildDB": "node private/js/New_Test.js"
+    "buildDB": "node private/js/Simulation.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "mocha": "^6.2.2",
     "mock-fs": "^4.10.3",
     "nodemon": "^2.0.1",
+    "readline-sync": "^1.4.10",
     "sinon": "^7.5.0"
   }
 }
