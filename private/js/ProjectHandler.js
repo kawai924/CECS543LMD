@@ -139,6 +139,83 @@ class ProjectHandler {
     }
   }
 
+
+
+  getParentList(projectPath, manifestID) {
+    // Using PathObj now but will change to use this.path
+    let paths = []; // Array that will hold all paths
+    let queue = new makeQueue();
+    queue.enqueue( {manifestID: manifestID, startingArr: [], startingPath: projectPath} );
+    
+    while(!queue.isEmpty()) {
+      let pathObj = queue.dequeue();
+      manifestID = pathObj.manifestID;
+      projectPath = pathObj.startingPath;
+      
+      let targetPath = projectPath.split(VSC_REPO_NAME)[0];
+      // console.log(targetPath);
+      targetPath = path.join(targetPath, VSC_REPO_NAME, MANIFEST_DIR);
+      let targetParentList = pathObj.startingArr.concat(manifestID);
+
+      // Read First Manifest file
+      let manifestData = JSON.parse(
+        fs.readFileSync(path.join(targetPath ,manifestID.toString() + '.json'))
+      );
+      // Grab first Parent
+      let curParent = manifestData.parent[0].parentID;
+      let parentPath = manifestData.parent[0].parentPath;
+
+      // While a parent exists
+      while (curParent != null) {
+        targetParentList.push(curParent);
+        manifestData = JSON.parse(
+          fs.readFileSync(path.join(parentPath, curParent.toString() +  '.json'))
+        );
+        
+
+        if (!manifestData.hasOwnProperty("parent")) {
+          curParent = null;
+          break;
+        }
+        switch(manifestData.command) {
+          case COMMANDS.MERGE_IN: // 2 Parents
+            parentPath = manifestData.parent[0].parentPath;
+            curParent = manifestData.parent[0].parentID;
+
+            let mergePath = manifestData.parent[1].parentPath;
+            let mergeParent = manifestData.parent[1].parentID;
+            queue.enqueue({manifestID: mergeParent, startingArr: targetParentList.slice(), startingPath: mergePath})
+            break;
+          default: // Regular commit/checkin
+            parentPath = manifestData.parent[0].parentPath;
+            curParent = manifestData.parent[0].parentID;
+        }
+      }
+      paths.push(targetParentList);
+    }
+    return paths;
+  }
+
+
+  commonAncestor(targetArr, sourceArr) {
+    let result = [];
+    targetArr.forEach( (pathArr) => {
+      sourceArr.forEach( (sourceArr) => {
+        result.push(this._commonAncestor(pathArr, sourceArr));
+      } )
+    });
+    return Math.max(...result);
+  }
+
+  _commonAncestor(targetList, sourceList) {
+    for (let i = 0; i < targetList.length; i ++) {
+      if (sourceList.includes(targetList[i])) {
+        return targetList[i];
+      }
+    }
+    return false; // Should never happen?
+  } 
+
   /**
    * Remove a project of a user
    * @returns void
