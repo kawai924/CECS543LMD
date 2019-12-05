@@ -107,16 +107,6 @@ class ManifestWriter {
   }
 
   /**
-   * Add source path to the manifest builder
-   * @param {String} fromPath source path
-   * @returns this instance
-   */
-  addCheckoutFrom(fromPath) {
-    this.fromPath = fromPath || "";
-    return this;
-  }
-
-  /**
    * Add parents to the manifest builder
    * @param  {...Object} parents : object = {parentID, parentPath}
    * @returns this instance

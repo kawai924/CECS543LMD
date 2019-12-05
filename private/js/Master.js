@@ -33,8 +33,7 @@ class MasterManReader {
    * @returns {Number} HEAD manifest ID
    */
   getHead() {
-    const masManReader = new MasterManReader(this.username, this.projectName);
-    return masManReader.getMasMan().head;
+    return this.getMasMan().head;
   }
 }
 
@@ -61,8 +60,6 @@ class MasterManWriter {
    * @returns void
    */
   writeFreshMasMan(toPath = this.masManFilePath) {
-    // toPath = toPath || this.masManFilePath;
-
     const freshMasMan = {
       username: this.username,
       projectName: this.projectName,
@@ -70,11 +67,8 @@ class MasterManWriter {
       labels: [],
       manifests: []
     };
-    try {
-      fs.writeFileSync(this.masManFilePath, JSON.stringify(freshMasMan));
-    } catch (e) {
-      throw new Error("Unable to write fresh master manifest file");
-    }
+
+    this._rewriteMasMan(freshMasMan);
   }
 
   /**
@@ -84,6 +78,7 @@ class MasterManWriter {
    * @returns void
    */
   addNewMan(man) {
+    // Write a new master manifest if not present.
     if (!this._isMasManPresent()) {
       this.writeFreshMasMan();
     }
@@ -91,13 +86,11 @@ class MasterManWriter {
     const masManReader = new MasterManReader(this.username, this.projectName);
     const masManWriter = new MasterManWriter(this.username, this.projectName);
 
+    // Add manifest to master manifest
     const masMan = masManReader.getMasMan();
     masMan.manifests.push(man);
-    try {
-      fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
-    } catch (e) {
-      throw new Error("Unable to write master manifest to add new manifest");
-    }
+    this._rewriteMasMan(masMan);
+
     // Update head
     masManWriter.addHead(man.manifestID);
   }
@@ -115,11 +108,8 @@ class MasterManWriter {
 
     const newLabel = { [label]: manID };
     masMan.labels.push(newLabel);
-    try {
-      fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
-    } catch (e) {
-      throw new Error("Unable to write master manifest to update label");
-    }
+
+    this._rewriteMasMan(masMan);
   }
 
   /**
@@ -135,17 +125,28 @@ class MasterManWriter {
     fs.writeFileSync(this.masManFilePath, JSON.stringify(masMan));
   }
 
+  /**** Private Functions
+   ************************/
+
+  /**
+   * Write updated master manifest to file.
+   * @param {JSON} updatedMasMan updated master manifest json
+   * @returns void
+   */
+  _rewriteMasMan(updatedMasMan) {
+    try {
+      fs.writeFileSync(this.masManFilePath, JSON.stringify(updatedMasMan));
+    } catch (e) {
+      throw new Error("Unable to write updated master manifest.");
+    }
+  }
+
   /**
    * Check if master manifest is present
    * @returns {Boolean} true if present
    */
   _isMasManPresent() {
-    try {
-      let output = fs.readFileSync(this.masManFilePath);
-      return output.length > 0;
-    } catch (e) {
-      this.writeFreshMasMan();
-    }
+    return fs.existsSync(this.masManFilePath);
   }
 }
 
