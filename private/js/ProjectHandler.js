@@ -359,7 +359,7 @@ class ProjectHandler {
       movedFileList.push(movedFile);
     });
 
-    console.log('Please resolve these conflicts: ');
+    console.log('Conflicts:');
     console.log(movedFileList);
     return movedFileList;
   }
