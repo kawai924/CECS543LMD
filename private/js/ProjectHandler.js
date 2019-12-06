@@ -1,3 +1,11 @@
+/*
+ * This file contains CREATE, CHECK-IN, LABEL, CHECK-OUT, MERGE-OUT, MERGE-IN operations.
+ * Master manifest contains information about project and manifests.
+ * Authors: Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
+ * Contacts: nguyen.dch@gmail.com | matthewnguyen19@gmail.com | marco.curci@student.csulb.edu | dennis.lo@student.csulb.edu
+ * LMD VSC Control - CECS 543 - Fall 2019
+ */
+
 const path = require('path');
 const fs = require('fs');
 

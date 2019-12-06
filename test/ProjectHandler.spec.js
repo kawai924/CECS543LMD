@@ -1,3 +1,10 @@
+/*
+ * Test some functions of ProjectHandler.js
+ * Authors: Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
+ * Contacts: nguyen.dch@gmail.com | matthewnguyen19@gmail.com | marco.curci@student.csulb.edu | dennis.lo@student.csulb.edu
+ * LMD VSC Control - CECS 543 - Fall 2019
+ */
+
 const mockFS = require('mock-fs');
 const fs = require('fs');
 const assert = require('chai').assert;

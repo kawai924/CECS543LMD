@@ -1,7 +1,12 @@
+/*
+ * This file stores functions that doesn't fit to any class.
+ * Authors: Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
+ * Contacts: nguyen.dch@gmail.com | matthewnguyen19@gmail.com | marco.curci@student.csulb.edu | dennis.lo@student.csulb.edu
+ * LMD VSC Control - CECS 543 - Fall 2019
+ */
+
 const fs = require('fs');
 const path = require('path');
-
-const { MASTER_MANIFEST_NAME, VSC_REPO_NAME, MANIFEST_DIR } = require('.');
 
 /**
  * Check if a path is a directory

@@ -1,3 +1,11 @@
+/*
+ * This file handle reading and writing relating to manifest.
+ * Manifest contains information about artifacts in repo and other related information.
+ * Authors: Liam Nguyen | Matt Nguyen | Marco Curci | Dennis Lo
+ * Contacts: nguyen.dch@gmail.com | matthewnguyen19@gmail.com | marco.curci@student.csulb.edu | dennis.lo@student.csulb.edu
+ * LMD VSC Control - CECS 543 - Fall 2019
+ */
+
 const path = require('path');
 const fs = require('fs');
 
