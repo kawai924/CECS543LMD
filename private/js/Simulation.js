@@ -80,7 +80,7 @@ function aliceBeforeBobCheckout() {
   fsExt.writeFileSync(path.join(aProPath, "foo", "foo1.txt"), "I'm foo");
   aPH.checkin();
 
-  console.log("ALICE LABEL foo");
+  console.log("ALICE ADD LABEL foo\n");
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, "foo");
 
@@ -106,7 +106,7 @@ function aliceBeforeBobCheckout() {
   );
   aPH.checkin();
 
-  console.log("ALICE LABEL foo_changed\n");
+  console.log("ALICE ADD LABEL foo_changed\n");
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, "foo_changed");
 }
@@ -118,7 +118,7 @@ function bobCheckOutAlice() {
 
   // Alice
   console.log(
-    "BOB CREATES\n FILE: \tnew/alice_status.txt\n\tCONTENT: 'Alice is happy'\n"
+    "ALICE CREATES\n FILE: \tnew/alice_status.txt\n\tCONTENT: 'Alice is happy'\n"
   );
   fsExt.mkdirpSync(path.join(aProPath, "new"));
   fsExt.writeFileSync(
@@ -128,7 +128,7 @@ function bobCheckOutAlice() {
   aPH.checkin();
 
   // Alice
-  console.log("ALICE LABEL newFolder");
+  console.log("ALICE LABEL newFolder\n");
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, "newFolder");
 
@@ -144,7 +144,7 @@ function bobCheckOutAlice() {
   bPH.checkin();
 
   // Bob
-  console.log("BOB LABEL newFolder\n");
+  console.log("BOB ADD LABEL newFolder\n");
   manifestID = bMasManReader.getHead();
   bMasManWriter.addLabel(manifestID, "newFolder");
 
@@ -169,7 +169,7 @@ function bobCheckOutAlice() {
   aPH.checkin();
 
   // Alice
-  console.log("ALICE LABEL journal\n");
+  console.log("ALICE ADD LABEL journal\n");
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, "journal");
 
@@ -192,7 +192,7 @@ function bobCheckOutAlice() {
   bPH.checkin();
 
   // Bob
-  console.log("BOB LABEL foo_changed\n");
+  console.log("BOB ADD LABEL foo_changed\n");
   manifestID = bMasManReader.getHead();
   bMasManWriter.addLabel(manifestID, "foo_changed");
 }
@@ -206,7 +206,7 @@ function bobMergeWithAlice1() {
 }
 
 function bobResolveMergeConflict1() {
-  console.log("PRETEND BOB FIXES ALL CONFLICTS AND USE HIS COPY\n");
+  console.log("PRETEND BOB FIXES ALL CONFLICTS BY USING HIS COPY\n");
   const bobMergeOutMan = bManReader.getMan(bMasManReader.getHead());
   const conflictFiles = bobMergeOutMan.structure;
   conflictFiles.forEach(list => {
@@ -243,7 +243,7 @@ function bobMergeWithAlice2() {
   );
   aPH.checkin();
 
-  console.log("ALICE LABEL data_changed'\n");
+  console.log("ALICE ADD LABEL data_changed'\n");
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, "data_changed");
 
@@ -258,7 +258,7 @@ function bobMergeWithAlice2() {
   );
   bPH.checkin();
 
-  console.log("BOB LABEL recent\n");
+  console.log("BOB ADD LABEL recent\n");
   manifestID = bMasManReader.getHead();
   bMasManWriter.addLabel(manifestID, "recent");
 
@@ -282,7 +282,7 @@ function bobResolveMergeConflict2() {
 
       const filenameWithUnderscore = filename.split("_")[0];
 
-      // Choose grandma
+      // Choose _mg
       if (filename.includes("_mr") || filename.includes("_mt")) {
         fs.unlinkSync(file);
       } else {
