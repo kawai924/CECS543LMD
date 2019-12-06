@@ -40,14 +40,13 @@ const simulations = [
 
 // Simulation logic
 let index = 0;
+console.log('Welcome to our terminal simulation!');
+console.log('All projects are placed in DATABASE directory');
 console.log(
-  '-----------------------------------------\nHow to run the simulation?\n 1: Run all\n Enter: Run step by step\n'
+  '-----------------------------------------\nHow to run the simulation?\n 1: Run all\n Enter: Run step by step'
 );
 while (index < simulations.length) {
-  let input = readlineSync.question(
-    '**********************************\nYour input: '
-  );
-  console.log('**********************************');
+  let input = readlineSync.question('> ');
   if (input === '1') {
     for (let i = index; i < simulations.length; i++) {
       simulations[i]();
@@ -62,12 +61,13 @@ while (index < simulations.length) {
 /*Helper functions
  ************************/
 function aliceCreate() {
-  console.log(`ALICE CREATE PROJECT: ${aProj1}\n`);
+  console.log(`Alice creates project ${aProj1}\n`);
   aPH.create();
+  console.log('-----------------------------------------');
 }
 function aliceBeforeBobCheckout() {
   console.log(
-    "ALICE CREATES\n FILE: \tdata.txt \n\tCONTENT: 'Alice writes Hello World'\n"
+    "Alice creates and check-in \n file: \tdata.txt \n\tcontent: 'Alice writes Hello World'\n"
   );
   fsExt.writeFileSync(
     path.join(aProPath, 'data.txt'),
@@ -75,17 +75,19 @@ function aliceBeforeBobCheckout() {
   );
   aPH.checkin();
 
-  console.log("ALICE CREATES\n FILE: \tfoo/foo1.txt \n\tCONTENT: 'I'm foo'\n");
+  console.log(
+    "Alice creates and check-in\n file: \tfoo/foo1.txt \n\tcontent: 'I'm foo'\n"
+  );
   fsExt.mkdirpSync(path.join(aProPath, 'foo'));
   fsExt.writeFileSync(path.join(aProPath, 'foo', 'foo1.txt'), "I'm foo");
   aPH.checkin();
 
-  console.log('ALICE ADD LABEL foo\n');
+  console.log('Alice adds label foo\n');
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, 'foo');
 
   console.log(
-    "ALICE CREATES\n FILE: \tbar/baz/baz1.txt \n\tCONTENT: 'I'm under bar/baz'\n"
+    "Alice creates and check-in\n file: \tbar/baz/baz1.txt \n\tcontent: 'I'm under bar/baz'\n"
   );
   fsExt.mkdirpSync(path.join(aProPath, 'bar', 'baz'), {
     recursive: true
@@ -97,67 +99,72 @@ function aliceBeforeBobCheckout() {
   aPH.checkin();
 
   console.log(
-    "ALICE CHANGE\n FILE: \tfoo/foo1.txt \n\tCONTENT: 'Alice said good-bye...'\n"
+    "Alice creates and check-in\n file: \tnew/status.txt \n\tcontent: 'Blank'\n"
   );
-  fsExt.mkdirpSync(path.join(aProPath, 'foo'));
-  fsExt.writeFileSync(
-    path.join(aProPath, 'foo', 'foo1.txt'),
-    'Alice said good-bye...'
-  );
+  fsExt.mkdirpSync(path.join(aProPath, 'new'), {
+    recursive: true
+  });
+  fsExt.writeFileSync(path.join(aProPath, 'new', 'status.txt'), 'Blank');
   aPH.checkin();
 
-  console.log('ALICE ADD LABEL foo_changed\n');
+  // console.log(
+  //   "Alice changes\n file: \tfoo/foo1.txt \n\tcontent: 'Alice said good-bye...'\n"
+  // );
+  // fsExt.mkdirpSync(path.join(aProPath, 'foo'));
+  // fsExt.writeFileSync(
+  //   path.join(aProPath, 'foo', 'foo1.txt'),
+  //   'Alice said good-bye...'
+  // );
+  // aPH.checkin();
+
+  console.log('Alice adds label alice1\n');
   manifestID = aMasManReader.getHead();
-  aMasManWriter.addLabel(manifestID, 'foo_changed');
+  aMasManWriter.addLabel(manifestID, 'alice1');
+
+  console.log('-----------------------------------------');
 }
 
 function bobCheckOutAlice() {
-  console.log("BOB CHECKOUT ALICE USING LABEL 'foo'\n");
+  console.log("Bob checkout Alice using label: 'alice1'\n");
   // Bob
-  bPH.checkout(user1, aProj1, 'foo');
+  bPH.checkout(user1, aProj1, 'alice1');
 
   // Alice
   console.log(
-    "ALICE CREATES\n FILE: \tnew/alice_status.txt\n\tCONTENT: 'Alice is happy'\n"
+    "Alice creates and check-in\n file: \tnew/status.txt\n\tcontent: 'Happy'\n"
   );
   fsExt.mkdirpSync(path.join(aProPath, 'new'));
-  fsExt.writeFileSync(
-    path.join(aProPath, 'new', 'alice_status.txt'),
-    'Alice is happy'
-  );
+  fsExt.writeFileSync(path.join(aProPath, 'new', 'status.txt'), 'Happy');
   aPH.checkin();
 
   // Alice
-  console.log('ALICE LABEL newFolder\n');
+  console.log('Alice adds label newFolder\n');
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, 'newFolder');
 
   // Bob
   console.log(
-    "BOB CREATES\n FILE: \tnew/bob_status.txt\n\tCONTENT: 'Bob is running'\n"
+    "Bob creates and check-in\n file: \tnew/status.txt\n\tcontent: 'Happy'\n"
   );
   fsExt.mkdirpSync(path.join(bProPath, 'new'));
-  fsExt.writeFileSync(
-    path.join(bProPath, 'new', 'bob_status.txt'),
-    'Bob is running'
-  );
+  fsExt.writeFileSync(path.join(bProPath, 'new', 'status.txt'), 'Happy');
   bPH.checkin();
 
   // Bob
-  console.log('BOB ADD LABEL newFolder\n');
+  console.log('Bob adds label newFolder\n');
   manifestID = bMasManReader.getHead();
   bMasManWriter.addLabel(manifestID, 'newFolder');
 
   // Alice
   console.log(
-    "ALICE CHANGE\n FILE: \tdata.txt \n\tCONTENT: 'Alice comes back'\n"
+    "Alice changes\n file: \tdata.txt \n\tcontent: 'Alice comes back'\n"
   );
   fsExt.writeFileSync(path.join(aProPath, 'data.txt'), 'Alice comes back');
   aPH.checkin();
 
   // Alice
   console.log(
-    "ALICE CHANGE\n FILE: \tsecret/journal.txt \n\tCONTENT: 'Don't read me'\n"
+    "Alice changes\n file: \tsecret/journal.txt \n\tcontent: 'Don't read me'\n"
   );
   fsExt.mkdirpSync(path.join(aProPath, 'secret'), {
     recursive: true
@@ -169,20 +176,20 @@ function bobCheckOutAlice() {
   aPH.checkin();
 
   // Alice
-  console.log('ALICE ADD LABEL journal\n');
+  console.log('Alice adds label journal\n');
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, 'journal');
 
   // Bob overwrites data.txt
   console.log(
-    "BOB CHANGE\n FILE: \tdata.txt \n\tCONTENT: 'Bob just swings by...'\n"
+    "Bob changes\n file: \tdata.txt \n\tcontent: 'Bob just swings by...'\n"
   );
   fsExt.writeFileSync(path.join(bProPath, 'data.txt'), 'Bob just swings by...');
   bPH.checkin();
 
   // Bob overwrites foo1.txt
   console.log(
-    "BOB CHANGE\n FILE: \tfoo/foo1.txt \n\tCONTENT: 'Bob changed foo....'\n"
+    "Bob changes\n file: \tfoo/foo1.txt \n\tcontent: 'Bob changed foo....'\n"
   );
   fsExt.mkdirpSync(path.join(bProPath, 'foo'));
   fsExt.writeFileSync(
@@ -192,21 +199,27 @@ function bobCheckOutAlice() {
   bPH.checkin();
 
   // Bob
-  console.log('BOB ADD LABEL foo_changed\n');
+  console.log('Bob adds label foo_changed\n');
   manifestID = bMasManReader.getHead();
   bMasManWriter.addLabel(manifestID, 'foo_changed');
+
+  console.log('-----------------------------------------');
 }
 
 function bobMergeWithAlice1() {
   console.log(
-    'BOB 1ST MERGE WITH ALICE USING newFolder(Alice) and foo_change(Bob).\n'
+    'Bob 1st merge with alice using labels newFolder(Alice) and foo_change(Bob).\n'
   );
-  console.log('THIS SHOULD CAUSE 2 CONFLICTS: data.txt and foo/foo1.txt\n');
+  console.log(
+    'This should cause 2 conflicts: data.txt and foo/foo1.txt.\n No conflict at new/status.txt because of same content.\n'
+  );
   bPH.mergeOut('alice', 'newFolder', 'foo_changed');
+
+  console.log('-----------------------------------------');
 }
 
 function bobResolveMergeConflict1() {
-  console.log('PRETEND BOB FIXES ALL CONFLICTS BY USING HIS COPY\n');
+  console.log('Pretend Bob fix all conflicts by using his copy\n');
   const bobMergeOutMan = bManReader.getMan(bMasManReader.getHead());
   const conflictFiles = bobMergeOutMan.structure;
   conflictFiles.forEach(list => {
@@ -228,14 +241,16 @@ function bobResolveMergeConflict1() {
   });
 
   // Bob checkin
-  console.log('BOB MERGE IN AFTER FIXING CONFLICTS\n');
+  console.log('Bob merges in after fixing all conflicts\n');
   bPH.mergeIn();
+
+  console.log('-----------------------------------------');
 }
 
 function bobMergeWithAlice2() {
   // Alice
   console.log(
-    "ALICE CHANGE\n FILE: \tdata.txt \n\tCONTENT: 'Alice goes to the coffee shop.'\n"
+    "Alice changes\n file: \tdata.txt \n\tcontent: 'Alice goes to the coffee shop.'\n"
   );
   fsExt.writeFileSync(
     path.join(aProPath, 'data.txt'),
@@ -243,13 +258,13 @@ function bobMergeWithAlice2() {
   );
   aPH.checkin();
 
-  console.log("ALICE ADD LABEL data_changed'\n");
+  console.log("Alice adds label data_changed'\n");
   manifestID = aMasManReader.getHead();
   aMasManWriter.addLabel(manifestID, 'data_changed');
 
   // Bob
   console.log(
-    "BOB CREATE\n FILE: \tsample/sample1.txt \n\tCONTENT: 'Sample file'\n"
+    "BOB creates and check-in \n file: \tsample/sample1.txt \n\tcontent: 'Sample file'\n"
   );
   fsExt.mkdirpSync(path.join(bProPath, 'sample'));
   fsExt.writeFileSync(
@@ -258,19 +273,23 @@ function bobMergeWithAlice2() {
   );
   bPH.checkin();
 
-  console.log('BOB ADD LABEL recent\n');
+  console.log('Bob adds label recent\n');
   manifestID = bMasManReader.getHead();
   bMasManWriter.addLabel(manifestID, 'recent');
 
   console.log(
-    'BOB MERGE OUT WITH ALICE USING data_changed(Alice) and recent(Bob).\n'
+    'Bob merges out with alice using labels data_changed(Alice) and recent(Bob).\n'
   );
-  console.log('THIS SHOULD CAUSE 2 CONFLICTS, data.txt and foo/foo1.txt\n');
+  console.log(
+    'This should still causes 2 conflicts: data.txt and foo/foo1.txt\n'
+  );
   bPH.mergeOut('alice', 'data_changed', 'recent');
+
+  console.log('-----------------------------------------');
 }
 
 function bobResolveMergeConflict2() {
-  console.log('PRETEND BOB FIX ALL CONFLICT USING GRANDMA FILE\n');
+  console.log('Pretend Bob resolve all conflicts using grandma file\n');
   const bobMergeOutMan = bManReader.getMan(bMasManReader.getHead());
   const conflictFiles = bobMergeOutMan.structure;
   conflictFiles.forEach(list => {
@@ -291,23 +310,31 @@ function bobResolveMergeConflict2() {
     });
   });
 
-  console.log('BOB MERGE IN AFTER RESOLVING CONFLICTS\n');
+  console.log('Bob merges in after resolving conflicts\n');
   bPH.mergeIn();
+
+  console.log('-----------------------------------------');
 }
 
 function aliceProject2() {
-  console.log('ALICE CREATE PROJECT BETA AND CHECKIN EMPTY PROJECT TREE\n');
+  console.log(
+    'Alice creates and check-in project beta and check in empty project tree\n'
+  );
   aPH.forProject(aProj2);
   aPH.create();
   aPH.checkin();
+
+  console.log('--------------------END--------------------');
 }
 
 /**
  * Reset alice and bob
  */
 function reset() {
-  console.log('ERASE ALICE AND BOB\n');
+  console.log('Erase Alice and Bob\n');
   fsExt.removeSync(path.join(DB_PATH, user1));
   fsExt.removeSync(path.join(DB_PATH, user2));
   fsExt.removeSync(path.join(ROOTPATH, DATABASE_NAME, USERS_FILENAME));
+
+  console.log('-----------------------------------------');
 }

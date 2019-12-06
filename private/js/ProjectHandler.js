@@ -337,6 +337,7 @@ class ProjectHandler {
         sourceInfo.artifactRelPath,
         sourceInfo.artifactNode
       );
+
       const ancestorArtifactPath = path.join(
         sourceProjectPath,
         VSC_REPO_NAME,
@@ -358,6 +359,8 @@ class ProjectHandler {
       movedFileList.push(movedFile);
     });
 
+    console.log('Please resolve these conflicts: ');
+    console.log(movedFileList);
     return movedFileList;
   }
 
