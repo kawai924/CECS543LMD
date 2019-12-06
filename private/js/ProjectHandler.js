@@ -1,9 +1,10 @@
-const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME, COMMANDS } = require("./");
-const path = require("path");
-const fs = require("fs");
-const { makeDirSync, makeQueue, isDir } = require("./Functions");
-const { ManifestWriter, ManifestReader } = require("./Manifest");
-const { MasterManWriter, MasterManReader } = require("./Master");
+const path = require('path');
+const fs = require('fs');
+
+const { makeDirSync, makeQueue, isDir } = require('./Functions');
+const { ManifestWriter, ManifestReader } = require('./Manifest');
+const { MasterManWriter, MasterManReader } = require('./Master');
+const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME, COMMANDS } = require('./');
 
 /**
  * Handling all actions for a project
@@ -31,7 +32,7 @@ class ProjectHandler {
    * @returns void
    */
   create() {
-    // Create all neccessary folder at the target repo
+    // Create all necessary folder at the target repo
     fs.mkdirSync(path.join(this.repoPath, MANIFEST_DIR), { recursive: true });
 
     // Get handlers
@@ -115,7 +116,7 @@ class ProjectHandler {
     // Attempt to get manifest
     const sMan = sManReader.getMan(sID);
 
-    // Create all neccessary folder
+    // Create all necessary folder
     fs.mkdirSync(this.manDirPath, { recursive: true });
 
     // Checkout files
@@ -155,7 +156,7 @@ class ProjectHandler {
 
   /**
    * Merge Out action
-   * @param {String} sUsername souce username
+   * @param {String} sUsername source username
    * @param {Number | String} sID source manifest ID or label
    * @param {Number | String} tID target manifest ID or label
    */
@@ -224,13 +225,13 @@ class ProjectHandler {
     const headID = masManReader.getHead();
     const manifest = manReader.getMan(headID);
 
-    // Check if the head manifest is a mergeout
+    // Check if the head manifest is a merge-out
     if (manifest.command !== COMMANDS.MERGE_OUT)
-      throw new Error("Previous manifest was not a merge out");
+      throw new Error('Previous manifest was not a merge out');
 
     // Check if conflicted files have been fixed
     if (!this._hasUserFixedMergeOut(manifest.structure)) {
-      throw new Error("Please fix all conflict files before merge in");
+      throw new Error('Please fix all conflict files before merge in');
     }
 
     const artifactsList = this._checkinProjectTree(
@@ -277,9 +278,9 @@ class ProjectHandler {
   }
 
   /**
-   * Carry out mergeout operation
+   * Carry out merge-out operation
    * @param {String} sUsername
-   * @param {Number | String} sManifestID Souce's manifest ID or label
+   * @param {Number | String} sManifestID Source's manifest ID or label
    * @param {Number | String} tManifestID Target's manifest ID or label
    * @returns {Array} an array of all conflicted files
    */
@@ -310,7 +311,6 @@ class ProjectHandler {
     const tManifest = tManifestReader.getMan(tManifestID);
 
     const conflictList = this._gatherConflicts(sManifest, tManifest);
-    // console.log({ conflictList: JSON.stringify(conflictList) });
     // Include artifact from ancestor manifest
     conflictList.map(conflict => {
       const fileName = conflict.source.artifactNode.split(path.sep)[0];
@@ -389,7 +389,7 @@ class ProjectHandler {
 
       // Read First Manifest file
       let manifestData = JSON.parse(
-        fs.readFileSync(path.join(targetPath, manifestID.toString() + ".json"))
+        fs.readFileSync(path.join(targetPath, manifestID.toString() + '.json'))
       );
       // Grab first Parent
       let curParent = manifestData.parent[0].parentID;
@@ -399,11 +399,11 @@ class ProjectHandler {
       while (curParent != null) {
         targetParentList.push(curParent);
         manifestData = JSON.parse(
-          fs.readFileSync(path.join(parentPath, curParent.toString() + ".json"))
+          fs.readFileSync(path.join(parentPath, curParent.toString() + '.json'))
         );
 
         if (
-          !manifestData.hasOwnProperty("parent") ||
+          !manifestData.hasOwnProperty('parent') ||
           manifestData.parent.length === 0
         ) {
           curParent = null;
@@ -435,9 +435,9 @@ class ProjectHandler {
   }
 
   /**
-   * Find the most recent common ancestor ID betwween two arrays
+   * Find the most recent common ancestor ID between two arrays
    * @param {Array} targetArr An array of array of ancestry manifest ID of target
-   * @param {Array} sourceArr An array of array of ancestry manifest ID of souce
+   * @param {Array} sourceArr An array of array of ancestry manifest ID of source
    * @returns {Number} the most common ancestor manifest ID
    */
   _commonAncestor(targetArr, sourceArr) {
@@ -462,7 +462,7 @@ class ProjectHandler {
         return targetList[i];
       }
     }
-    throw new Error("Unable to find common ancestor");
+    throw new Error('Unable to find common ancestor');
   }
 
   /**
@@ -485,7 +485,7 @@ class ProjectHandler {
       ssmallfilelist.push(filename);
       sinfolder.push(structure.artifactRelPath);
 
-      let tar = filename.lastIndexOf("/");
+      let tar = filename.lastIndexOf('/');
       let file = filename.substring(0, tar);
       sfolderlist.push(file);
     }
@@ -502,7 +502,7 @@ class ProjectHandler {
       tsmallfilelist.push(filename);
       tinfolder.push(structure.artifactRelPath);
 
-      let tar = filename.lastIndexOf("/");
+      let tar = filename.lastIndexOf('/');
       let file = filename.substring(0, tar);
       tfolderlist.push(file);
     }
@@ -547,15 +547,15 @@ class ProjectHandler {
     // Append _mr or _mg or _mt to the duplicated filenames
     const rFilePath = path.join(
       targetDirectory,
-      fileName.replace(/\.[^/.]+$/, "") + "_mr" + extension
+      fileName.replace(/\.[^/.]+$/, '') + '_mr' + extension
     );
     const gFilePath = path.join(
       targetDirectory,
-      fileName.replace(/\.[^/.]+$/, "") + "_mg" + extension
+      fileName.replace(/\.[^/.]+$/, '') + '_mg' + extension
     );
     const tFilePath = path.join(
       targetDirectory,
-      fileName.replace(/\.[^/.]+$/, "") + "_mt" + extension
+      fileName.replace(/\.[^/.]+$/, '') + '_mt' + extension
     );
 
     // Move file from source repo to target project tree
@@ -567,11 +567,11 @@ class ProjectHandler {
 
     return {
       fromSource: rFilePath,
-      fromAncesor: gFilePath,
+      fromAncestor: gFilePath,
       fromTarget: tFilePath
     };
   }
-  /***************************** CHECKOUT *****************************/
+  /***************************** CHECK-OUT *****************************/
   /**
    * During checkout, turn artifact from source's repo to a file in target project tree
    * @param {JSON} artifact artifact object {artifactNode, artifactRelPath}
@@ -582,7 +582,7 @@ class ProjectHandler {
     const dirPath = path.join(this.projectPath, artifact.artifactRelPath);
     fs.mkdirSync(dirPath, { recursive: true }); // Recursively make directories at the destination
 
-    if (artifact.artifactNode !== "") {
+    if (artifact.artifactNode !== '') {
       const fullFilePathFromSource = path.join(
         sProjectPath,
         VSC_REPO_NAME,
@@ -594,7 +594,7 @@ class ProjectHandler {
     }
   }
 
-  /***************************** CHECKIN *****************************/
+  /***************************** CHECK-IN *****************************/
   /**
    * For each file in project path, compute artifact ID, change filename to artifact ID and move it to the provided repo path
    * @param {*} projPath source project path that the files are evaluated.
@@ -628,7 +628,7 @@ class ProjectHandler {
           makeDirSync(targetFile);
 
           struct.push({
-            artifactNode: "",
+            artifactNode: '',
             artifactRelPath: path.normalize(path.relative(repoPath, targetFile))
           });
 
@@ -648,7 +648,7 @@ class ProjectHandler {
           const aAbsPath = path.join(leafFolder, aID);
           fs.copyFileSync(filePath, aAbsPath);
 
-          // Grab the absolute path from database to the curent artifact
+          // Grab the absolute path from database to the current artifact
           const aDirPath = path.parse(leafFolder).dir;
 
           // Add artifact and its path to manifest
@@ -670,8 +670,8 @@ class ProjectHandler {
    */
   _createArtifactID(filePath) {
     // Read the file and grab the extension
-    let data = fs.readFileSync(filePath, "utf8");
-    let ext = filePath.substring(filePath.lastIndexOf("."));
+    let data = fs.readFileSync(filePath, 'utf8');
+    let ext = filePath.substring(filePath.lastIndexOf('.'));
     let weights = [1, 3, 7, 11, 13];
     const len = data.length;
     let weight;

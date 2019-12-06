@@ -1,15 +1,16 @@
-const mockFS = require("mock-fs");
-const { isDir, makeQueue } = require("../private/js/Functions");
-const assert = require("chai").assert;
+const mockFS = require('mock-fs');
+const assert = require('chai').assert;
 
-describe("Functions", function() {
-  describe("Queue", function() {
-    it("queue should be empty when initialized", function() {
+const { isDir, makeQueue } = require('../private/js/Functions');
+
+describe('Functions', function() {
+  describe('Queue', function() {
+    it('queue should be empty when initialized', function() {
       const queue = makeQueue();
       assert.isTrue(queue.isEmpty());
     });
 
-    it("should follow FIFO", function() {
+    it('should follow FIFO', function() {
       const queue = makeQueue();
       queue.enqueue(2);
       queue.enqueue(3);
@@ -17,14 +18,14 @@ describe("Functions", function() {
     });
   });
 
-  describe("File System", function() {
+  describe('File System', function() {
     beforeEach(() => {
       mockFS({
         source: {
-          "file.txt": "",
+          'file.txt': '',
           folder1: {},
           folder2: {
-            "nested.txt": ""
+            'nested.txt': ''
           }
         },
         target: {}
@@ -35,13 +36,13 @@ describe("Functions", function() {
       mockFS.restore();
     });
 
-    describe("#isDir()", function() {
-      it("returns true for folder", function() {
-        assert.isTrue(isDir("", "source"));
+    describe('#isDir()', function() {
+      it('returns true for folder', function() {
+        assert.isTrue(isDir('', 'source'));
       });
 
-      it("return false for file", function() {
-        assert.isFalse(isDir("source", "file.txt"));
+      it('return false for file', function() {
+        assert.isFalse(isDir('source', 'file.txt'));
       });
     });
   });

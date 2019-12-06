@@ -1,8 +1,9 @@
-const { DB_PATH } = require("./index");
-const { MasterManReader } = require("./Master");
-const { ManifestReader } = require("./Manifest");
-const path = require("path");
-const fs = require("fs");
+const path = require('path');
+const fs = require('fs');
+
+const { DB_PATH } = require('./index');
+const { MasterManReader } = require('./Master');
+const { ManifestReader } = require('./Manifest');
 
 /**
  * Getting information of a user of a project
@@ -14,7 +15,7 @@ class ViewOneUserOneProj {
   }
 
   /**
-   * Read master manifest and manifest to get informations about the project
+   * Read master manifest and manifest to get information about the project
    * @returns {JSON} information about the project.
    * @throws {Error} if manifest or master manifest cannot be found.
    */
@@ -47,7 +48,7 @@ class ViewOneUser {
   }
 
   /**
-   * Read master manifest and manifest to get informations about all projects of a user
+   * Read master manifest and manifest to get information about all projects of a user
    * @returns {JSON} information about all projects of a user
    * @throws {Error} if manifest or master manifest cannot be found.
    */
@@ -74,7 +75,7 @@ class ViewAll {
   constructor() {}
 
   /**
-   * Read master manifest and manifest to get informations about all projects of all users
+   * Read master manifest and manifest to get information about all projects of all users
    * @returns {JSON} information about all projects of all users
    * @throws {Error} if manifest or master manifest cannot be found.
    */

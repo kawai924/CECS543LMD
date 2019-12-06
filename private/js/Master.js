@@ -1,6 +1,7 @@
-const { DB_PATH, VSC_REPO_NAME, MASTER_MANIFEST_NAME } = require("./index");
-const path = require("path");
-const fs = require("fs");
+const path = require('path');
+const fs = require('fs');
+
+const { DB_PATH, VSC_REPO_NAME, MASTER_MANIFEST_NAME } = require('./index');
 
 /**
  * Handle reading master manifest file
@@ -137,7 +138,7 @@ class MasterManWriter {
     try {
       fs.writeFileSync(this.masManFilePath, JSON.stringify(updatedMasMan));
     } catch (e) {
-      throw new Error("Unable to write updated master manifest.");
+      throw new Error('Unable to write updated master manifest.');
     }
   }
 

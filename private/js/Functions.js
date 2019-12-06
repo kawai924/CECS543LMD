@@ -1,6 +1,7 @@
-const { MASTER_MANIFEST_NAME, VSC_REPO_NAME, MANIFEST_DIR } = require(".");
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
+
+const { MASTER_MANIFEST_NAME, VSC_REPO_NAME, MANIFEST_DIR } = require('.');
 
 /**
  * Check if a path is a directory

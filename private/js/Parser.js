@@ -1,22 +1,23 @@
-const { COMMANDS, DB_PATH } = require("./");
-const { ProjectHandler } = require("./ProjectHandler");
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
+
+const { COMMANDS, DB_PATH } = require('./');
+const { ProjectHandler } = require('./ProjectHandler');
 
 module.exports = function() {
   /**
    * Layout of particular command
    */
   let _command_guides = {
-    [COMMANDS.CREATE]: "create | <project name>",
-    [COMMANDS.CHECKIN]: "checkin | <project name> | <(optional) from path>",
+    [COMMANDS.CREATE]: 'create | <project name>',
+    [COMMANDS.CHECKIN]: 'checkin | <project name> | <(optional) from path>',
     [COMMANDS.CHECKOUT]:
-      "checkout | <project name> | <from_username> | <from manifest id> OR <label name",
+      'checkout | <project name> | <from_username> | <from manifest id> OR <label name',
     [COMMANDS.MERGE_OUT]:
-      "mergeout | <project name> | <target manifest id> | <source username> | <souce manifest id>",
-    [COMMANDS.MERGE_IN]: "<mergein> | <project name>",
-    [COMMANDS.LABEL]: "label | <project name> | <label name> | <manifest id>",
-    [COMMANDS.REMOVE]: "remove | <project name>"
+      'mergeout | <project name> | <target manifest id> | <source username> | <source manifest id>',
+    [COMMANDS.MERGE_IN]: '<mergein> | <project name>',
+    [COMMANDS.LABEL]: 'label | <project name> | <label name> | <manifest id>',
+    [COMMANDS.REMOVE]: 'remove | <project name>'
   };
 
   /**
@@ -28,7 +29,7 @@ module.exports = function() {
    */
   const commandParse = (username, prompt) => {
     prompt = prompt.trim(); // Remove white space
-    const [command, projectName] = prompt.split(" ");
+    const [command, projectName] = prompt.split(' ');
     let projPath, tManifestID, sUsername, sManifestID;
     console.log({ command });
 
@@ -94,7 +95,7 @@ module.exports = function() {
         break;
 
       default:
-        throw new Error("Wrong command");
+        throw new Error('Wrong command');
     }
   };
 
@@ -109,19 +110,19 @@ module.exports = function() {
   const _getDefaultNumArgs = command => {
     switch (command) {
       case COMMANDS.CREATE:
-        return _command_guides[COMMANDS.CREATE].split("|").length;
+        return _command_guides[COMMANDS.CREATE].split('|').length;
       case COMMANDS.CHECKIN:
-        return _command_guides[COMMANDS.CHECKIN].split("|").length;
+        return _command_guides[COMMANDS.CHECKIN].split('|').length;
       case COMMANDS.CHECKOUT:
-        return _command_guides[COMMANDS.CHECKOUT].split("|").length;
+        return _command_guides[COMMANDS.CHECKOUT].split('|').length;
       case COMMANDS.MERGE_OUT:
-        return _command_guides[COMMANDS.MERGE_OUT].split("|").length;
+        return _command_guides[COMMANDS.MERGE_OUT].split('|').length;
       case COMMANDS.MERGE_IN:
-        return _command_guides[COMMANDS.MERGE_IN].split("|").length;
+        return _command_guides[COMMANDS.MERGE_IN].split('|').length;
       case COMMANDS.LABEL:
-        return _command_guides[COMMANDS.LABEL].split("|").length;
+        return _command_guides[COMMANDS.LABEL].split('|').length;
       case COMMANDS.MERGE_OUT:
-        return _command_guides[COMMANDS.LABEL].split("|").length;
+        return _command_guides[COMMANDS.LABEL].split('|').length;
       default:
         throw new Error(`Can't get number of arguments of ${command}`);
     }
@@ -135,7 +136,7 @@ module.exports = function() {
    * @param {String} delim Delimiter to split the string
    * @returns {Array} Array of string with length = count
    */
-  const _splitAndAppend = (str, count, delim = " ") => {
+  const _splitAndAppend = (str, count, delim = ' ') => {
     const arr = str.split(delim);
     return [...arr.splice(0, count), arr.join(delim)];
   };

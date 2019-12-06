@@ -1,8 +1,8 @@
-const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME } = require("./index");
-const path = require("path");
-const fs = require("fs");
+const path = require('path');
+const fs = require('fs');
 
-const { MasterManReader } = require("./Master");
+const { MasterManReader } = require('./Master');
+const { DB_PATH, MANIFEST_DIR, VSC_REPO_NAME } = require('./index');
 
 /**
  * Handle reading manifest file
@@ -56,7 +56,7 @@ class ManifestReader {
     }
 
     throw new Error(
-      "Cannot find artifact with given file name and relative path!"
+      'Cannot find artifact with given file name and relative path!'
     );
   }
 
@@ -136,7 +136,7 @@ class ManifestWriter {
    * @returns this instance
    */
   addCommand(command) {
-    this.command = command || "";
+    this.command = command || '';
     return this;
   }
 
